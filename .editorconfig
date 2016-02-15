@@ -1,0 +1,11 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# 4 space indentation
+[*.py]
+indent_style = space
+indent_size = 4
+
