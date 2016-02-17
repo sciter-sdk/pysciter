@@ -31,11 +31,13 @@ class EventHandler:
         if wnd:
             self.attached_to_window = wnd
             ok = _api.SciterWindowAttachEventHandler(wnd, self._event_handler_proc, tag, subscription)
-            assert(ok == SCDOM_RESULT.SCDOM_OK)
+            if ok != SCDOM_RESULT.SCDOM_OK:
+                raise sciter.SciterError("Could not attach to window")
         elif element:
             self.attached_to_element = element
             ok = _api.SciterAttachEventHandler(element, self._event_handler_proc, tag)
-            assert(ok == SCDOM_RESULT.SCDOM_OK)
+            if ok != SCDOM_RESULT.SCDOM_OK:
+                raise sciter.SciterError("Could not attach to element")
         pass
 
     def detach(self):
@@ -43,10 +45,12 @@ class EventHandler:
         tag = id(self)
         if self.attached_to_window:
             ok = _api.SciterWindowDetachEventHandler(self.attached_to_window, self._event_handler_proc, tag)
-            assert(ok == SCDOM_RESULT.SCDOM_OK)
+            if ok != SCDOM_RESULT.SCDOM_OK:
+                raise sciter.SciterError("Could not detach from window")
         elif self.attached_to_element:
             ok = _api.SciterDetachEventHandler(self.attached_to_element, self._event_handler_proc, tag)
-            assert(ok == SCDOM_RESULT.SCDOM_OK)
+            if ok != SCDOM_RESULT.SCDOM_OK:
+                raise sciter.SciterError("Could not attach from element")
         pass
 
 
@@ -85,7 +89,10 @@ class EventHandler:
 
     def _on_script_call(self, f):
         args = sciter.Value.unpack_from(f.argv, f.argc)
-        rv = self.on_script_call(f.name.decode('utf-8'), args)
+        try:
+            rv = self.on_script_call(f.name.decode('utf-8'), args)
+        except Exception as e:
+            rv = e
         if rv is not None:
             sciter.Value.pack_to(f.result, rv)
             return True

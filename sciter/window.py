@@ -37,21 +37,22 @@ class Window(sciter.host.Host, sciter.behavior.EventHandler):
         rect = sciter.sctypes.RECT()
         self._wnd_handler_proc = sciter.scdef.SciterWindowDelegate(self._msg_delegate)
         self.hwnd = _api.SciterCreateWindow(flags, ctypes.byref(rect), self._wnd_handler_proc, None, parent)
-        if self.hwnd:
-            if debug:
-                self.setup_debug()
-            self.setup_callback(self.hwnd)
-            self.attach(wnd=self.hwnd)
+        if not self.hwnd:
+            raise sciter.SciterError("Could not create window")
+        if debug:
+            self.setup_debug()
+        self.setup_callback(self.hwnd)
+        self.attach(wnd=self.hwnd)
         pass
 
     def set_title(self, title: str):
         """Set window title."""
         ctypes.windll.user32.SetWindowTextW(self.hwnd, title)
-        pass
+        return self
 
     def get_title(self) -> str:
         """Get window title."""
-        cb = ctypes.windll.user32.GetWindowTextW(self.hwnd) + 1
+        cb = ctypes.windll.user32.GetWindowTextLengthW(self.hwnd) + 1
         title = ctypes.create_unicode_buffer(cb)
         ctypes.windll.user32.GetWindowTextW(self.hwnd, title, cb)
         return title
@@ -59,18 +60,18 @@ class Window(sciter.host.Host, sciter.behavior.EventHandler):
     def collapse(self):
         """Minimize window."""
         ctypes.windll.user32.ShowWindow(self.hwnd, 6)  # SW_MINIMIZE
-        pass
+        return self
 
     def expand(self, maximize=False):
         """Show or maximize window."""
         sw = 3 if maximize else 1  # SW_MAXIMIZE or SW_NORMAL
         ctypes.windll.user32.ShowWindow(self.hwnd, sw)
-        pass
+        return self
 
     def dismiss(self):
         """Close window."""
         ctypes.windll.user32.PostMessageW(self.hwnd, 0x0010, 0, 0)  # WM_CLOSE
-        pass
+        return self
 
     def run_app(self) -> int:
         """Run the main app message loop until window been closed."""

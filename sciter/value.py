@@ -38,7 +38,7 @@ class value():
     
     @classmethod
     def parse(self, json: str, how=VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL, throw=True):
-        """Parses json string into value."""
+        """Parse json string into value."""
         rv = value()
         ok = _api.ValueFromString(rv, json, len(json), how)
         if ok != 0 and throw:

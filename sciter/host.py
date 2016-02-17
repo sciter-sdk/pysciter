@@ -40,23 +40,31 @@ class Host():
     def set_option(self, option, value):
         """Set various sciter engine options, see the SCITER_RT_OPTIONS."""
         ok = _api.SciterSetOption(self.hwnd, option, value)
-        return ok != 0
+        if not ok:
+            raise sciter.SciterError("Could not set option " + str(option) + "=" + str(value))
+        return self
 
     def set_home_url(self, url: str):
         """Set sciter home url."""
         ok = _api.SciterSetHomeURL(self.hwnd, url)
-        return ok != 0
+        if not ok:
+            raise sciter.SciterError("Could not home url " + str(url))
+        return self
 
     def set_media_type(self, media_type: str):
         """Set media type of this sciter instance."""
         ok = _api.SciterSetMediaType(self.hwnd, media_type)
-        return ok != 0
+        if not ok:
+            raise sciter.SciterError("Could not set media type " + str(media_type))
+        return self
 
     def set_media_vars(self, media: dict):
         """Set media variables of this sciter instance."""
         v = sciter.Value(media)
         ok = _api.SciterSetMediaVars(self.hwnd, v)
-        return ok != 0
+        if not ok:
+            raise sciter.SciterError("Could not set media vars " + str(media))
+        return self
 
     def set_master_css(self, css_str: str, append: bool):
         """Set Master style sheet."""
@@ -65,13 +73,17 @@ class Host():
             ok = _api.SciterAppendMasterCSS(utf, len(utf))
         else:
             ok = _api.SciterSetMasterCSS(utf, len(utf))
-        return ok != 0
+        if not ok:
+            raise sciter.SciterError("Could not set master CSS")
+        return self
 
     def set_css(self, css_str: str, base_url: str, media_type: str):
         """Set (reset) style sheet of current document."""
         utf = css_str.encode('utf-8')
         ok = _api.SciterSetCSS(self.hwnd, utf, len(utf), base_url, media_type)
-        return ok != 0
+        if not ok:
+            raise sciter.SciterError("Could not set CSS")
+        return self
 
     def get_hwnd(self) -> HWINDOW:
         """Get window handle."""
@@ -80,18 +92,20 @@ class Host():
     def load_file(self, uri: str):
         """Load HTML document from file."""
         ok = _api.SciterLoadFile(self.hwnd, uri)
-        if ok:
-            self.root = self.get_root()
-        return ok != 0
+        if not ok:
+            raise sciter.SciterError("Unable to load file " + uri)
+        self.root = self.get_root()
+        return self
 
     def load_html(self, html: bytes, uri=None):
         """Load HTML document from memory."""
         cb = len(html)
         pb = ctypes.c_char_p(html)
         ok = _api.SciterLoadHtml(self.hwnd, pb, cb, uri)
-        if ok:
-            self.root = self.get_root()
-        return ok != 0
+        if not ok:
+            raise sciter.SciterError("Unable to load html " + str(uri))
+        self.root = self.get_root()
+        return self
 
     def get_root(self) -> HELEMENT:
         """Get window root DOM element."""
