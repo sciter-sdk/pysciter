@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>27c0c17e-bd4d-459a-9eb3-3532e4db5ad1</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tests\test_value.py</StartupFile>
+    <StartupFile>examples\uminimal.py</StartupFile>
     <SearchPath>d:\usr\dev\python\PySciter</SearchPath>
     <WorkingDirectory>d:\usr\dev\python\PySciter\</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -30,6 +30,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="examples\minimal.py" />
+    <Compile Include="examples\plain-win.py" />
+    <Compile Include="examples\uminimal.py" />
+    <Compile Include="sciter\behavior.py" />
+    <Compile Include="sciter\error.py" />
+    <Compile Include="sciter\host.py" />
     <Compile Include="sciter\scapi.py" />
     <Compile Include="sciter\scbehavior.py">
       <SubType>Code</SubType>

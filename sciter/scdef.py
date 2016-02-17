@@ -30,6 +30,67 @@ class SciterNotification(IntEnum):
     SC_GRAPHICS_CRITICAL_FAILURE = 0x07
 
 
+class SCITER_RT_OPTIONS(IntEnum):
+    SCITER_SMOOTH_SCROLL = 1       # value:TRUE - enable, value:FALSE - disable, enabled by default
+    SCITER_CONNECTION_TIMEOUT = 2  # value: milliseconds, connection timeout of http client
+    SCITER_HTTPS_ERROR = 3         # value: 0 - drop connection, 1 - use builtin dialog, 2 - accept connection silently
+    SCITER_FONT_SMOOTHING = 4      # value: 0 - system default, 1 - no smoothing, 2 - std smoothing, 3 - clear type
+
+    SCITER_TRANSPARENT_WINDOW = 6  # Windows Aero support, value:
+                                   # 0 - normal drawing,
+                                   # 1 - window has transparent background after calls DwmExtendFrameIntoClientArea() or DwmEnableBlurBehindWindow().
+    SCITER_SET_GPU_BLACKLIST  = 7  # hWnd = NULL,
+                                   # value = LPCBYTE, json - GPU black list, see: gpu-blacklist.json resource.
+    SCITER_SET_SCRIPT_RUNTIME_FEATURES = 8,  # value - combination of SCRIPT_RUNTIME_FEATURES flags.
+    SCITER_SET_GFX_LAYER = 9       # hWnd = NULL, value - GFX_LAYER
+    SCITER_SET_DEBUG_MODE = 10     # hWnd, value - TRUE/FALSE
+    SCITER_SET_UX_THEMING = 11     # hWnd = NULL, value - BOOL, TRUE - the engine will use "unisex" theme that is common for all platforms. 
+                                   # That UX theme is not using OS primitives for rendering input elements. Use it if you want exactly
+                                   # the same (modulo fonts) look-n-feel on all platforms.
+    SCITER_ALPHA_WINDOW  = 12      #  hWnd, value - TRUE/FALSE - window uses per pixel alpha (e.g. WS_EX_LAYERED/UpdateLayeredWindow() window)
+
+
+class SCRIPT_RUNTIME_FEATURES(IntEnum):
+    ALLOW_FILE_IO = 0x00000001
+    ALLOW_SOCKET_IO = 0x00000002
+    ALLOW_EVAL = 0x00000004
+    ALLOW_SYSINFO = 0x00000008
+
+
+class GFX_LAYER(IntEnum):
+    GFX_LAYER_GDI      = 1
+    GFX_LAYER_WARP     = 2
+    GFX_LAYER_D2D      = 3
+    GFX_LAYER_AUTO     = 0xFFFF
+
+
+class OUTPUT_SUBSYTEMS(IntEnum):
+    DOM = 0       # html parser & runtime
+    CSSS = 1      # csss! parser & runtime
+    CSS = 2       # css parser
+    TIS = 3       # TIS parser & runtime
+
+
+class OUTPUT_SEVERITY(IntEnum):
+    INFO = 0
+    WARNING = 1
+    ERROR = 2
+
+
+class SCITER_CREATE_WINDOW_FLAGS(IntEnum):
+    SW_CHILD      = (1 << 0)    # child window only, if this flag is set all other flags ignored
+    SW_TITLEBAR   = (1 << 1)    # toplevel window, has titlebar
+    SW_RESIZEABLE = (1 << 2)    # has resizeable frame
+    SW_TOOL       = (1 << 3)    # is tool window
+    SW_CONTROLS   = (1 << 4)    # has minimize / maximize buttons
+    SW_GLASSY     = (1 << 5)    # glassy window ( DwmExtendFrameIntoClientArea on windows )
+    SW_ALPHA      = (1 << 6)    # transparent window ( e.g. WS_EX_LAYERED on Windows )
+    SW_MAIN       = (1 << 7)    # main window of the app, will terminate the app on close
+    SW_POPUP      = (1 << 8)    # the window is created as topmost window.
+    SW_ENABLE_DEBUG = (1 << 9)  # make this window inspector ready
+    SW_OWNS_VM    = (1 << 10)   # it has its own script VM
+
+
 class SCITER_CALLBACK_NOTIFICATION(Structure):
     """."""
     _fields_ = [
@@ -50,6 +111,19 @@ class SCN_LOAD_DATA(Structure):
         ("requestId", HREQUEST),
         ("principal", HELEMENT),
         ("initiator", HELEMENT),
+        ]
+
+
+class SCN_DATA_LOADED(Structure):
+    """."""
+    _fields_ = [
+        ("code", c_uint),
+        ("hwnd", HWINDOW),
+        ("uri", LPCWSTR),
+        ("data", LPCBYTE),
+        ("dataSize", UINT),
+        ("dataType", UINT),
+        ("status", UINT),
         ]
 
 
