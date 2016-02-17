@@ -1,5 +1,6 @@
 import unittest
 
+import sciter
 from sciter.value import value, VALUE_TYPE
 
 
@@ -109,6 +110,20 @@ class TestSciterValue(unittest.TestCase):
         pass
 
     def test_12len(self):
+        pass
+
+    def test_13parse(self):
+        items = ["", 'null', '1', '"2"', '2.0', 'true', '[3, 4]', '{"5": 5, "6": 6, seven: "seven"}']
+        for item in items:
+            with self.subTest(val=item):
+                xval = value.parse(item)
+                if xval:
+                    self.assertTrue(xval)
+                else:
+                    self.assertFalse(xval)
+        with self.assertRaises(sciter.ValueError):
+            item = '{item: '
+            xval = value.parse(item)
         pass
     
     # __getitem__ __setitem__ __delitem__ __contains__

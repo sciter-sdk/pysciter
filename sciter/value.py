@@ -20,38 +20,30 @@ _python_types = {VALUE_TYPE.T_UNDEFINED: type(None),
                  VALUE_TYPE.T_MAP: dict,
                  VALUE_TYPE.T_BYTES: bytes,
                  }
+
 _value_type_names = [name.lower()[2:] for name, val in VALUE_TYPE.__members__.items()]
 
-_native_cache = []
+def _subtype_name(subtype):
+    return [name.split('_')[-1].lower() for name, val in subtype.__members__.items()]
 
-class _NativeFunctor():
-    """sciter::native_function wrapper."""
-    def __init__(self, func):
-        self.func = func
-        self.scinvoke = sciter.scdef.NATIVE_FUNCTOR_INVOKE(self.invoke)
-        self.screlease = sciter.scdef.NATIVE_FUNCTOR_RELEASE(self.release)
-        pass
+_value_subtypes = {VALUE_TYPE.T_LENGTH: _subtype_name(VALUE_UNIT_TYPE),
+                   VALUE_TYPE.T_DATE: _subtype_name(VALUE_UNIT_TYPE_DATE),
+                   VALUE_TYPE.T_OBJECT: _subtype_name(VALUE_UNIT_TYPE_OBJECT),
+                   VALUE_TYPE.T_STRING: _subtype_name(VALUE_UNIT_TYPE_STRING),
+                   }
 
-    def store(self, svalue):
-        ok = _api.ValueNativeFunctorSet(svalue, self.scinvoke, self.screlease, None)
-        _native_cache.append(self)
-        return ok
-
-    def invoke(self, tag, argc, argv, retv):
-        args = value.unpack_from(argv, argc)
-        try:
-            rv = self.func(*args)
-        except Exception as e:
-            rv = e
-        value.pack_to(retv, rv)
-        pass
-
-    def release(self, tag):
-        _native_cache.remove(self)
-        pass
 
 class value():
     """sciter::value pythonic wrapper."""
+    
+    @classmethod
+    def parse(self, json: str, how=VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL, throw=True):
+        """Parses json string into value."""
+        rv = value()
+        ok = _api.ValueFromString(rv, json, len(json), how)
+        if ok != 0 and throw:
+            raise sciter.ValueError(VALUE_RESULT.HV_BAD_PARAMETER, "value.parse")
+        return rv
 
     @classmethod
     def unpack_from(self, args, count):
@@ -80,12 +72,22 @@ class value():
         self.clear()
         pass
 
+    def __call__(self, *args, **kwargs):
+        """Alias for self.call()"""
+        return self.call(*args, **kwargs)
+
     def __repr__(self):
         """Machine-like value visualization."""
         t = VALUE_TYPE(self.data.t)
         tname = _value_type_names[self.data.t]
         if t in (VALUE_TYPE.T_UNDEFINED, VALUE_TYPE.T_NULL):
             return "<%s>" % (tname)
+
+        if self.data.u != 0:
+            subtypes = _value_subtypes.get(t)
+            if subtypes:
+                tname = tname + ':' + subtypes[self.data.u]
+
         return "<%s: %s>" % (tname, str(self))
 
     def __str__(self):
@@ -195,23 +197,27 @@ class value():
         It will convert all object-arrays to plain JSON arrays – removing all references of script objects.
         """
         ok = _api.ValueIsolate(self)
-        return ok == VALUE_RESULT.HV_OK
+        self._throw_if(ok)
+        return self
 
     def copy(self):
         """Return a shallow copy of the sciter::value."""
         copy = value()
         ok = _api.ValueCopy(copy, self)
+        self._throw_if(ok)
         return copy
 
     def copy_to(self, other):
         """Copy value to external SCITER_VALUE."""
         ok = _api.ValueCopy(other, self)
-        return ok == VALUE_RESULT.HV_OK
+        self._throw_if(ok)
+        return self
 
     def clear(self):
         """Clear the VALUE and deallocates all assosiated structures that are not used anywhere else."""
         ok = _api.ValueClear(self)
-        return ok == VALUE_RESULT.HV_OK
+        self._throw_if(ok)
+        return self
 
     def length(self) -> int:
         """Return the number of items in the T_ARRAY, T_MAP, T_FUNCTION and T_OBJECT sciter::value."""
@@ -219,6 +225,7 @@ class value():
             raise AttributeError("'%s' has no attribute '%s'" % (self.get_type(), 'length'))
         n = ctypes.c_int32()
         ok = _api.ValueElementsCount(self, byref(n))
+        self._throw_if(ok)
         return n.value
 
     def values(self):
@@ -230,6 +237,7 @@ class value():
         for n in range(self.length()):
             xval = value()
             ok = _api.ValueNthElementValue(self, n, xval)
+            self._throw_if(ok)
             r.append(xval)
         assert(len(r) == xlen)
         return list(r)
@@ -238,13 +246,15 @@ class value():
         """Append value to the end of T_ARRAY sciter::value."""
         xval = value(val)
         ok = _api.ValueNthElementSet(self.length(), xval)
-        pass
+        self._throw_if(ok)
+        return self
 
     def insert(self, i, val):
         """Insert or set value at given index of T_ARRAY, T_MAP, T_FUNCTION and T_OBJECT sciter::value."""
         xval = value(val)
         ok = _api.ValueNthElementSet(i, xval)
-        return ok == VALUE_RESULT.HV_OK
+        self._throw_if(ok)
+        return self
 
 
     ## @name Mapping sequence operations:
@@ -257,6 +267,7 @@ class value():
         for n in range(self.length()):
             xval = value()
             ok = _api.ValueNthElementKey(self, n, xval)
+            self._throw_if(ok)
             r.append(xval)
         return tuple(r)
 
@@ -269,12 +280,35 @@ class value():
             xkey = value()
             xval = value()
             ok = _api.ValueNthElementKey(self, n, xkey)
+            self._throw_if(ok)
             ok = _api.ValueNthElementValue(self, n, xval)
+            self._throw_if(ok)
             r.append((xkey, xval))
         return tuple(r)
 
 
     ## @name Underlaying value operations
+    def call(self, *args, **kwargs):
+        """Function invokation for T_OBJECT/UT_OBJECT_FUNCTION.
+        args: arguments passed to
+        kwargs:
+            name (str): url or name of the script - used for error reporting in the script.
+            this (value): object that will be known as 'this' inside that function.
+        
+        """
+        rv = value()
+        argc = len(args)
+        args_type = sciter.value.SCITER_VALUE * argc
+        argv = args_type()
+        for i, v in enumerate(args):
+            sv = sciter.Value(v)
+            sv.copy_to(argv[i])
+        name = kwargs.get('name')
+        thisv = value(kwargs.get('this'))
+        ok = _api.ValueInvoke(self, thisv, argc, argv, rv, name)
+        self._throw_if(ok)
+        return rv.get_value()
+
     def is_string(self):
         """."""
         t, u = self.get_type(with_unit=True)
@@ -313,19 +347,23 @@ class value():
         elif t == VALUE_TYPE.T_BOOL:
             v = ctypes.c_int32()
             ok = _api.ValueIntData(self, byref(v))
+            self._throw_if(ok)
             return v.value != 0
         elif t == VALUE_TYPE.T_INT:
             v = ctypes.c_int32()
             ok = _api.ValueIntData(self, byref(v))
+            self._throw_if(ok)
             return int(v.value)
         elif t == VALUE_TYPE.T_FLOAT:
             v = ctypes.c_double()
             ok = _api.ValueFloatData(self, byref(v))
+            self._throw_if(ok)
             return float(v.value)
         elif t == VALUE_TYPE.T_STRING:
             v = ctypes.c_wchar_p()
             n = ctypes.c_uint32()
             ok = _api.ValueStringData(self, byref(v), byref(n))
+            self._throw_if(ok)
             # if self.data.u == VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR:
             #    raise ScriptError(v.value)
             return v.value
@@ -333,6 +371,7 @@ class value():
             v = ctypes.c_char_p()
             n = ctypes.c_uint32()
             ok = _api.ValueBinaryData(self, byref(v), byref(n))
+            self._throw_if(ok)
             return v.value
         elif t == VALUE_TYPE.T_ARRAY:
             return self._get_list()
@@ -360,25 +399,35 @@ class value():
             self.data.t = VALUE_TYPE.T_NULL
         elif isinstance(val, bool):
             ok = _api.ValueIntDataSet(self, int(val), VALUE_TYPE.T_BOOL, 0)
+            self._throw_if(ok)
         elif isinstance(val, int):
             ok = _api.ValueIntDataSet(self, val, VALUE_TYPE.T_INT, 0)
+            self._throw_if(ok)
         elif isinstance(val, float):
             ok = _api.ValueFloatDataSet(self, val, VALUE_TYPE.T_FLOAT, 0)
+            self._throw_if(ok)
         elif isinstance(val, str):
             ok = _api.ValueStringDataSet(self, val, len(val), 0)
+            self._throw_if(ok)
         elif isinstance(val, (bytes, bytearray)):
             ok = _api.ValueBinaryDataSet(self, ctypes.c_char_p(val), len(val), VALUE_TYPE.T_BYTES, 0)
+            self._throw_if(ok)
         elif isinstance(val, (list, tuple)):
             ok = self._assign_list(val)
+            self._throw_if(ok)
         elif isinstance(val, dict):
             ok = self._assign_dict(val)
+            self._throw_if(ok)
         elif isinstance(val, Exception):
             val = str(val)
             ok = _api.ValueStringDataSet(self, val, len(val), VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR)
+            self._throw_if(ok)
         elif isinstance(val, (value, SCITER_VALUE)):
             ok = _api.ValueCopy(self, val)
+            self._throw_if(ok)
         elif inspect.isroutine(val):
             ok = self._assign_function(val)
+            self._throw_if(ok)
         else:
             raise TypeError(str(type(val)) + " is unsupported sciter type")
         pass
@@ -411,4 +460,45 @@ class value():
         fc = _NativeFunctor(callable)
         return fc.store(self)
 
+    @classmethod
+    def _throw_if(self, code):
+        if code <= 0:
+            return
+        import inspect
+        context = inspect.stack()[1][3]
+        raise sciter.ValueError(code, "value." + context)
+
+    pass
 # end
+
+
+_native_cache = []
+
+
+class _NativeFunctor():
+    """sciter::native_function wrapper."""
+    def __init__(self, func):
+        self.func = func
+        self.scinvoke = sciter.scdef.NATIVE_FUNCTOR_INVOKE(self.invoke)
+        self.screlease = sciter.scdef.NATIVE_FUNCTOR_RELEASE(self.release)
+        pass
+
+    def store(self, svalue):
+        ok = _api.ValueNativeFunctorSet(svalue, self.scinvoke, self.screlease, None)
+        _native_cache.append(self)
+        return ok
+
+    def invoke(self, tag, argc, argv, retv):
+        args = value.unpack_from(argv, argc)
+        try:
+            rv = self.func(*args)
+        except Exception as e:
+            rv = e
+        value.pack_to(retv, rv)
+        pass
+
+    def release(self, tag):
+        _native_cache.remove(self)
+        pass
+
+    pass
