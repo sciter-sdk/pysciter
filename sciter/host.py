@@ -103,8 +103,11 @@ class Host():
         """Evaluate script in context of current document."""
         rv = sciter.Value()
         ok = _api.SciterEval(self.hwnd, script, len(script), rv)
-        if not ok and rv.is_error_string():
-            raise ScriptError(rv.get_value(), name)
+        is_error = rv.is_error_string()
+        if not ok and is_error:
+            raise sciter.ScriptError(rv.get_value(), name)
+        elif is_error:
+            raise sciter.ScriptException(rv.get_value(), name)
         return rv
 
     def call_function(self, name: str, *args):
@@ -118,8 +121,11 @@ class Host():
             sv.copy_to(argv[i])
         cname = name.encode('utf-8')
         ok = _api.SciterCall(self.hwnd, cname, argc, argv, rv)
-        if not ok and rv.is_error_string():
-            raise ScriptError(rv.get_value(), name)
+        is_error = rv.is_error_string()
+        if not ok and is_error:
+            raise sciter.ScriptError(rv.get_value(), name)
+        elif is_error:
+            raise sciter.ScriptException(rv.get_value(), name)
         return rv
 
     ## @name following functions can be overloaded

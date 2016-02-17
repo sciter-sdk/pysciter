@@ -307,6 +307,8 @@ class value():
         thisv = value(kwargs.get('this'))
         ok = _api.ValueInvoke(self, thisv, argc, argv, rv, name)
         self._throw_if(ok)
+        if rv.is_error_string():
+            raise sciter.ScriptException(rv.get_value(), name)
         return rv.get_value()
 
     def is_string(self):

@@ -442,10 +442,12 @@ def SciterAPI():
         return SciterAPI._api
 
     scdll = WinDLL(SCITER_DLL_NAME)
-    if scdll:
-        scdll.SciterAPI.restype = POINTER(ISciterAPI)
-        SciterAPI._api = scdll.SciterAPI().contents
-        return SciterAPI._api
+    if not scdll:
+        raise SciterError("Unable to load library " + SCITER_DLL_NAME)
+
+    scdll.SciterAPI.restype = POINTER(ISciterAPI)
+    SciterAPI._api = scdll.SciterAPI().contents
+    return SciterAPI._api
 # end
 
 
