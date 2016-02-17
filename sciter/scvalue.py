@@ -97,4 +97,3 @@ class VALUE_STRING_CVT_TYPE(enum.IntEnum):
     CVT_JSON_LITERAL = 1   # json literal parsing/emission
     CVT_JSON_MAP = 2       # json parsing/emission, it parses as if token '{' already recognized
     CVT_XJSON_LITERAL = 3  # x-json parsing/emission, date is emitted as ISO8601 date literal, currency is emitted in the form DDDD$CCC
-

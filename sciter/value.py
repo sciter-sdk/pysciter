@@ -1,28 +1,69 @@
 """Python interface to sciter::value."""
 
-from .scvalue import *
-from .scapi import SciterAPI
-
+import inspect
 import ctypes
+import sciter
+import sciter.scdef
+from sciter.scvalue import *
+
+_api = sciter.SciterAPI()
 byref = ctypes.byref
 
-_api = SciterAPI()
 
 _python_types = {VALUE_TYPE.T_UNDEFINED: type(None),
-                                VALUE_TYPE.T_NULL: type(None),
-                                VALUE_TYPE.T_BOOL: bool,
-                                VALUE_TYPE.T_INT: int,
-                                VALUE_TYPE.T_FLOAT: float,
-                                VALUE_TYPE.T_STRING: str,
-                                VALUE_TYPE.T_ARRAY: list,
-                                VALUE_TYPE.T_MAP: dict,
-                                VALUE_TYPE.T_BYTES: bytes,
-                                }
+                 VALUE_TYPE.T_NULL: type(None),
+                 VALUE_TYPE.T_BOOL: bool,
+                 VALUE_TYPE.T_INT: int,
+                 VALUE_TYPE.T_FLOAT: float,
+                 VALUE_TYPE.T_STRING: str,
+                 VALUE_TYPE.T_ARRAY: list,
+                 VALUE_TYPE.T_MAP: dict,
+                 VALUE_TYPE.T_BYTES: bytes,
+                 }
 _value_type_names = [name.lower()[2:] for name, val in VALUE_TYPE.__members__.items()]
 
+_native_cache = []
+
+class _NativeFunctor():
+    """sciter::native_function wrapper."""
+    def __init__(self, func):
+        self.func = func
+        self.scinvoke = sciter.scdef.NATIVE_FUNCTOR_INVOKE(self.invoke)
+        self.screlease = sciter.scdef.NATIVE_FUNCTOR_RELEASE(self.release)
+        pass
+
+    def store(self, svalue):
+        ok = _api.ValueNativeFunctorSet(svalue, self.scinvoke, self.screlease, None)
+        _native_cache.append(self)
+        return ok
+
+    def invoke(self, tag, argc, argv, retv):
+        args = value.unpack_from(argv, argc)
+        try:
+            rv = self.func(*args)
+        except Exception as e:
+            rv = e
+        value.pack_to(retv, rv)
+        pass
+
+    def release(self, tag):
+        _native_cache.remove(self)
+        pass
 
 class value():
     """sciter::value pythonic wrapper."""
+
+    @classmethod
+    def unpack_from(self, args, count):
+        """Unpack sciter values to python types."""
+        return [value(args[i]).get_value() for i in range(count)]
+
+    @classmethod
+    def pack_to(self, scval, val):
+        """Pack python value to SCITER_VALUE."""
+        v = value(val)
+        v.copy_to(scval)
+        pass
 
     def __init__(self, val=None):
         """Return a new sciter value wrapped object."""
@@ -83,7 +124,7 @@ class value():
     ## @name Container-like support:
 
     def __len__(self):
-        """Items count for array, map and function."""
+        """Item count for array, map and function."""
         return self.length()
 
     def __getitem__(self, key):
@@ -132,7 +173,7 @@ class value():
         # only map objects are supported currently
         if self.get_type() == VALUE_TYPE.T_MAP:
             xkey = value(key)
-            xval = value() # undefined
+            xval = value()  # undefined
             ok = _api.ValueSetValueToKey(self, xkey, xval)
             if ok != VALUE_RESULT.HV_OK:
                 raise TypeError
@@ -149,16 +190,28 @@ class value():
 
     ## @name Sequence operations:
 
+    def isolate(self):
+        """Convert T_OBJECT value types to T_MAP or T_ARRAY.
+        It will convert all object-arrays to plain JSON arrays – removing all references of script objects.
+        """
+        ok = _api.ValueIsolate(self)
+        return ok == VALUE_RESULT.HV_OK
+
     def copy(self):
         """Return a shallow copy of the sciter::value."""
         copy = value()
         ok = _api.ValueCopy(copy, self)
         return copy
 
+    def copy_to(self, other):
+        """Copy value to external SCITER_VALUE."""
+        ok = _api.ValueCopy(other, self)
+        return ok == VALUE_RESULT.HV_OK
+
     def clear(self):
         """Clear the VALUE and deallocates all assosiated structures that are not used anywhere else."""
         ok = _api.ValueClear(self)
-        pass
+        return ok == VALUE_RESULT.HV_OK
 
     def length(self) -> int:
         """Return the number of items in the T_ARRAY, T_MAP, T_FUNCTION and T_OBJECT sciter::value."""
@@ -191,7 +244,7 @@ class value():
         """Insert or set value at given index of T_ARRAY, T_MAP, T_FUNCTION and T_OBJECT sciter::value."""
         xval = value(val)
         ok = _api.ValueNthElementSet(i, xval)
-        pass
+        return ok == VALUE_RESULT.HV_OK
 
 
     ## @name Mapping sequence operations:
@@ -222,6 +275,20 @@ class value():
 
 
     ## @name Underlaying value operations
+    def is_string(self):
+        """."""
+        t, u = self.get_type(with_unit=True)
+        return t == VALUE_TYPE.T_STRING
+
+    def is_error_string(self):
+        """."""
+        t, u = self.get_type(with_unit=True)
+        return t == VALUE_TYPE.T_STRING and u == VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR
+
+    def is_symbol(self):
+        """."""
+        t, u = self.get_type(with_unit=True)
+        return t == VALUE_TYPE.T_STRING and u == VALUE_UNIT_TYPE_STRING.UT_STRING_SYMBOL
 
     def get_type(self, py=False, with_unit=False):
         """Return python type or sciter type with (optionally) unit subtype of sciter::value."""
@@ -259,6 +326,8 @@ class value():
             v = ctypes.c_wchar_p()
             n = ctypes.c_uint32()
             ok = _api.ValueStringData(self, byref(v), byref(n))
+            # if self.data.u == VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR:
+            #    raise ScriptError(v.value)
             return v.value
         elif t == VALUE_TYPE.T_BYTES:
             v = ctypes.c_char_p()
@@ -303,8 +372,13 @@ class value():
             ok = self._assign_list(val)
         elif isinstance(val, dict):
             ok = self._assign_dict(val)
+        elif isinstance(val, Exception):
+            val = str(val)
+            ok = _api.ValueStringDataSet(self, val, len(val), VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR)
         elif isinstance(val, (value, SCITER_VALUE)):
             ok = _api.ValueCopy(self, val)
+        elif inspect.isroutine(val):
+            ok = self._assign_function(val)
         else:
             raise TypeError(str(type(val)) + " is unsupported sciter type")
         pass
@@ -312,12 +386,12 @@ class value():
     def _assign_list(self, val):
         for i, v in enumerate(val):
             self[i] = v
-        pass
+        return VALUE_RESULT.HV_OK
 
     def _assign_dict(self, val):
         for k, v in val.items():
             self[k] = v
-        pass
+        return VALUE_RESULT.HV_OK
 
     def _get_list(self):
         # convert sciter array to python list
@@ -332,5 +406,9 @@ class value():
         for key, item in self.items():
             r[key.get_value()] = item.get_value()
         return r
+
+    def _assign_function(self, callable):
+        fc = _NativeFunctor(callable)
+        return fc.store(self)
 
 # end
