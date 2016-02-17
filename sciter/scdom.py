@@ -1,8 +1,9 @@
 """DOM Access methods."""
 
+import enum
+
 from ctypes import c_void_p, Structure
 from ctypes.wintypes import INT, UINT, LPCWSTR
-import enum
 
 HELEMENT = c_void_p
 HNODE = c_void_p

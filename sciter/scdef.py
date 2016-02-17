@@ -5,10 +5,10 @@ from enum import IntEnum
 from ctypes import *
 from ctypes.wintypes import *
 
-from .sctypes import *
-from .scdom import HELEMENT
-from .screquest import HREQUEST
-from .scvalue import PSCITER_VALUE
+from sciter.sctypes import *
+from sciter.scdom import HELEMENT
+from sciter.screquest import HREQUEST
+from sciter.scvalue import PSCITER_VALUE
 
 
 class LOAD_RESULT(IntEnum):

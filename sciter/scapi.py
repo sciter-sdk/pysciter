@@ -1,14 +1,14 @@
 from ctypes import *
 from ctypes.wintypes import *
 
-from .sctypes import *
-from .scdef import *
-from .scdom import SCDOM_RESULT, HELEMENT, HNODE, HSARCHIVE, METHOD_PARAMS, REQUEST_PARAM
-from .scbehavior import BEHAVIOR_EVENT_PARAMS
-from .scvalue import VALUE_RESULT, SCITER_VALUE, FLOAT_VALUE
-from .sctiscript import HVM, tiscript_native_interface
-from .scgraphics import LPSciterGraphicsAPI
-from .screquest import LPSciterRequestAPI
+from sciter.sctypes import *
+from sciter.scdef import *
+from sciter.scdom import SCDOM_RESULT, HELEMENT, HNODE, HSARCHIVE, METHOD_PARAMS, REQUEST_PARAM
+from sciter.scbehavior import BEHAVIOR_EVENT_PARAMS
+from sciter.scvalue import VALUE_RESULT, SCITER_VALUE, FLOAT_VALUE
+from sciter.sctiscript import HVM, tiscript_native_interface
+from sciter.scgraphics import LPSciterGraphicsAPI
+from sciter.screquest import LPSciterRequestAPI
 
 #
 # sciter-x-api.h
@@ -22,7 +22,6 @@ SciterProc = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM)
 SciterProcND = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM, POINTER(BOOL))
 # endif
 SciterLoadFile = SCFN(BOOL, HWINDOW, LPCWSTR)
-
 SciterLoadHtml = SCFN(BOOL, HWINDOW, LPCBYTE, UINT, LPCWSTR)
 SciterSetCallback = SCFN(VOID, HWINDOW, SciterHostCallback, LPVOID)
 SciterSetMasterCSS = SCFN(BOOL, LPCBYTE, UINT)

@@ -6,7 +6,7 @@ Incomplete.
 import enum
 from ctypes import Structure, POINTER, c_void_p
 
-from .sctypes import SCFN
+from sciter.sctypes import SCFN
 
 HREQUEST = c_void_p
 

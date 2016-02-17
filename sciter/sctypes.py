@@ -2,8 +2,8 @@
 
 # TODO: Linux, OSX.
 
-from ctypes import WINFUNCTYPE, POINTER, c_void_p, c_char_p, c_int, c_int64, c_uint64
-from ctypes.wintypes import HWND, WPARAM, LPARAM
+from ctypes import WINFUNCTYPE, POINTER, c_void_p, c_char_p, c_int, c_int64, c_uint64, c_double
+from ctypes.wintypes import *
 
 import platform
 
