@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>27c0c17e-bd4d-459a-9eb3-3532e4db5ad1</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>examples\uminimal.py</StartupFile>
+    <StartupFile>examples\pysciter.py</StartupFile>
     <SearchPath>d:\usr\dev\python\PySciter</SearchPath>
     <WorkingDirectory>d:\usr\dev\python\PySciter\</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -31,7 +31,7 @@
   <ItemGroup>
     <Compile Include="examples\minimal.py" />
     <Compile Include="examples\plain-win.py" />
-    <Compile Include="examples\uminimal.py" />
+    <Compile Include="examples\pysciter.py" />
     <Compile Include="sciter\behavior.py" />
     <Compile Include="sciter\error.py" />
     <Compile Include="sciter\host.py" />
@@ -91,6 +91,10 @@
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.5" />
     <InterpreterReference Include="{a833b95e-ee3b-45c2-be7d-c7400c3a42f1}\3.5" />
     <InterpreterReference Include="{f5d930f9-ee3d-417c-be4b-d8c5adbd231e}\3.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="examples\minimal.htm" />
+    <Content Include="examples\pysciter.htm" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

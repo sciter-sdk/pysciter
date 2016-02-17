@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <title></title>
+    <style>
+    
+    html {
+      background: radial-gradient(75% 75%, circle farthest-side, white, orange, rgb(0,0,204));
+      //background: #fff;
+      color:#fff;
+    }
+    
+    html:rtl {
+      mapping: left-to-right(background);
+    }
+    
+    
+    //body { 
+    //  size:*;
+    //  overflow:auto; 
+    //}
+    
+    </style>
+    <script type="text/tiscript">
+    
+      $(#machine).text = Sciter.machineName();
+      
+      var counter = 0;
+      
+      $(button#append).on("click", function(){
+        $(body).$append(<h1#test>{++counter }</h1>);
+      });
+      
+      $(button#open).on("click", function(){
+      
+        var fn = view.selectFile(#open,
+          "HTML Files (*.htm,*.html)|*.HTM;*.HTML|All Files (*.*)|*.*" , "html" );
+
+        stdout.println("selected file: " + fn);
+        $(body).$append(<h1#test>{fn}</h1>);
+      });
+
+      $(button#ti2py).on("click", function() {
+        var answer = view.PythonCall();
+        $(body).$append(<h1#test>script -&gt; python: {answer}</h1>);
+      })
+
+      $(button#py2ti).on("click", function() {
+        var answer = view.ScriptCallTest();
+      })
+
+      function hello(who) {
+      	$(body).$append(<h1#test>python -&gt; script: {who}</h1>);
+      	return "its working!";
+      }
+
+      function raise_error(arg) {
+      	return new Error(String.$(Unexpected type of input {typeof arg}.));
+      }
+
+      self.timer(2000, function() {
+
+        if(!view.api)
+          view.api = view.GetNativeApi();
+          // {add: function(a,b) { return a + b; }};
+
+        stdout.println(String.printf("2 + 3 = %d", view.api.add(2, 3)));
+        stdout.println(String.printf("2 * 3 = %d", view.api.mul(2, 3)));
+        stdout.println(String.printf("2 - 3 = %d", view.api.sub(2, 3)));
+      });
+    
+    </script>
+  </head>
+<body>
+
+  <h1>Pythonic Sciter Application</h1>
+  <p>Running on <em #machine /> machine</p>
+  
+  <button #append>Append</button>
+  <button #open>Open</button>
+  <button #ti2py>Call python</button>
+  <button #py2ti>Call script</button>
+  <select>
+    <option>First</option>
+    <option>Second</option>
+    <option>Third</option>
+  </select>
+
+</body>
+</html>
