@@ -3,7 +3,7 @@
 import enum
 
 from ctypes import c_void_p, Structure
-from ctypes.wintypes import INT, UINT, LPCWSTR
+from sciter.sctypes import INT, UINT, LPCWSTR
 
 HELEMENT = c_void_p
 HNODE = c_void_p

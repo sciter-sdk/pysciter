@@ -4,9 +4,8 @@ Incomplete.
 """
 import enum
 from ctypes import *
-from ctypes.wintypes import *
 
-from sciter.sctypes import SCFN
+from sciter.sctypes import SCFN, UINT, BOOL
 
 HGFX = c_void_p
 HIMG = c_void_p

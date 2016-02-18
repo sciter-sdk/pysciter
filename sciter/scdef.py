@@ -3,7 +3,6 @@
 from enum import IntEnum
 
 from ctypes import *
-from ctypes.wintypes import *
 
 from sciter.sctypes import *
 from sciter.scdom import HELEMENT

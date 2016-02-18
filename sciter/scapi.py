@@ -1,5 +1,5 @@
+"""Sciter C API interface."""
 from ctypes import *
-from ctypes.wintypes import *
 
 from sciter.sctypes import *
 from sciter.scdef import *
