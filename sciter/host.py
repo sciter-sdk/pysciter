@@ -5,7 +5,7 @@ import os.path
 import sciter.value
 
 from sciter.scdef import *
-from sciter.scdom import HELEMENT, SCDOM_RESULT
+from sciter.scdom import HELEMENT
 from sciter.sctypes import HWINDOW
 
 _api = sciter.SciterAPI()
@@ -23,10 +23,16 @@ class Host():
         """Alias for self.call_function()."""
         return self.call_function(name, *args)
 
+    def get_version(self):
+        """Return version of Sciter engine as (3,3,1,7)."""
+        high = _api.SciterVersion(True)
+        low = _api.SciterVersion(False)
+        return (high >> 16, high & 0xFFFF, low >> 16, low & 0xFFFF)
+
     def setup_callback(self, hwnd):
         """Set callback for sciter engine events."""
         self.hwnd = hwnd
-        self.root = self.get_root() # if called on existing document
+        self.root = self.get_root()  # if called on existing document
         self._sciter_handler_proc = SciterHostCallback(self.handle_notification)
         _api.SciterSetCallback(hwnd, self._sciter_handler_proc, ctypes.c_void_p(0))
         pass
@@ -92,7 +98,7 @@ class Host():
 
     def load_file(self, uri: str, normalize=True):
         """Load HTML document from file."""
-        if normalize and not ":" in uri:
+        if normalize and ":" not in uri:
             uri = "file://" + os.path.abspath(uri).replace("\\", "/")
         ok = _api.SciterLoadFile(self.hwnd, uri)
         if not ok:
@@ -145,16 +151,29 @@ class Host():
             raise sciter.ScriptException(rv.get_value(), name)
         return rv
 
+    def data_ready(self, uri: str, data: bytes, request_id=None, hwnd=None):
+        """This function is used in response to SCN_LOAD_DATA request."""
+        if not hwnd:
+            hwnd = self.hwnd
+        if request_id:
+            ok = _api.SciterDataReadyAsync(hwnd, uri, data, len(data), request_id)
+        else:
+            ok = _api.SciterDataReady(hwnd, uri, data, len(data))
+        if not ok:
+            raise sciter.SciterError("Unable to pass data for " + uri)
+        pass
+
+
     ## @name following functions can be overloaded
-    def on_load_data(self, nm):
+    def on_load_data(self, nm: SCN_LOAD_DATA):
         """Notifies that Sciter is about to download a referred resource."""
         pass
 
-    def on_data_loaded(self, nm):
+    def on_data_loaded(self, nm: SCN_DATA_LOADED):
         """This notification indicates that external data (for example image) download process completed."""
         pass
 
-    def on_attach_behavior(self, nm):
+    def on_attach_behavior(self, nm: SCN_ATTACH_BEHAVIOR):
         """This notification is sent on parsing the document and while processing elements having non empty `style.behavior` attribute value."""
         pass
 

@@ -88,3 +88,5 @@ class Window(sciter.host.Host, sciter.behavior.EventHandler):
             phandled.contents = 1  # True
             return rv
         return 0
+
+    pass
