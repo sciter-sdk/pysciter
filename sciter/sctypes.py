@@ -13,8 +13,11 @@ from ctypes import (POINTER,
 
 # 'win32', 'darwin', 'linux'
 SCITER_OS = sys.platform
+SCITER_WIN = SCITER_OS == 'win32'
+SCITER_OSX = SCITER_OS == 'darwin'
+SCITER_LNX = SCITER_OS == 'linux'
 
-if SCITER_OS == 'win32':
+if SCITER_WIN:
     SCITER_DLL_NAME = "sciter64" if sys.maxsize > 2**32 else "sciter32"
 
     SCFN = ctypes.WINFUNCTYPE
@@ -31,7 +34,7 @@ if SCITER_OS == 'win32':
     IDXGISwapChain = c_void_p
     IDXGISurface = c_void_p
 
-elif SCITER_OS == 'darwin':
+elif SCITER_OSX:
     assert sys.maxsize > 2**32, "Only 64-bit supported."
 
     SCITER_DLL_NAME = "sciter-osx-64" if sys.maxsize > 2**32 else "sciter-osx-32"
