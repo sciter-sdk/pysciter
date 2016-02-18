@@ -53,6 +53,13 @@ class EventHandler:
                 raise sciter.SciterError("Could not attach from element")
         pass
 
+    def dispatch(self, name, args):
+        """Route script call to python handler directly."""
+        fn = getattr(self, name, None)
+        if fn is not None:
+            return fn(*args)
+        pass
+
 
     ## @name following functions can be overloaded
     ## @param he - a `this` element for behavior attached to
