@@ -40,7 +40,7 @@
       });
 
       $(button#ti2py).on("click", function() {
-        var answer = view.PythonCall();
+        var answer = view.PythonCall(view.caption);
         $(body).$append(<h1#test>script -&gt; python: {answer}</h1>);
       })
 
@@ -54,7 +54,7 @@
       }
 
       function raise_error(arg) {
-      	return new Error(String.$(Unexpected type of input {typeof arg}.));
+      	throw new Error(String.$(Unexpected type of input {typeof arg}.));
       }
 
       self.timer(2000, function() {
