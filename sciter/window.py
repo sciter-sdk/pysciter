@@ -45,21 +45,9 @@ class Window(sciter.host.Host, sciter.behavior.EventHandler):
         self.attach(wnd=self.hwnd)
         pass
 
-    def set_title(self, title: str):
-        """Set window title."""
-        ctypes.windll.user32.SetWindowTextW(self.hwnd, title)
-        return self
-
-    def get_title(self) -> str:
-        """Get window title."""
-        cb = ctypes.windll.user32.GetWindowTextLengthW(self.hwnd) + 1
-        title = ctypes.create_unicode_buffer(cb)
-        ctypes.windll.user32.GetWindowTextW(self.hwnd, title, cb)
-        return title
-
-    def collapse(self):
+    def collapse(self, hide=False):
         """Minimize window."""
-        ctypes.windll.user32.ShowWindow(self.hwnd, 6)  # SW_MINIMIZE
+        ctypes.windll.user32.ShowWindow(self.hwnd, 0 if hide else 6)  # SW_HIDE or SW_MINIMIZE
         return self
 
     def expand(self, maximize=False):
