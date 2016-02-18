@@ -1,6 +1,7 @@
 """Sciter host application helpers."""
 
 import ctypes
+import os.path
 import sciter.value
 
 from sciter.scdef import *
@@ -89,8 +90,10 @@ class Host():
         """Get window handle."""
         return self.hwnd
 
-    def load_file(self, uri: str):
+    def load_file(self, uri: str, normalize=True):
         """Load HTML document from file."""
+        if normalize and not ":" in uri:
+            uri = "file://" + os.path.abspath(uri).replace("\\", "/")
         ok = _api.SciterLoadFile(self.hwnd, uri)
         if not ok:
             raise sciter.SciterError("Unable to load file " + uri)
