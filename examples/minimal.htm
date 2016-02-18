@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title></title>
+    <title>Minimalistic Sciter demo</title>
     <style>
     
       html {
@@ -14,6 +14,8 @@
     
     </style>
     <script type="text/tiscript">
+
+      view.caption = $(head > title).value;
     
       $(#machine).text = Sciter.machineName();
       

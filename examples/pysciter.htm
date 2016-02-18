@@ -1,27 +1,22 @@
 <html>
   <head>
-    <title></title>
+    <title>PySciter sample</title>
     <style>
-    
-    html {
-      background: radial-gradient(75% 75%, circle farthest-side, white, orange, rgb(0,0,204));
-      //background: #fff;
-      color:#fff;
-    }
-    
-    html:rtl {
-      mapping: left-to-right(background);
-    }
-    
-    
-    //body { 
-    //  size:*;
-    //  overflow:auto; 
-    //}
-    
+
+      html {
+        background: radial-gradient(75% 75%, circle farthest-side, white, orange, rgb(0,0,204));
+        color:#fff;
+      }
+      
+      html:rtl {
+        mapping: left-to-right(background);
+      }
+
     </style>
     <script type="text/tiscript">
     
+      view.caption = $(head > title).value;
+
       $(#machine).text = Sciter.machineName();
       
       var counter = 0;
