@@ -2,6 +2,7 @@
 
 import inspect
 import ctypes
+
 import sciter
 import sciter.scdef
 from sciter.scvalue import *
@@ -23,6 +24,7 @@ _python_types = {VALUE_TYPE.T_UNDEFINED: type(None),
 
 _value_type_names = [name.lower()[2:] for name, val in VALUE_TYPE.__members__.items()]
 
+
 def _subtype_name(subtype):
     return [name.split('_')[-1].lower() for name, val in subtype.__members__.items()]
 
@@ -35,9 +37,9 @@ _value_subtypes = {VALUE_TYPE.T_LENGTH: _subtype_name(VALUE_UNIT_TYPE),
 
 class value():
     """sciter::value pythonic wrapper."""
-    
+
     @classmethod
-    def parse(self, json: str, how=VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL, throw=True):
+    def parse(cls, json: str, how=VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL, throw=True):
         """Parse json string into value."""
         rv = value()
         ok = _api.ValueFromString(rv, json, len(json), how)
@@ -46,12 +48,12 @@ class value():
         return rv
 
     @classmethod
-    def unpack_from(self, args, count):
+    def unpack_from(cls, args, count):
         """Unpack sciter values to python types."""
         return [value(args[i]).get_value() for i in range(count)]
 
     @classmethod
-    def pack_to(self, scval, val):
+    def pack_to(cls, scval, val):
         """Pack python value to SCITER_VALUE."""
         v = value(val)
         v.copy_to(scval)
@@ -73,7 +75,7 @@ class value():
         pass
 
     def __call__(self, *args, **kwargs):
-        """Alias for self.call()"""
+        """Alias for self.call()."""
         return self.call(*args, **kwargs)
 
     def __repr__(self):
@@ -194,6 +196,7 @@ class value():
 
     def isolate(self):
         """Convert T_OBJECT value types to T_MAP or T_ARRAY.
+
         It will convert all object-arrays to plain JSON arrays – removing all references of script objects.
         """
         ok = _api.ValueIsolate(self)
@@ -290,11 +293,11 @@ class value():
     ## @name Underlaying value operations
     def call(self, *args, **kwargs):
         """Function invokation for T_OBJECT/UT_OBJECT_FUNCTION.
+
         args: arguments passed to
         kwargs:
             name (str): url or name of the script - used for error reporting in the script.
             this (value): object that will be known as 'this' inside that function.
-        
         """
         rv = value()
         argc = len(args)
@@ -463,7 +466,7 @@ class value():
         return fc.store(self)
 
     @classmethod
-    def _throw_if(self, code):
+    def _throw_if(cls, code):
         if code <= 0:
             return
         import inspect
