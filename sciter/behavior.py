@@ -110,10 +110,7 @@ class EventHandler:
 
         elif evt == EVENT_GROUPS.HANDLE_INITIALIZATION:
             # handle initialization events and route to attached() and detached()
-            # NOTE: this called twice: when attached to empty window and after load_file.
-            # so we'll skip first call
-            if he is None:
-                return True
+            # NOTE: when attaching to empty window, this called with he == NULL
             p = ctypes.cast(params, ctypes.POINTER(INITIALIZATION_PARAMS))
             if p.contents.cmd == INITIALIZATION_EVENTS.BEHAVIOR_DETACH:
                 self.detached(he)
