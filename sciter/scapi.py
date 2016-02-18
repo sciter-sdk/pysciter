@@ -10,10 +10,11 @@ from sciter.sctiscript import HVM, tiscript_native_interface
 from sciter.scgraphics import LPSciterGraphicsAPI
 from sciter.screquest import LPSciterRequestAPI
 
+
 #
 # sciter-x-api.h
 #
-SciterClassName = SCFN(LPCWSTR)
+SciterClassName = SCFN(c_utf16_lp)
 SciterVersion = SCFN(UINT, BOOL)
 SciterDataReady = SCFN(BOOL, HWINDOW, LPCWSTR, LPCBYTE, UINT)
 SciterDataReadyAsync = SCFN(BOOL, HWINDOW, LPCWSTR, LPCBYTE, UINT, LPVOID)
@@ -431,7 +432,7 @@ class ISciterAPI(Structure):
 
     def _make_fields(names):
         context = globals()
-        fields = [(name, context[name]) for name in names if context[name]]
+        fields = [(name, context[name]) for name in names if name in context]
         fields.insert(0, ("version", UINT))
         return fields
 
@@ -453,12 +454,26 @@ def SciterAPI():
 # end
 
 
+
 if __name__ == "__main__":
     print("loading sciter dll: ")
-    scdll = WinDLL("sciter64")
-    if not scdll:
-        print("error: sciter dll not found.")
-        exit(2)
+    scdll = None
+    if SCITER_WIN:
+        scdll = WinDLL(SCITER_DLL_NAME)
+        if not scdll:
+            print("error: sciter dll not found.")
+            exit(2)
+
+    elif SCITER_OSX:
+
+        sclib = ctypes.util.find_library(SCITER_DLL_NAME)
+        print("found: ", sclib)
+        if not sclib:
+            exit(2)
+        scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
+        if not scdll:
+            print("error: sciter dll not found.")
+            exit(2)
 
     scdll.SciterAPI.restype = POINTER(ISciterAPI)
     scapi = scdll.SciterAPI().contents
