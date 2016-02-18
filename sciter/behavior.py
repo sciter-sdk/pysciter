@@ -72,7 +72,7 @@ class EventHandler:
     def detached(self, he):
         pass
 
-    def document_complete(self, target: HELEMENT):
+    def document_complete(self):
         """Notification that document finishes its loading - all requests for external resources are finished."""
         pass
 
@@ -133,7 +133,7 @@ class EventHandler:
             m = p.contents
             if m.cmd == BEHAVIOR_EVENTS.DOCUMENT_COMPLETE:
                 self.element = he
-                self.document_complete(m.heTarget)
+                self.document_complete()
             elif m.cmd == BEHAVIOR_EVENTS.DOCUMENT_CLOSE:
                 self.document_close()
                 self.element = None
