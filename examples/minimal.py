@@ -2,18 +2,8 @@
 
 import sciter
 
-# main frame
-class Frame(sciter.Window):
-    def __init__(self):
-        super().__init__(ismain=True, uni_theme=True)
-        pass
-
-
-def main():
-    frame = Frame()
+if __name__ == '__main__':
+    frame = sciter.Window(ismain=True, uni_theme=True)
     frame.load_file("examples/minimal.htm")
-    frame.set_title("PySciter")
     frame.expand()
     frame.run_app()
-
-main()

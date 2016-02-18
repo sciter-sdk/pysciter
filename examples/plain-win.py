@@ -140,4 +140,5 @@ def main():
 
     print('Quit.')
 
-main()
+if __name__ == '__main__':
+    main()

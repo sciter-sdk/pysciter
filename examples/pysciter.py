@@ -76,7 +76,7 @@ class Frame(sciter.Window):
 # end
 
 
-if __file__ == '__main__':
+if __name__ == '__main__':
     frame = Frame()
-    frame.load_file("examples/pysciter.htm").set_title("PySciter").expand()
+    frame.load_file("examples/pysciter.htm").expand()
     frame.run_app()
