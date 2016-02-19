@@ -5,6 +5,8 @@ import ctypes
 
 import sciter
 import sciter.scdef
+import sciter.sctypes
+
 from sciter.scvalue import *
 
 _api = sciter.SciterAPI()
@@ -96,10 +98,7 @@ class value():
         """Human-like value representation."""
         copy = self.copy()
         ok = _api.ValueToString(copy, VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL)
-        p = ctypes.c_wchar_p()
-        n = ctypes.c_uint32()
-        ok = _api.ValueStringData(copy, byref(p), byref(n))
-        return p.value
+        return copy.get_value()
 
     def __bool__(self):
         """Value to bool conversion."""
@@ -365,13 +364,20 @@ class value():
             self._throw_if(ok)
             return float(v.value)
         elif t == VALUE_TYPE.T_STRING:
-            v = ctypes.c_wchar_p()
-            n = ctypes.c_uint32()
-            ok = _api.ValueStringData(self, byref(v), byref(n))
-            self._throw_if(ok)
-            # if self.data.u == VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR:
-            #    raise ScriptError(v.value)
-            return v.value
+            if sciter.SCITER_OSX:
+                v = ctypes.c_utf16_p()
+                n = ctypes.c_uint32()
+                ok = _api.ValueStringData(self, byref(v), byref(n))
+                self._throw_if(ok)
+                return v.value
+            else:
+                v = ctypes.c_wchar_p()
+                n = ctypes.c_uint32()
+                ok = _api.ValueStringData(self, byref(v), byref(n))
+                self._throw_if(ok)
+                # if self.data.u == VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR:
+                #    raise ScriptError(v.value)
+                return v.value
         elif t == VALUE_TYPE.T_BYTES:
             v = ctypes.c_char_p()
             n = ctypes.c_uint32()
@@ -412,7 +418,12 @@ class value():
             ok = _api.ValueFloatDataSet(self, val, VALUE_TYPE.T_FLOAT, 0)
             self._throw_if(ok)
         elif isinstance(val, str):
-            ok = _api.ValueStringDataSet(self, val, len(val), 0)
+            if sciter.SCITER_OSX:
+                bval = val.encode('utf-16le')
+                n = len(bval) >> 1
+                ok = _api.ValueStringDataSet(self, bval, n, 0)
+            else:
+                ok = _api.ValueStringDataSet(self, val, len(val), 0)
             self._throw_if(ok)
         elif isinstance(val, (bytes, bytearray)):
             ok = _api.ValueBinaryDataSet(self, ctypes.c_char_p(val), len(val), VALUE_TYPE.T_BYTES, 0)
@@ -425,7 +436,12 @@ class value():
             self._throw_if(ok)
         elif isinstance(val, Exception):
             val = str(val)
-            ok = _api.ValueStringDataSet(self, val, len(val), VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR)
+            if sciter.SCITER_OSX:
+                bval = val.encode('utf-16le')
+                n = len(bval) >> 1
+                ok = _api.ValueStringDataSet(self, bval, n, VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR)
+            else:
+                ok = _api.ValueStringDataSet(self, val, len(val), VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR)
             self._throw_if(ok)
         elif isinstance(val, (value, SCITER_VALUE)):
             ok = _api.ValueCopy(self, val)
