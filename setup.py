@@ -10,7 +10,7 @@ config = {
     'description': 'Python bindings for the Sciter - Embeddable HTML/CSS/script engine.',
     'url': 'http://github.com/pravic/pysciter/',
     'download_url': 'http://github.com/pravic/pysciter/',
-    'version': '0.2',
+    'version': '0.3',
     'packages': ['sciter'],
     'install_requires': [''],
     'scripts': [],
