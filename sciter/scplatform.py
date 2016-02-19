@@ -96,22 +96,26 @@ elif SCITER_OS == 'darwin':
         def collapse(self, hide=False):
             """Minimize or hide window."""
             wnd = self._window()
-            self.objc(wnd, 'performMiniaturize', self.hwnd)
+            if hide:
+                self.objc(wnd, 'orderOut:', None)
+            else:
+                self.objc(wnd, 'performMiniaturize:', self.hwnd)
             return self
 
         def expand(self, maximize=False):
             """Show or maximize window."""
             wnd = self._window()
-            #self.objc(wnd, 'makeKeyWindow')
-            #self.objc(wnd, 'becomeMainWindow')
-            #self.objc(wnd, 'becomeKeyWindow')
-            self.objc(wnd, 'makeKeyAndOrderFront:')
+            if self.window_flags & sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR:
+                # bring the main window foreground
+                self.objc(self.nsApp, 'activateIgnoringOtherApps:', True)
+            self.objc(wnd, 'makeKeyAndOrderFront:', None)
+            if maximize:
+                self.objc(wnd, 'performZoom:', None)
             return self
 
         def dismiss(self):
             """Close window."""
-            wnd = self._window()
-            self.objc(wnd, 'close')
+            self.objc(self._window(), 'close')
             return self
 
         def run_app(self):
