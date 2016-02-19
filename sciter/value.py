@@ -365,7 +365,7 @@ class value():
             return float(v.value)
         elif t == VALUE_TYPE.T_STRING:
             if sciter.SCITER_OSX:
-                v = ctypes.c_utf16_p()
+                v = sciter.sctypes.c_utf16_p()
                 n = ctypes.c_uint32()
                 ok = _api.ValueStringData(self, byref(v), byref(n))
                 self._throw_if(ok)

@@ -455,7 +455,6 @@ def SciterAPI():
 
         import ctypes.util
         sclib = ctypes.util.find_library(SCITER_DLL_NAME)
-        print("found: ", sclib)
         if not sclib:
             exit(2)
         scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)

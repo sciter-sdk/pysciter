@@ -88,23 +88,9 @@ elif SCITER_OS == 'darwin':
             return wnd
 
         def _window(self, hwnd=None):
-            NSView = self.objc.getClass('NSView')
-            NSWindow = self.objc.getClass('NSWindow')
-            #print('nsview', NSView, NSWindow)
-
-            r = self.objc.hasSEL('makeKeyAndOrderFront', NSWindow)
-            print('makeKeyAndOrderFront', r)
-
             if hwnd is None:
                 hwnd = self.hwnd
             wnd = self.objc(hwnd, 'window')
-            #print('wnd', hwnd, wnd)
-
-            cn = self.objc(hwnd, 'className')
-            #print('className', cn)
-            print(self.objc.fromString(cn))
-            print(self.objc.fromString(self.objc(wnd, 'className')))
-
             return wnd
 
         def collapse(self, hide=False):
@@ -120,7 +106,6 @@ elif SCITER_OS == 'darwin':
             #self.objc(wnd, 'becomeMainWindow')
             #self.objc(wnd, 'becomeKeyWindow')
             self.objc(wnd, 'makeKeyAndOrderFront:')
-            
             return self
 
         def dismiss(self):
@@ -131,10 +116,7 @@ elif SCITER_OS == 'darwin':
 
         def run_app(self):
             """Run the main app message loop until window been closed."""
-            #running = self.objc(self.nsApp, 'isRunning')
-            #print('running', running)
             self.objc(self.nsApp, 'run')
-            print('finished run')
             return 0
 
         def quit_app(self, code=0):
@@ -152,11 +134,7 @@ elif SCITER_OS == 'darwin':
         def __init__(self):
             import ctypes.util
 
-            print("loading")
-            objd = ctypes.util.find_library('objc')
-            
-            objc = ctypes.cdll.LoadLibrary(objd)
-            print("objc dll", objc)
+            objc = ctypes.cdll.LoadLibrary(ctypes.util.find_library('objc'))
 
             self.appkit = ctypes.cdll.LoadLibrary(ctypes.util.find_library('AppKit'))
             self.cf = ctypes.cdll.LoadLibrary(ctypes.util.find_library('CoreFoundation'))
@@ -210,9 +188,7 @@ elif SCITER_OS == 'darwin':
             n = self.cf.CFStringGetLength(nsString)
             buf = ctypes.create_string_buffer(n * 4 + 4)
             ok = self.cf.CFStringGetCString(nsString, buf, n * 4, kCFStringEncodingUTF8)
-            #print(ok, n, buf.value)
-            if ok:
-                return buf.value.decode('utf-8')
+            return buf.value.decode('utf-8') if ok else None
 
         def getClass(self, name):
             # NSSound = objc.getClass('NSSound')
