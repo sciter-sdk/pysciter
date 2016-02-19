@@ -18,13 +18,11 @@ SCITER_OSX = SCITER_OS == 'darwin'
 SCITER_LNX = SCITER_OS == 'linux'
 
 
-import _ctypes
-
 def utf16tostr(addr, size=-1):
     cb = size if size > 0 else 32
     bstr = ctypes.string_at(addr, cb)
-    if size > 0:
-        return bstr.decode('utf-16')
+    if size >= 0:
+        return bstr.decode('utf-16le')
     
     # lookup zero char
     chunks = []
@@ -37,61 +35,59 @@ def utf16tostr(addr, size=-1):
                 break
             pass
         assert found % 2 == 0, "truncated string with len " + str(found)
-        chunks.append(bstr[0:found].decode('utf-16'))
+        chunks.append(bstr[0:found].decode('utf-16le'))
         if found != cb:
             break
-        bstr = ctypes.string_at(addr + cb, cb)
+        addr = addr + cb
+        bstr = ctypes.string_at(addr, cb)
         continue
     return "".join(chunks)
 
-class c_utf16_lp(_ctypes._SimpleCData):
-    #
-    # Used as API return
-    #
-    _type_ = 'P'  # pointer
-    def _check_retval_(cval):
-        return utf16tostr(cval)
-    pass
 
-class c_utf16_p():
-    #
-    # API return: _SimpleCData + _check_retval_
-    # API arg: ctor from string to pointer
-    # API immediate value - non simple data
-    #
-    _type_ = 'P'  # pointer
+class c_utf16_p(ctypes.c_char_p):
+    def __init__(self, value=None):
+        super(c_utf16_p, self).__init__()
+        if value is not None:
+            self.value = value
 
-    def __str__(self):
-        return self.sval or ""
+    @property
+    def value(self,
+              c_void_p=ctypes.c_void_p):
+        addr = c_void_p.from_buffer(self).value
+        return utf16tostr(addr)
 
-    def __init__(self, obj=None):
-        self.sval = None
-        # print("init", type(obj), obj)
+    @value.setter
+    def value(self, value,
+              c_char_p=ctypes.c_char_p):
+        value = value.encode('utf-16le') + b'\x00'
+        c_char_p.value.__set__(self, value)
+
+    @classmethod
+    def from_param(cls, obj):
         if isinstance(obj, str):
-            # string -> pointer
-            p = c_char_p(obj.encode('utf-16'))
-            pv = ctypes.cast(p, c_void_p)
-            self.sval = obj
-            self.vval = pv
-            self.value = pv.value
-        elif isinstance(obj, int):
-            # pointer -> string
-            # print("init %d" % obj)
-            pass
-        pass
+            obj = obj.encode('utf-16le') + b'\x00'
+        return super(c_utf16_p, cls).from_param(obj)
 
-    def from_param(obj):
-        # native from python
-        # print("+++from param", obj)
-        if isinstance(obj, str):
-            return obj.encode('utf-16') + b'\x00\x00'
-        elif isinstance(obj, c_utf16_p):
-            return obj.value
-        return obj
+    @classmethod
+    def _check_retval_(cls, result):
+        return result.value
 
-    def _check_retval_(cval):
-        return utf16tostr(cval)
-    pass
+
+class UTF16LEField(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __get__(self, obj, cls,
+                c_void_p=ctypes.c_void_p,
+                addressof=ctypes.addressof):
+        field_addr = addressof(obj) + getattr(cls, self.name).offset
+        addr = c_void_p.from_address(field_addr).value
+        return utf16tostr(addr)
+
+    def __set__(self, obj, value):
+        value = value.encode('utf-16le') + b'\x00'
+        setattr(obj, self.name, value)
+
 
 if SCITER_WIN:
     SCITER_DLL_NAME = "sciter64" if sys.maxsize > 2**32 else "sciter32"
