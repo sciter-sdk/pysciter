@@ -103,7 +103,7 @@ class SCN_LOAD_DATA(Structure):
     _fields_ = [
         ("code", c_uint),
         ("hwnd", HWINDOW),
-        ("uri", LPCWSTR),
+        ("_uri", LPCWSTR),
         ("outData", LPCBYTE),
         ("outDataSize", UINT),
         ("dataType", UINT),
@@ -111,6 +111,7 @@ class SCN_LOAD_DATA(Structure):
         ("principal", HELEMENT),
         ("initiator", HELEMENT),
         ]
+    uri = UTF16LEField('_uri')
 
 
 class SCN_DATA_LOADED(Structure):
@@ -118,12 +119,13 @@ class SCN_DATA_LOADED(Structure):
     _fields_ = [
         ("code", c_uint),
         ("hwnd", HWINDOW),
-        ("uri", LPCWSTR),
+        ("_uri", LPCWSTR),
         ("data", LPCBYTE),
         ("dataSize", UINT),
         ("dataType", UINT),
         ("status", UINT),
         ]
+    uri = UTF16LEField('_uri')
 
 
 class SCN_ATTACH_BEHAVIOR(Structure):
@@ -141,7 +143,10 @@ class SCN_ATTACH_BEHAVIOR(Structure):
 LPSCITER_CALLBACK_NOTIFICATION = POINTER(SCITER_CALLBACK_NOTIFICATION)
 SciterHostCallback = SC_CALLBACK(UINT, LPSCITER_CALLBACK_NOTIFICATION, LPVOID)
 
-SciterWindowDelegate = SC_CALLBACK(LRESULT, HWINDOW, UINT, WPARAM, LPARAM, LPVOID, PBOOL)
+if SCITER_WIN:
+    SciterWindowDelegate = SC_CALLBACK(LRESULT, HWINDOW, UINT, WPARAM, LPARAM, LPVOID, PBOOL)
+else:
+    SciterWindowDelegate = c_void_p
 
 DEBUG_OUTPUT_PROC = SC_CALLBACK(VOID, LPVOID, UINT, UINT, LPCWSTR, UINT)
 

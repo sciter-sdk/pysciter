@@ -448,5 +448,7 @@ class DATA_ARRIVED_PARAMS(ctypes.Structure):
         ("status", UINT),        # status = 0 (dataSize == 0) - unknown error.
                                  # status = 100..505 - http response status, Note: 200 - OK!
                                  # status > 12000 - wininet error code, see ERROR_INTERNET_*** in wininet.h
-        ("uri", LPCWSTR),        # requested url
+        ("_uri", LPCWSTR),       # requested url
     ]
+    uri = UTF16LEField('_uri')
+

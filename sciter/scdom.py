@@ -2,13 +2,13 @@
 
 import enum
 
-from ctypes import c_void_p, Structure
-from sciter.sctypes import INT, UINT, LPCWSTR
+import ctypes
+from sciter.sctypes import INT, UINT, LPCWSTR, UTF16LEField
 
-HELEMENT = c_void_p
-HNODE = c_void_p
-HRANGE = c_void_p
-HSARCHIVE = c_void_p
+HELEMENT = ctypes.c_void_p
+HNODE = ctypes.c_void_p
+HRANGE = ctypes.c_void_p
+HSARCHIVE = ctypes.c_void_p
 
 
 class SCDOM_RESULT(enum.IntEnum):
@@ -36,7 +36,7 @@ class SCDOM_RESULT(enum.IntEnum):
 # end
 
 
-class HPOSITION(Structure):
+class HPOSITION(ctypes.Structure):
     """."""
     _fields_ = [
         ("hn", HNODE),
@@ -44,17 +44,19 @@ class HPOSITION(Structure):
         ]
 
 
-class METHOD_PARAMS(Structure):
+class METHOD_PARAMS(ctypes.Structure):
     """."""
     _fields_ = [("methodID", UINT), ]
 
 
-class REQUEST_PARAM(Structure):
+class REQUEST_PARAM(ctypes.Structure):
     """."""
     _fields_ = [
-        ("name", LPCWSTR),
-        ("value", LPCWSTR),
+        ("_name", LPCWSTR),
+        ("_value", LPCWSTR),
         ]
+    name = UTF16LEField('_name')
+    value = UTF16LEField('_value')
 
 
 class NODE_TYPE(enum.IntEnum):
