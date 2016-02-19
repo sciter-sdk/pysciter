@@ -14,7 +14,7 @@ from sciter.screquest import LPSciterRequestAPI
 #
 # sciter-x-api.h
 #
-SciterClassName = SCFN(c_utf16_lp)
+SciterClassName = SCFN(c_utf16_p)
 SciterVersion = SCFN(UINT, BOOL)
 SciterDataReady = SCFN(BOOL, HWINDOW, LPCWSTR, LPCBYTE, UINT)
 SciterDataReadyAsync = SCFN(BOOL, HWINDOW, LPCWSTR, LPCBYTE, UINT, LPVOID)
@@ -262,10 +262,10 @@ class ISciterAPI(Structure):
         "SciterGraphicsCaps",
         "SciterSetHomeURL",
         # if defined(OSX)
-        #  "SciterCreateNSView",
+        "SciterCreateNSView",
         # endif
         # if defined(LINUX)
-        #  "SciterCreateWidget",
+        "SciterCreateWidget",
         # endif
 
         "SciterCreateWindow",
@@ -444,19 +444,6 @@ def SciterAPI():
     if hasattr(SciterAPI, "_api"):
         return SciterAPI._api
 
-    scdll = WinDLL(SCITER_DLL_NAME)
-    if not scdll:
-        raise SciterError("Unable to load library " + SCITER_DLL_NAME)
-
-    scdll.SciterAPI.restype = POINTER(ISciterAPI)
-    SciterAPI._api = scdll.SciterAPI().contents
-    return SciterAPI._api
-# end
-
-
-
-if __name__ == "__main__":
-    print("loading sciter dll: ")
     scdll = None
     if SCITER_WIN:
         scdll = WinDLL(SCITER_DLL_NAME)
@@ -466,6 +453,7 @@ if __name__ == "__main__":
 
     elif SCITER_OSX:
 
+        import ctypes.util
         sclib = ctypes.util.find_library(SCITER_DLL_NAME)
         print("found: ", sclib)
         if not sclib:
@@ -476,7 +464,16 @@ if __name__ == "__main__":
             exit(2)
 
     scdll.SciterAPI.restype = POINTER(ISciterAPI)
-    scapi = scdll.SciterAPI().contents
+    SciterAPI._api = scdll.SciterAPI().contents
+    return SciterAPI._api
+# end
+
+
+
+if __name__ == "__main__":
+    print("loading sciter dll: ")
+
+    scapi = SciterAPI()
 
     apiver = scapi.version
     clsname = scapi.SciterClassName()
