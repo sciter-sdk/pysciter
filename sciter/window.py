@@ -46,4 +46,12 @@ class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.behavior.Eve
         self.attach(wnd=self.hwnd)
         pass
 
+    # overrideable
+    def document_close(self):
+        # Quit application if main window was closed
+        if self.window_flags & sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR:
+            self.quit_app()
+        super().document_close()
+        pass
+
     pass
