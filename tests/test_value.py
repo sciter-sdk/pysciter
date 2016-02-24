@@ -107,9 +107,33 @@ class TestSciterValue(unittest.TestCase):
         pass
 
     def test_11bytes(self):
+        items = [None, 1, u'hello']
+        for item in items:
+            with self.subTest(val=item):
+                xval = value(item)
+                with self.assertRaises(TypeError):
+                    bval = bytes(xval)
+                continue
+        item = b'hello, world'
+        xval = value(item)
+        self.assertEqual(bytes(xval), bytes(item))
         pass
 
     def test_12len(self):
+        items = [[], {}, [3, 4], {'5': 5, '6': 6}]
+        for item in items:
+            with self.subTest(val=item):
+                xval = value(item)
+                self.assertEqual(len(xval), len(item))
+                continue
+
+        items = [None, False, True, 0, 1, 2.0, u'3', b'4', ]
+        for item in items:
+            with self.subTest(val=item):
+                with self.assertRaises(AttributeError):
+                    xval = value(item)
+                    xval.length()
+                    continue
         pass
 
     def test_13parse(self):
@@ -125,8 +149,85 @@ class TestSciterValue(unittest.TestCase):
             item = '{item: '
             xval = value.parse(item)
         pass
+
+    def test_14getitem(self):
+        items = ['[3,4,5]', '{"five": 5, "seven": 7}']
+        with self.subTest(val=items[0]):
+            xval = value.parse(items[0])
+            
+            self.assertEqual(xval[0], value(3))
+            self.assertEqual(xval[1], value(4))
+            self.assertEqual(xval[-1],value(5))
+
+            with self.assertRaises(IndexError):
+                r = xval[20]
+            
+            with self.assertRaises(TypeError):
+                r = xval['key']
+
+        with self.subTest(val=items[1]):
+            xval = value.parse(items[1])
+            
+            self.assertEqual(xval['five'], value(5))
+
+            with self.assertRaises(KeyError):
+                r = xval['not exist']
+        pass
     
-    # __getitem__ __setitem__ __delitem__ __contains__
+    def test_16setitem(self):
+        xval = value([1,2,3])
+        xval[0] = 7
+        xval[-1] = 7
+        self.assertEqual(xval, value([7,2,7]))
+
+        xval = value({'0': 0})
+        xval['0'] = 'zero'
+        xval['7'] = 7
+        self.assertEqual(xval['0'], value('zero'))
+        self.assertEqual(xval['7'], value(7))
+
+        # undefined -> array
+        xval = value([])
+        self.assertEqual(xval.get_type(), VALUE_TYPE.T_ARRAY)
+
+        xval = value()
+        xval[0] = 7
+        self.assertEqual(xval.get_type(), VALUE_TYPE.T_ARRAY)
+        self.assertEqual(xval[0], value(7))
+
+        with self.assertRaises(KeyError):
+            xval = value([]) # array
+            xval['key'] = 'value'
+
+        # undefined -> map
+        xval = value({})
+        self.assertEqual(xval.get_type(), VALUE_TYPE.T_MAP)
+
+        xval = value()
+        xval['0'] = 7
+        self.assertEqual(xval.get_type(), VALUE_TYPE.T_MAP)
+        self.assertEqual(xval['0'], value(7))
+        pass
+
+    @unittest.skip("__delitem__ is not supported")
+    def test_17delitem(self):
+        items = [i for i in range(5)]
+        item = dict(zip(map(lambda x: str(x), items), items))
+        xval = value(item)
+        del xval['2'] # middle
+        del xval['0'] # first
+        del xval['4'] # last
+        self.assertEqual(xval, value({1: 1, 3: 3}))
+        pass
+
+    def test_18contains(self):
+        xval = value({'0': 0, '7': 7})
+        self.assertIn('0', xval)
+        self.assertIn('7', xval)
+        self.assertNotIn('8', xval)
+        pass
+
+
     # Sequence operations
     # Mapping sequence operations
 

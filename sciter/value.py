@@ -49,17 +49,18 @@ class value():
             raise sciter.ValueError(VALUE_RESULT.HV_BAD_PARAMETER, "value.parse")
         return rv
 
-    @classmethod
-    def unpack_from(cls, args, count):
+    @staticmethod
+    def unpack_from(args, count):
         """Unpack sciter values to python types."""
         return [value(args[i]).get_value() for i in range(count)]
 
-    @classmethod
-    def pack_to(cls, scval, val):
+    @staticmethod
+    def pack_to(scval, val):
         """Pack python value to SCITER_VALUE."""
         v = value(val)
         v.copy_to(scval)
         pass
+
 
     def __init__(self, val=None):
         """Return a new sciter value wrapped object."""
@@ -107,10 +108,13 @@ class value():
 
     def __bytes__(self):
         """Value to bytes conversion."""
+        if not self.is_bytes():
+            raise TypeError(repr(self))
         p = ctypes.c_char_p()
         n = ctypes.c_uint32()
         ok = _api.ValueBinaryData(self, byref(p), byref(n))
-        return ctypes.string_at(p, n)
+        self._throw_if(ok)
+        return p.value
 
     def __eq__(self, other):
         """Value comparison."""
@@ -132,7 +136,7 @@ class value():
 
     def __getitem__(self, key):
         """Get item for array and map type."""
-        if self.get_type() == VALUE_TYPE.T_ARRAY and isinstance(key, int):
+        if self.is_array() and isinstance(key, int):
             # array elements can be retrieved only by index
             key = len(self) + key if key < 0 else key
             if key < 0 or key >= len(self):
@@ -140,12 +144,12 @@ class value():
             r = value()
             ok = _api.ValueNthElementValue(self, key, r)
             return r
-        elif self.get_type() == VALUE_TYPE.T_MAP:
+        elif self.is_map():
             # map elements can be retrieved by sciter::value's key
             xkey = value(key)
             r = value()
             ok = _api.ValueGetValueOfKey(self, xkey, r)
-            if ok != VALUE_RESULT.HV_OK:
+            if ok != VALUE_RESULT.HV_OK or r.is_undefined():
                 raise KeyError
             return r
         else:
@@ -155,8 +159,10 @@ class value():
 
     def __setitem__(self, key, val):
         """Set item for array and map type."""
-        if isinstance(key, int):
+        if self.is_array() or (self.is_undefined() and isinstance(key, int)):
             # set array element by index
+            if not isinstance(key, int):
+                raise KeyError
             xval = value(val)
             key = len(self) + key if key < 0 else key
             ok = _api.ValueNthElementValueSet(self, key, xval)
@@ -171,22 +177,9 @@ class value():
                 raise TypeError
         pass
 
-    def __delitem__(self, key):
-        """Delete item from map object."""
-        # only map objects are supported currently
-        if self.get_type() == VALUE_TYPE.T_MAP:
-            xkey = value(key)
-            xval = value()  # undefined
-            ok = _api.ValueSetValueToKey(self, xkey, xval)
-            if ok != VALUE_RESULT.HV_OK:
-                raise TypeError
-        else:
-            raise TypeError
-        pass
-
     def __contains__(self, item):
         """Check whether item exists at array or map object."""
-        xvals = self.values() if self.get_type() == VALUE_TYPE.T_ARRAY else self.keys()
+        xvals = self.values() if self.is_array() else self.keys()
         xitem = value(item)
         return xitem in xvals
 
@@ -313,6 +306,36 @@ class value():
             raise sciter.ScriptException(rv.get_value(), name)
         return rv.get_value()
 
+    def is_undefined(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_UNDEFINED
+
+    def is_null(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_NULL
+
+    def is_bool(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_BOOL
+
+    def is_int(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_INT
+
+    def is_float(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_FLOAT
+
+    def is_bytes(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_BYTES
+
     def is_string(self):
         """."""
         t, u = self.get_type(with_unit=True)
@@ -327,6 +350,17 @@ class value():
         """."""
         t, u = self.get_type(with_unit=True)
         return t == VALUE_TYPE.T_STRING and u == VALUE_UNIT_TYPE_STRING.UT_STRING_SYMBOL
+
+    def is_array(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_ARRAY
+
+    def is_map(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_MAP
+
 
     def get_type(self, py=False, with_unit=False):
         """Return python type or sciter type with (optionally) unit subtype of sciter::value."""
@@ -454,14 +488,20 @@ class value():
         pass
 
     def _assign_list(self, val):
+        # special case to explicitly make an empty array
+        json = '[]'
+        ok = _api.ValueFromString(self, json, len(json), VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL)
         for i, v in enumerate(val):
             self[i] = v
-        return VALUE_RESULT.HV_OK
+        return ok
 
     def _assign_dict(self, val):
+        # special case to explicitly make an empty dict
+        json = '{}'
+        ok = _api.ValueFromString(self, json, len(json), VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL)
         for k, v in val.items():
             self[k] = v
-        return VALUE_RESULT.HV_OK
+        return ok
 
     def _get_list(self):
         # convert sciter array to python list
@@ -481,8 +521,8 @@ class value():
         fc = _NativeFunctor(callable)
         return fc.store(self)
 
-    @classmethod
-    def _throw_if(cls, code):
+    @staticmethod
+    def _throw_if(code):
         if code <= 0:
             return
         import inspect
