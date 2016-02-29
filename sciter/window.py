@@ -4,14 +4,14 @@ import ctypes
 
 import sciter.scdef
 import sciter.host
-import sciter.behavior
+import sciter.event
 import sciter.sctypes
 import sciter.scplatform
 
 _api = sciter.SciterAPI()
 
 
-class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.behavior.EventHandler):
+class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventHandler):
     """Basic Sciter window."""
 
     def __init__(self, ismain=False, ispopup=False, ischild=False, resizeable=True, parent=None, uni_theme=False, debug=True):

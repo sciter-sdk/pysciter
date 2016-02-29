@@ -10,7 +10,7 @@ class Frame(sciter.Window):
 
     def on_subscription(self, groups):
         # subscribing only for scripting calls and document events
-        from sciter.behavior import EVENT_GROUPS
+        from sciter.event import EVENT_GROUPS
         return EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL
 
     def on_script_call(self, name, args):
