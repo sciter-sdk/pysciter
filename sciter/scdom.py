@@ -101,12 +101,12 @@ class SCITER_SCROLL_FLAGS(enum.IntEnum):
 
 class SET_ELEMENT_HTML(enum.IntEnum):
     """."""
-    SIH_REPLACE_CONTENT = 0
-    SIH_INSERT_AT_START = 1
-    SIH_APPEND_AFTER_LAST = 2
-    SOH_REPLACE = 3
-    SOH_INSERT_BEFORE = 4
-    SOH_INSERT_AFTER = 5
+    SIH_REPLACE_CONTENT = 0     # replace content of the element
+    SIH_INSERT_AT_START = 1     # insert html before first child of the element
+    SIH_APPEND_AFTER_LAST = 2   # insert html after last child of the element
+    SOH_REPLACE = 3             # replace element by html, a.k.a. element.outerHtml = "something"
+    SOH_INSERT_BEFORE = 4       # insert html before the element
+    SOH_INSERT_AFTER = 5        # insert html after the element
 
 
 class ELEMENT_STATE_BITS(enum.IntEnum):

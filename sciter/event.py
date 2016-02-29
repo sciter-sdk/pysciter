@@ -16,10 +16,14 @@ class EventHandler:
         """Attach event handler to dom::element or sciter::window."""
         self.subscription = subscription
         self.element = None
-        self.attached_to_window = None
-        self.attached_to_element = None
+        self._attached_to_window = None
+        self._attached_to_element = None
         if wnd or element:
             self.attach(wnd, element, subscription)
+        pass
+
+    def __del__(self):
+        assert(not self.element)
         pass
 
     def attach(self, wnd=None, element=None, subscription=EVENT_GROUPS.HANDLE_ALL):
@@ -29,12 +33,12 @@ class EventHandler:
         self._event_handler_proc = sciter.scdef.ElementEventProc(self._element_proc)
         tag = id(self)
         if wnd:
-            self.attached_to_window = wnd
+            self._attached_to_window = wnd
             ok = _api.SciterWindowAttachEventHandler(wnd, self._event_handler_proc, tag, subscription)
             if ok != SCDOM_RESULT.SCDOM_OK:
                 raise sciter.SciterError("Could not attach to window")
         elif element:
-            self.attached_to_element = element
+            self._attached_to_element = element
             ok = _api.SciterAttachEventHandler(element, self._event_handler_proc, tag)
             if ok != SCDOM_RESULT.SCDOM_OK:
                 raise sciter.SciterError("Could not attach to element")
@@ -43,12 +47,12 @@ class EventHandler:
     def detach(self):
         """Detach event handler from dom::element or sciter::window."""
         tag = id(self)
-        if self.attached_to_window:
-            ok = _api.SciterWindowDetachEventHandler(self.attached_to_window, self._event_handler_proc, tag)
+        if self._attached_to_window:
+            ok = _api.SciterWindowDetachEventHandler(self._attached_to_window, self._event_handler_proc, tag)
             if ok != SCDOM_RESULT.SCDOM_OK:
                 raise sciter.SciterError("Could not detach from window")
-        elif self.attached_to_element:
-            ok = _api.SciterDetachEventHandler(self.attached_to_element, self._event_handler_proc, tag)
+        elif self._attached_to_element:
+            ok = _api.SciterDetachEventHandler(self._attached_to_element, self._event_handler_proc, tag)
             if ok != SCDOM_RESULT.SCDOM_OK:
                 raise sciter.SciterError("Could not attach from element")
         pass
@@ -92,6 +96,10 @@ class EventHandler:
         """Notification event from builtin behaviors."""
         pass
 
+    def on_data_arrived(self, nm: DATA_ARRIVED_PARAMS):
+        """Requested data has been delivered."""
+        pass
+
     ## @}
 
     def _on_script_call(self, f):
@@ -107,7 +115,7 @@ class EventHandler:
 
 
     def _element_proc(self, tag, he, evt, params):
-
+        he = HELEMENT(he)
         if evt == EVENT_GROUPS.SUBSCRIPTIONS_REQUEST:
             p = ctypes.cast(params, ctypes.POINTER(ctypes.c_uint))
             subscribed = self.on_subscription(p.contents)
@@ -123,7 +131,7 @@ class EventHandler:
                 self.detached(he)
                 self.element = None
             elif p.contents.cmd == INITIALIZATION_EVENTS.BEHAVIOR_ATTACH:
-                self.element = he
+                self.element = sciter.Element(he)
                 self.attached(he)
             return True
 
@@ -132,7 +140,7 @@ class EventHandler:
             p = ctypes.cast(params, ctypes.POINTER(BEHAVIOR_EVENT_PARAMS))
             m = p.contents
             if m.cmd == BEHAVIOR_EVENTS.DOCUMENT_COMPLETE:
-                self.element = he
+                self.element = sciter.Element(he)
                 self.document_complete()
             elif m.cmd == BEHAVIOR_EVENTS.DOCUMENT_CLOSE:
                 self.document_close()
@@ -147,5 +155,11 @@ class EventHandler:
             # handle script calls
             p = ctypes.cast(params, ctypes.POINTER(SCRIPTING_METHOD_PARAMS))
             return self._on_script_call(p.contents)
+
+        elif evt == EVENT_GROUPS.HANDLE_DATA_ARRIVED:
+            # notification event: data requested by HTMLayoutRequestData just delivered
+            p = ctypes.cast(params, ctypes.POINTER(DATA_ARRIVED_PARAMS))
+            handled = self.on_data_arrived(p.contents)
+            return handled or False
 
         return False

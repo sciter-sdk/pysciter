@@ -4,8 +4,10 @@ import ctypes
 import os.path
 
 from sciter.scdef import *
-from sciter.scdom import HELEMENT
 from sciter.sctypes import HWINDOW
+
+import sciter
+import sciter.dom
 
 _api = sciter.SciterAPI()
 
@@ -96,7 +98,7 @@ class Host():
 
     def load_file(self, uri: str, normalize=True):
         """Load HTML document from file."""
-        if normalize and ":" not in uri:
+        if normalize and "://" not in uri:
             uri = "file://" + os.path.abspath(uri).replace("\\", "/")
         ok = _api.SciterLoadFile(self.hwnd, uri)
         if not ok:
@@ -106,6 +108,8 @@ class Host():
 
     def load_html(self, html: bytes, uri=None):
         """Load HTML document from memory."""
+        if not isinstance(html, bytes):
+            raise TypeError("html must be a bytes type")
         cb = len(html)
         pb = ctypes.c_char_p(html)
         ok = _api.SciterLoadHtml(self.hwnd, pb, cb, uri)
@@ -114,17 +118,17 @@ class Host():
         self.root = self.get_root()
         return self
 
-    def get_root(self) -> HELEMENT:
+    def get_root(self):
         """Get window root DOM element."""
-        he = HELEMENT()
+        he = sciter.dom.HELEMENT()
         ok = _api.SciterGetRootElement(self.hwnd, ctypes.byref(he))
-        return he
+        return sciter.dom.Element(he) if he else None
 
-    def eval_script(self, script: str):
+    def eval_script(self, script: str, name=None):
         """Evaluate script in context of current document."""
         rv = sciter.Value()
         ok = _api.SciterEval(self.hwnd, script, len(script), rv)
-        sciter.Value.raise_from(rv, ok != False, name)
+        sciter.Value.raise_from(rv, ok != False, name if name else 'Host.eval')
         return rv
 
     def call_function(self, name: str, *args):
