@@ -31,7 +31,7 @@ class Frame(sciter.Window):
         def on_sub(a, b):
             raise Exception("sub(%d,%d) raised exception" % (a, b))
                 
-        api = {'add': on_add,               # plain function
+        api = { 'add': on_add,              # plain function
                 'sub': on_sub,              # raised exception will propagated to script 
                 'mul': lambda a,b: a * b,   # lambdas support
                 }
@@ -40,12 +40,16 @@ class Frame(sciter.Window):
     def ScriptCallTest(self):
         print("calling 'hello'")
         answer = self.call_function('hello', "hello, python")
-        print("hello answer: ", answer)
+        print("call answer: ", answer)
 
         print("get and call 'hello'")
         answer = self.eval_script('hello')
         answer = answer.call('argument', name='on_script_call')
-        print("hello answer: ", answer)
+        print("get answer: ", answer)
+
+        print("eval 'hello'")
+        answer = self.eval_script('hello("42");')
+        print("eval answer: ", answer)
 
         try:
             print("\ncalling 'raise_error'")

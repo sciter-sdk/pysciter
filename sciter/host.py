@@ -31,6 +31,8 @@ class Host():
 
     def setup_callback(self, hwnd):
         """Set callback for sciter engine events."""
+        if not hwnd:
+            raise ValueError("Invalid window handle provided.")
         self.hwnd = hwnd
         self.root = self.get_root()  # if called on existing document
         self._sciter_handler_proc = SciterHostCallback(self.handle_notification)
@@ -46,13 +48,16 @@ class Host():
 
     def set_option(self, option, value):
         """Set various sciter engine options, see the SCITER_RT_OPTIONS."""
-        ok = _api.SciterSetOption(self.hwnd, option, value)
+        hwnd = self.hwnd
+        if option in (SCITER_RT_OPTIONS.SCITER_SET_GPU_BLACKLIST, SCITER_RT_OPTIONS.SCITER_SET_GFX_LAYER, SCITER_RT_OPTIONS.SCITER_SET_UX_THEMING):
+            hwnd = None
+        ok = _api.SciterSetOption(hwnd, option, value)
         if not ok:
             raise sciter.SciterError("Could not set option " + str(option) + "=" + str(value))
         return self
 
     def set_home_url(self, url: str):
-        """Set sciter home url."""
+        """Set sciter window home url."""
         ok = _api.SciterSetHomeURL(self.hwnd, url)
         if not ok:
             raise sciter.SciterError("Could not home url " + str(url))
