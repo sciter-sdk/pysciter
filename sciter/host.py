@@ -22,12 +22,6 @@ class Host():
         """Alias for self.call_function()."""
         return self.call_function(name, *args)
 
-    def get_version(self):
-        """Return version of Sciter engine as (3,3,1,7)."""
-        high = _api.SciterVersion(True)
-        low = _api.SciterVersion(False)
-        return (high >> 16, high & 0xFFFF, low >> 16, low & 0xFFFF)
-
     def setup_callback(self, hwnd):
         """Set callback for sciter engine events."""
         if not hwnd:
