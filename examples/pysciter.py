@@ -81,6 +81,8 @@ class Frame(sciter.Window):
 
 
 if __name__ == '__main__':
+    import os
+    htm = os.path.join(os.path.dirname(__file__), 'pysciter.htm')
     frame = Frame()
-    frame.load_file("examples/pysciter.htm").expand()
+    frame.load_file(htm)
     frame.run_app()
