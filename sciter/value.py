@@ -49,19 +49,6 @@ class value():
             raise sciter.ValueError(VALUE_RESULT.HV_BAD_PARAMETER, "value.parse")
         return rv
 
-    @staticmethod
-    def unpack_from(args, count):
-        """Unpack sciter values to python types."""
-        return [value(args[i]).get_value() for i in range(count)]
-
-    @staticmethod
-    def pack_to(scval, val):
-        """Pack python value to SCITER_VALUE."""
-        v = value(val)
-        v.copy_to(scval)
-        pass
-
-
     def __init__(self, val=None):
         """Return a new sciter value wrapped object."""
         self.data = SCITER_VALUE()
@@ -292,18 +279,11 @@ class value():
             this (value): object that will be known as 'this' inside that function.
         """
         rv = value()
-        argc = len(args)
-        args_type = sciter.value.SCITER_VALUE * argc
-        argv = args_type()
-        for i, v in enumerate(args):
-            sv = sciter.Value(v)
-            sv.copy_to(argv[i])
+        argc, argv, this = sciter.Value.pack_args(*args, **kwargs)
         name = kwargs.get('name')
-        thisv = value(kwargs.get('this'))
-        ok = _api.ValueInvoke(self, thisv, argc, argv, rv, name)
+        ok = _api.ValueInvoke(self, this, argc, argv, rv, )
+        sciter.Value.raise_from(rv, ok <= VALUE_RESULT.HV_OK, name)
         self._throw_if(ok)
-        if rv.is_error_string():
-            raise sciter.ScriptException(rv.get_value(), name)
         return rv.get_value()
 
     def is_undefined(self):
@@ -528,6 +508,40 @@ class value():
         import inspect
         context = inspect.stack()[1][3]
         raise sciter.ValueError(code, "value." + context)
+
+
+    @staticmethod
+    def unpack_from(args, count):
+        """Unpack sciter values to python types."""
+        return [value(args[i]).get_value() for i in range(count)]
+
+    @staticmethod
+    def pack_to(scval, val):
+        """Pack python value to SCITER_VALUE."""
+        v = value(val)
+        v.copy_to(scval)
+        pass
+
+    @staticmethod
+    def pack_args(*args, **kwargs):
+        argc = len(args)
+        args_type = SCITER_VALUE * argc
+        argv = args_type()
+        for i, v in enumerate(args):
+            sv = sciter.Value(v)
+            sv.copy_to(argv[i])
+        this = kwargs.get('this')
+        return (argc, argv, this)
+
+    @staticmethod
+    def raise_from(error_val, success: bool, name: str):
+        """Raise ScriptError or ScriptException from script value."""
+        is_error = error_val.is_error_string()
+        if not success and is_error:
+            raise sciter.ScriptError(error_val.get_value(), name)
+        elif is_error:
+            raise sciter.ScriptException(error_val.get_value(), name)
+        pass
 
     pass
 # end

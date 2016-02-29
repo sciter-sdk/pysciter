@@ -2,7 +2,6 @@
 
 import ctypes
 import os.path
-import sciter.value
 
 from sciter.scdef import *
 from sciter.scdom import HELEMENT
@@ -131,29 +130,15 @@ class Host():
         """Evaluate script in context of current document."""
         rv = sciter.Value()
         ok = _api.SciterEval(self.hwnd, script, len(script), rv)
-        is_error = rv.is_error_string()
-        if not ok and is_error:
-            raise sciter.ScriptError(rv.get_value(), name)
-        elif is_error:
-            raise sciter.ScriptException(rv.get_value(), name)
+        sciter.Value.raise_from(rv, ok != False, name)
         return rv
 
     def call_function(self, name: str, *args):
         """Call scripting function defined in the global namespace."""
         rv = sciter.Value()
-        argc = len(args)
-        args_type = sciter.value.SCITER_VALUE * argc
-        argv = args_type()
-        for i, v in enumerate(args):
-            sv = sciter.Value(v)
-            sv.copy_to(argv[i])
-        cname = name.encode('utf-8')
-        ok = _api.SciterCall(self.hwnd, cname, argc, argv, rv)
-        is_error = rv.is_error_string()
-        if not ok and is_error:
-            raise sciter.ScriptError(rv.get_value(), name)
-        elif is_error:
-            raise sciter.ScriptException(rv.get_value(), name)
+        argc, argv = sciter.Value.pack_args(*args)
+        ok = _api.SciterCall(self.hwnd, name.encode('utf-8'), argc, argv, rv)
+        sciter.Value.raise_from(rv, ok != False, name)
         return rv
 
     def data_ready(self, uri: str, data: bytes, request_id=None, hwnd=None):
