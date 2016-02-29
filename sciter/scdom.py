@@ -1,4 +1,4 @@
-"""DOM Access methods."""
+"""DOM access methods, C interface"""
 
 import enum
 
