@@ -46,6 +46,38 @@ class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventH
         self.attach(wnd=self.hwnd)
         pass
 
+    def collapse(self, hide=False):
+        """Minimize or hide window."""
+        return super().collapse(hide)
+
+    def expand(self, maximize=False):
+        """Show or maximize window."""
+        return super().expand(maximize)
+
+    def dismiss(self):
+        """Close window."""
+        return super().dismiss()
+
+    def set_title(self, title: str):
+        """Set native window title."""
+        return super().set_title(title)
+
+    def get_title(self):
+        """Get native window title."""
+        return super().get_title()
+
+    def run_app(self, show=True):
+        """Show window and run the main app message loop until window been closed."""
+        if show:
+            self.expand()
+        ret = super().run_app()
+        return ret
+
+    def quit_app(self, code=0):
+        """Post quit message."""
+        return super().quit_app(code)
+
+
     # overrideable
     def document_close(self):
         # Quit application if main window was closed

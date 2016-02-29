@@ -38,6 +38,18 @@ if SCITER_OS == 'win32':
             ctypes.windll.user32.PostMessageW(self.hwnd, 0x0010, 0, 0)  # WM_CLOSE
             return self
 
+        def set_title(self, title: str):
+            """Set native window title."""
+            ctypes.windll.user32.SetWindowTextW(self.hwnd, title)
+            return self
+
+        def get_title(self):
+            """Get native window title."""
+            cb = ctypes.windll.user32.GetWindowTextLengthW(self.hwnd) + 1
+            title = ctypes.create_unicode_buffer(cb)
+            ctypes.windll.user32.GetWindowTextW(self.hwnd, title, cb)
+            return title
+
         def run_app(self):
             """Run the main app message loop until window been closed."""
             msg = MSG()
@@ -118,6 +130,16 @@ elif SCITER_OS == 'darwin':
             self.objc(self._window(), 'close')
             return self
 
+        def set_title(self, title: str):
+            """Set native window title."""
+            self.objc(self._window(), 'setTitle:', self.objc.toNSString(title))
+            return self
+
+        def get_title(self):
+            """Get native window title."""
+            nstitle = self.objc(self._window(), 'title')
+            return self.objc.fromNSString(nstitle)
+
         def run_app(self):
             """Run the main app message loop until window been closed."""
             self.objc(self.nsApp, 'run')
@@ -181,9 +203,13 @@ elif SCITER_OS == 'darwin':
             # Boolean CFStringGetCString ( CFStringRef theString, char *buffer, CFIndex bufferSize, CFStringEncoding encoding );
             self.cf.CFStringGetCString.restype = ctypes.c_bool
             self.cf.CFStringGetCString.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_uint]
+
+            #  CFStringRef CFStringCreateWithCString ( CFAllocatorRef alloc, const char *cStr, CFStringEncoding encoding );
+            self.cf.CFStringCreateWithCString.restype = ctypes.c_void_p
+            self.cf.CFStringCreateWithCString.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_uint32]
             pass
 
-        def fromString(self, nsString):
+        def fromNSString(self, nsString):
             if not nsString:
                 return '<nil>'
 
@@ -193,6 +219,10 @@ elif SCITER_OS == 'darwin':
             buf = ctypes.create_string_buffer(n * 4 + 4)
             ok = self.cf.CFStringGetCString(nsString, buf, n * 4, kCFStringEncodingUTF8)
             return buf.value.decode('utf-8') if ok else None
+
+        def toNSString(self, string: str):
+            kCFStringEncodingUTF8 = 0x08000100
+            return ctypes.c_void_p(self.cf.CFStringCreateWithCString(None, string.encode('utf8'), kCFStringEncodingUTF8))
 
         def getClass(self, name):
             # NSSound = objc.getClass('NSSound')
