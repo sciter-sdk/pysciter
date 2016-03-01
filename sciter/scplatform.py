@@ -13,9 +13,6 @@ if SCITER_OS == 'win32':
     class WindowsWindow:
         """Win32 window."""
 
-        def __init__(self):
-            pass
-
         def _create(self, flags, rect, parent):
             if rect is None:
                 rect = sciter.sctypes.RECT()
@@ -86,6 +83,7 @@ elif SCITER_OS == 'darwin':
         """."""
 
         def __init__(self):
+            super().__init__()
             self.objc = ObjC()
             self.nsApp = None
             self._msg_delegate = None

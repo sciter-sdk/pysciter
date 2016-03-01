@@ -33,9 +33,8 @@ class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventH
 
         if debug:
             flags = flags | sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG
-
         self.window_flags = flags
-
+        self._title_changed = False
         self.hwnd = self._create(flags, rect=None, parent=None)
         if not self.hwnd:
             raise sciter.SciterError("Could not create window")
@@ -43,7 +42,7 @@ class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventH
         if debug:
             self.setup_debug()
         self.setup_callback(self.hwnd)
-        self.attach(wnd=self.hwnd)
+        self.attach(window=self.hwnd)
         pass
 
     def collapse(self, hide=False):
@@ -60,6 +59,7 @@ class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventH
 
     def set_title(self, title: str):
         """Set native window title."""
+        self._title_changed = True
         return super().set_title(title)
 
     def get_title(self):
@@ -79,6 +79,16 @@ class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventH
 
 
     # overrideable
+    def _document_ready(self, target):
+        # Set window title based on <title> content, if any
+        if self._title_changed:
+            return
+        root = sciter.Element(target)
+        title = root.find_first('html > head > title')
+        if title:
+            self.set_title(title.get_text())
+        pass
+
     def document_close(self):
         # Quit application if main window was closed
         if self.window_flags & sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR:
