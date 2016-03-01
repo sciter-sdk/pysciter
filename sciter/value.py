@@ -40,6 +40,8 @@ _value_subtypes = {VALUE_TYPE.T_LENGTH: _subtype_name(VALUE_UNIT_TYPE),
 class value():
     """sciter::value pythonic wrapper."""
 
+    ## @name Value constructors:
+
     @classmethod
     def parse(cls, json: str, how=VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL, throw=True):
         """Parse json string into value."""
@@ -48,6 +50,30 @@ class value():
         if ok != 0 and throw:
             raise sciter.ValueError(VALUE_RESULT.HV_BAD_PARAMETER, "value.parse")
         return rv
+
+    @classmethod
+    def null(cls):
+        """Make explicit json null value."""
+        rv = value()
+        rv.data.t = VALUE_TYPE.T_NULL
+        return rv
+
+    @classmethod
+    def symbol(cls, name):
+        """Make sciter symbol value."""
+        rv = value()
+        rv._assign_str(name, VALUE_UNIT_TYPE_STRING.UT_STRING_SYMBOL)
+        return rv
+
+    @classmethod
+    def secure_string(cls, val):
+        """Make sciter secure string value."""
+        rv = value()
+        rv._assign_str(name, VALUE_UNIT_TYPE_STRING.UT_STRING_SECURE)
+        return rv
+
+    
+    ## @name Value methods:
 
     def __init__(self, val=None):
         """Return a new sciter value wrapped object."""
@@ -432,13 +458,7 @@ class value():
             ok = _api.ValueFloatDataSet(self, val, VALUE_TYPE.T_FLOAT, 0)
             self._throw_if(ok)
         elif isinstance(val, str):
-            if sciter.SCITER_OSX:
-                bval = val.encode('utf-16le')
-                n = len(bval) >> 1
-                ok = _api.ValueStringDataSet(self, bval, n, 0)
-            else:
-                ok = _api.ValueStringDataSet(self, val, len(val), 0)
-            self._throw_if(ok)
+            ok = self._assign_str(val, VALUE_UNIT_TYPE_STRING.UT_STRING_STRING)
         elif isinstance(val, (bytes, bytearray)):
             ok = _api.ValueBinaryDataSet(self, ctypes.c_char_p(val), len(val), VALUE_TYPE.T_BYTES, 0)
             self._throw_if(ok)
@@ -449,14 +469,7 @@ class value():
             ok = self._assign_dict(val)
             self._throw_if(ok)
         elif isinstance(val, Exception):
-            val = str(val)
-            if sciter.SCITER_OSX:
-                bval = val.encode('utf-16le')
-                n = len(bval) >> 1
-                ok = _api.ValueStringDataSet(self, bval, n, VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR)
-            else:
-                ok = _api.ValueStringDataSet(self, val, len(val), VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR)
-            self._throw_if(ok)
+            ok = self._assign_str(str(val), VALUE_UNIT_TYPE_STRING.UT_STRING_ERROR)
         elif isinstance(val, (value, SCITER_VALUE)):
             ok = _api.ValueCopy(self, val)
             self._throw_if(ok)
@@ -500,6 +513,17 @@ class value():
     def _assign_function(self, callable):
         fc = _NativeFunctor(callable)
         return fc.store(self)
+
+    def _assign_str(self, val: str, units: int):
+        val = str(val)
+        if sciter.SCITER_OSX:
+            bval = val.encode('utf-16le')
+            n = len(bval) >> 1
+            ok = _api.ValueStringDataSet(self, bval, n, units)
+        else:
+            ok = _api.ValueStringDataSet(self, val, len(val), units)
+        self._throw_if(ok)
+        return ok
 
     @staticmethod
     def _throw_if(code):
