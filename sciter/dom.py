@@ -28,15 +28,17 @@ class Node:
     """DOM node - element, comment, text."""
 
     @classmethod
-    def make(cls, text, kind=NODE_TYPE.NT_TEXT):
+    def create(cls, text, kind=NODE_TYPE.NT_TEXT):
         """Make text or comment node with specified text."""
-        rv = Node()
+        if text is None:
+            text = ""
+        rv = HNODE()
         if kind == NODE_TYPE.NT_TEXT:
-            ok = _api.SciterCreateTextNode(text, len(text), ctypes.byref(rv.h))
+            ok = _api.SciterCreateTextNode(text, len(text), ctypes.byref(rv))
         elif kind == NODE_TYPE.NT_COMMENT:
-            ok = _api.SciterCreateCommentNode(text, len(text), ctypes.byref(rv.h))
+            ok = _api.SciterCreateCommentNode(text, len(text), ctypes.byref(rv))
         self._throw_if(ok)
-        return rv
+        return Node(rv)
 
 
     def __init__(self, node=None):
@@ -242,10 +244,10 @@ class Element:
     @classmethod
     def create(cls, tag: str, text=None):
         """Create new element, the element is disconnected initially from the DOM."""
-        p = Element()
-        ok = _api.SciterCreateElement(tag.encode('utf-8'), text, ctypes.byref(p.h))
+        p = HELEMENT()
+        ok = _api.SciterCreateElement(tag.encode('utf-8'), text, ctypes.byref(p))
         Element._throw_if(ok)
-        return p
+        return Element(p)
 
     @classmethod
     def from_window(cls, hwnd):
@@ -371,10 +373,10 @@ class Element:
 
     def clone(self):
         """Create new element as copy of existing element, new element is a full (deep) copy of the element and is disconnected initially from the DOM."""
-        p = Element()
-        ok = _api.SciterCloneElement(self, ctypes.byref(p.h))
+        p = HELEMENT()
+        ok = _api.SciterCloneElement(self, ctypes.byref(p))
         self._throw_if(ok)
-        return p
+        return Element(p)
 
 
 
@@ -544,7 +546,7 @@ class Element:
     def call_function(self, name: str, *args):
         """Call scripting function defined in the namespace of the element (a.k.a. global function)."""
         rv = sciter.Value()
-        argc, argv = sciter.Value.pack_args(*args)
+        argc, argv, this = sciter.Value.pack_args(*args)
         ok = _api.SciterCallScriptingFunction(self, name.encode('utf-8'), argv, argc, rv)
         sciter.Value.raise_from(rv, ok == SCDOM_RESULT.SCDOM_OK, name)
         self._throw_if(ok)
@@ -553,7 +555,7 @@ class Element:
     def call_method(self, name: str, *args):
         """Calls scripting method defined for the element."""
         rv = sciter.Value()
-        argc, argv = sciter.Value.pack_args(*args)
+        argc, argv, this = sciter.Value.pack_args(*args)
         ok = _api.SciterCallScriptingMethod(self, name.encode('utf-8'), argv, argc, rv)
         sciter.Value.raise_from(rv, ok == SCDOM_RESULT.SCDOM_OK, name)
         self._throw_if(ok)
@@ -729,13 +731,13 @@ class Element:
         return dad[len(dad)-1]
 
     def insert(self, child, index: int):
-        """Insert element e at index position of this element."""
+        """Insert element at index position of this element."""
         ok = _api.SciterInsertElement(child.h, self.h, index)
         self._throw_if(ok)
         return self
 
     def append(self, child):
-        """Append element e as last child of this element."""
+        """Append element as last child of this element."""
         return self.insert(child, 0x7FFFFFFF)
 
     def detach(self):
