@@ -1,32 +1,36 @@
-"""Go sciter example port."""
+"""Download http content (Go sciter example port)."""
 
 import sciter
 
-class MyEventHandler(sciter.EventHandler):
+class ContentEventHandler(sciter.EventHandler):
+    """<div#content> event handler."""
 
     def document_complete(self):
         print("content loaded.")
-        
         pass
 
     def on_data_arrived(self, nm):
-        print("data arrived, uri:", nm.uri, nm.dataSize)
+        print("data arrived, uri:", nm.uri, nm.dataSize, "bytes")
         pass
-
+    pass
 
 class Frame(sciter.Window):
     def __init__(self):
         super().__init__(ismain=True, uni_theme=False, debug=True)
         pass
 
-    def on_data_loaded(self, nm):
-        print("data loaded, uri:", nm.uri, nm.dataSize)
+    def on_data_load(self, nm):
+        # called on every html/img/css/etc resource download request
         pass
 
+    def on_data_loaded(self, nm):
+        # called on every downloaded resource 
+        print("data loaded, uri:", nm.uri, nm.dataSize, "bytes")
+        pass
 
     def load(self, url):
         self.set_title("Download Element Content")
-        self.load_html(b'''<html><body><span id='url'>Url To Load</span><frame id='content'></frame></body></html>''', "/")
+        self.load_html(b'''<html><body><p>Url to load: <span id='url'>placed here</span></p><div id='content' style='size: *'></div></body></html>''', "/")
 
         # get root element
         root = self.get_root()
@@ -41,8 +45,9 @@ class Frame(sciter.Window):
         print("span:", text)
 
         # install event handler to content frame to print data_arrived events
-        self.handler = MyEventHandler(element=content)
+        self.handler = ContentEventHandler(element=content)
         
+        # make http request to download url and place result as inner of #content
         print("load content")
         content.request_html(url)
         pass
@@ -51,7 +56,7 @@ class Frame(sciter.Window):
 if __name__ == '__main__':
     import sys
 
-    print("Sciter version:", ".".join(map(str, sciter.version())))
+    print("Sciter version:", sciter.version(as_str=True))
 
     if len(sys.argv) < 2:
         sys.exit("at least one Sciter compatible page url is needed")
