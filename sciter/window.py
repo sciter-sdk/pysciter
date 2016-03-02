@@ -1,7 +1,5 @@
 """High level window wrapper."""
 
-import ctypes
-
 import sciter.scdef
 import sciter.host
 import sciter.event
@@ -76,7 +74,6 @@ class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventH
     def quit_app(self, code=0):
         """Post quit message."""
         return super().quit_app(code)
-
 
     # overrideable
     def _document_ready(self, target):

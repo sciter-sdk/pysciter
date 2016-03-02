@@ -3,7 +3,7 @@
 import sys
 import ctypes
 
-from ctypes import (POINTER, 
+from ctypes import (POINTER,
                     c_char, c_byte, c_ubyte,
                     c_void_p, c_char_p,
                     c_int32, c_uint32, c_int64, c_uint64,
@@ -19,11 +19,12 @@ SCITER_LNX = SCITER_OS == 'linux'
 
 
 def utf16tostr(addr, size=-1):
+    """Read UTF-16 string from memory and encode as python string."""
     cb = size if size > 0 else 32
     bstr = ctypes.string_at(addr, cb)
     if size >= 0:
         return bstr.decode('utf-16le')
-    
+
     # lookup zero char
     chunks = []
     while True:
@@ -45,6 +46,8 @@ def utf16tostr(addr, size=-1):
 
 
 class c_utf16_p(ctypes.c_char_p):
+    """A ctypes wrapper for UTF-16 string pointer."""
+    # Taken from http://stackoverflow.com/a/35507014/736762, thanks to @eryksun.
     def __init__(self, value=None):
         super(c_utf16_p, self).__init__()
         if value is not None:
@@ -71,9 +74,12 @@ class c_utf16_p(ctypes.c_char_p):
     @classmethod
     def _check_retval_(cls, result):
         return result.value
+    pass
 
 
 class UTF16LEField(object):
+    """Structure member wrapper for UTF-16 string pointers."""
+    # Taken from http://stackoverflow.com/a/35507014/736762, thanks to @eryksun.
     def __init__(self, name):
         self.name = name
 
@@ -87,6 +93,7 @@ class UTF16LEField(object):
     def __set__(self, obj, value):
         value = value.encode('utf-16le') + b'\x00'
         setattr(obj, self.name, value)
+    pass
 
 
 if SCITER_WIN:
@@ -147,7 +154,9 @@ LPCSTR = LPSTR = c_char_p
 LPCVOID = LPVOID = c_void_p
 LPUINT = POINTER(UINT)
 
+
 class RECT(ctypes.Structure):
+    """Rectangle coordinates structure."""
     _fields_ = [("left", c_int32),
                 ("top", c_int32),
                 ("right", c_int32),
@@ -155,19 +164,25 @@ class RECT(ctypes.Structure):
 tagRECT = _RECTL = RECTL = RECT
 PRECT = LPRECT = POINTER(RECT)
 
+
 class POINT(ctypes.Structure):
+    """Point coordinates structure."""
     _fields_ = [("x", c_int32),
                 ("y", c_int32)]
 tagPOINT = _POINTL = POINTL = POINT
 PPOINT = LPPOINT = POINTER(POINT)
 
+
 class SIZE(ctypes.Structure):
+    """SIZE structure for width and height."""
     _fields_ = [("cx", c_int32),
                 ("cy", c_int32)]
 tagSIZE = SIZEL = SIZE
 PSIZE = LPSIZE = POINTER(SIZE)
 
+
 class MSG(ctypes.Structure):
+    """MSG structure for windows message queue."""
     _fields_ = [("hWnd", HWINDOW),
                 ("message", c_uint32),
                 ("wParam", WPARAM),

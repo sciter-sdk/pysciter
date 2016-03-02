@@ -45,7 +45,7 @@ class VALUE_TYPE(enum.IntEnum):
 
 
 class VALUE_UNIT_TYPE(enum.IntEnum):
-    """Sciter value subtype."""
+    """Sciter length value subtype."""
     UT_NONE = 0
     UT_EM = 1               # height of the element's font.
     UT_EX = 2               # height of letter 'x'

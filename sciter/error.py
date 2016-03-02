@@ -26,7 +26,7 @@ class ValueError(ArgumentError):
 
 
 class ScriptError(SciterError):
-    """Raised from calling script."""
+    """Raised by runtime from calling script when script error occured (e.g. bad syntax)."""
     def __init__(self, message, script=None):
         super().__init__(self, message.replace("\r", "\n"))
         self.message = message
@@ -41,7 +41,7 @@ class ScriptError(SciterError):
 
 
 class ScriptException(ScriptError):
+    """Raised by script by throwing or returning Error instance."""
     def __init__(self, message, script=None):
         super().__init__(message, script)
         pass
-

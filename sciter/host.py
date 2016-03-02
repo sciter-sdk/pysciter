@@ -16,6 +16,7 @@ class Host():
     """Standard implementation of SCITER_CALLBACK_NOTIFY handler."""
 
     def __init__(self):
+        """."""
         super().__init__()
         self.hwnd = None
         self.root = None
@@ -141,7 +142,7 @@ class Host():
         return rv
 
     def data_ready(self, uri: str, data: bytes, request_id=None, hwnd=None):
-        """This function is used in response to SCN_LOAD_DATA request."""
+        """This function is used as response to SCN_LOAD_DATA request."""
         if not hwnd:
             hwnd = self.hwnd
         if request_id:
@@ -189,3 +190,4 @@ class Host():
             rv = self.on_attach_behavior(ctypes.cast(pnm, ctypes.POINTER(SCN_ATTACH_BEHAVIOR)).contents)
         assert(rv is None or isinstance(rv, int))
         return 0 if rv is None else rv
+    pass

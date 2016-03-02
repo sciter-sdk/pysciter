@@ -69,18 +69,19 @@ class value():
     def secure_string(cls, val):
         """Make sciter secure string value."""
         rv = value()
-        rv._assign_str(name, VALUE_UNIT_TYPE_STRING.UT_STRING_SECURE)
+        rv._assign_str(val, VALUE_UNIT_TYPE_STRING.UT_STRING_SECURE)
         return rv
 
-    
+
     ## @name Value methods:
 
     def __init__(self, val=None):
         """Return a new sciter value wrapped object."""
+        super().__init__()
         self.data = SCITER_VALUE()
         self.ptr = ctypes.pointer(self.data)
         self._as_parameter_ = self.ptr
-        ok = _api.ValueInit(self.ptr)
+        _api.ValueInit(self.ptr)
         if val is not None:
             self.set_value(val)
         pass
@@ -367,7 +368,6 @@ class value():
         t = self.get_type()
         return t == VALUE_TYPE.T_MAP
 
-
     def get_type(self, py=False, with_unit=False):
         """Return python type or sciter type with (optionally) unit subtype of sciter::value."""
         t = VALUE_TYPE(self.data.t)
@@ -533,7 +533,7 @@ class value():
         context = inspect.stack()[1][3]
         raise sciter.ValueError(code, "value." + context)
 
-
+    # utility methods
     @staticmethod
     def unpack_from(args, count):
         """Unpack sciter values to python types."""
@@ -548,6 +548,7 @@ class value():
 
     @staticmethod
     def pack_args(*args, **kwargs):
+        """Pack arguments tuple as SCITER_VALUE array."""
         argc = len(args)
         args_type = SCITER_VALUE * argc
         argv = args_type()
@@ -559,7 +560,7 @@ class value():
 
     @staticmethod
     def raise_from(error_val, success: bool, name: str):
-        """Raise ScriptError or ScriptException from script value."""
+        """Raise ScriptError or ScriptException from script error value."""
         is_error = error_val.is_error_string()
         if not success and is_error:
             raise sciter.ScriptError(error_val.get_value(), name)
@@ -577,6 +578,7 @@ _native_cache = []
 class _NativeFunctor():
     """sciter::native_function wrapper."""
     def __init__(self, func):
+        super().__init__()
         self.func = func
         self.scinvoke = sciter.scdef.NATIVE_FUNCTOR_INVOKE(self.invoke)
         self.screlease = sciter.scdef.NATIVE_FUNCTOR_RELEASE(self.release)

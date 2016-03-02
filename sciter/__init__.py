@@ -1,8 +1,10 @@
+"""Sciter bindings for Python."""
+
 from .scapi import SciterAPI
+from .value import value as Value
 from .window import Window
 from .dom import Element
 from .event import EventHandler
-from .value import value as Value
 from .error import SciterError, ScriptError, ScriptException, ValueError
 from .sctypes import SCITER_WIN, SCITER_OSX, SCITER_LNX
 
@@ -17,6 +19,7 @@ def version(as_str=False):
     low = api.SciterVersion(False)
     ver = (high >> 16, high & 0xFFFF, low >> 16, low & 0xFFFF)
     return ".".join(map(str, ver)) if as_str else ver
+
 
 def script(name=None):
     """Annotation decorator for the functions that called from script."""

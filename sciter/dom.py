@@ -1,6 +1,7 @@
 """DOM access methods."""
 
 import ctypes
+
 import sciter.error
 import sciter.scdef
 
@@ -12,10 +13,12 @@ _api = sciter.SciterAPI()
 
 # TODO: behaviors support, create behavior
 
+
 class DomError(sciter.error.SciterError):
     """Raised from DOM operations."""
 
     def __init__(self, code, context=None):
+        """."""
         name = SCDOM_RESULT(code).name
         msg = name.replace("SCDOM_", "").replace("_", " ").lower()
         if context is not None:
@@ -40,9 +43,9 @@ class Node:
         self._throw_if(ok)
         return Node(rv)
 
-
     def __init__(self, node=None):
         """Construct Node object from HNODE or HELEMENT."""
+        super().__init__()
         self.h = None
         if node is not None:
             if isinstance(node, (HNODE, HELEMENT)):
@@ -286,9 +289,10 @@ class Element:
         ok = _api.SciterGetElementByUID(hwnd, uid, ctypes.byref(p))
         return Element(p)
 
-
+    # instance methods
     def __init__(self, node=None):
         """Construct Element object from HNODE or HELEMENT handle."""
+        super().__init__()
         self.h = None
         if node is not None:
             if isinstance(node, (HNODE, HELEMENT)):
@@ -389,6 +393,7 @@ class Element:
         return n.value
 
     def tag(self):
+        """Return element tag as string (e.g. 'div', 'body')."""
         txt = []
         def a2s(asz, n, ctx):
             txt.append(asz[0:n].decode('utf-8'))
@@ -468,9 +473,9 @@ class Element:
         self._throw_if(ok)
         return hwnd
 
-    def get_location(self, kind = ELEMENT_AREAS.SELF_RELATIVE | ELEMENT_AREAS.CONTENT_BOX):
+    def get_location(self, kind=ELEMENT_AREAS.SELF_RELATIVE | ELEMENT_AREAS.CONTENT_BOX):
         """Get bounding rectangle of the element."""
-        rc = sciter.sctypes.RECT(0,0,0,0)
+        rc = sciter.sctypes.RECT(0, 0, 0, 0)
         ok = _api.SciterGetElementLocation(self, ctypes.byref(rc), kind)
         self._throw_if(ok)
         return rc
@@ -491,7 +496,7 @@ class Element:
             raise ValueError("Only GET or POST supported here.")
 
         # GET_ASYNC = 0, GET_SYNC = 2, POST_ASYNC = 1, POST_SYNC = 3
-        method_type = 2 if async == False else 0
+        method_type = 2 if async is False else 0
         method_type += 1 if method == 'POST' else 0
 
         if params:
@@ -553,7 +558,7 @@ class Element:
         return rv
 
     def call_method(self, name: str, *args):
-        """Calls scripting method defined for the element."""
+        """Call scripting method defined for the element."""
         rv = sciter.Value()
         argc, argv, this = sciter.Value.pack_args(*args)
         ok = _api.SciterCallScriptingMethod(self, name.encode('utf-8'), argv, argc, rv)
@@ -618,7 +623,7 @@ class Element:
             self.remove_attribute(name)
         return self
 
-    
+
     ## @name Style attributes:
 
     def style_attribute(self, name: str):
@@ -654,7 +659,7 @@ class Element:
         return ELEMENT_STATE_BITS(n.value)
 
     def has_state(self, check: ELEMENT_STATE_BITS):
-        """Checks if particular UI state bits are set in the element."""
+        """Check if particular UI state bits are set in the element."""
         current = self.state()
         return (current & check) != 0
 
@@ -673,6 +678,7 @@ class Element:
         return bool(n.value)
 
     def highlight(self, isset=True):
+        """Highlight element visually (used for debug purposes)."""
         hwnd = self.get_hwnd(True)
         ok = _api.SciterSetHighlightedElement(hwnd, self if isset else None)
         self._throw_if(ok)
@@ -886,7 +892,7 @@ class Element:
             self._throw_if(ok)
         return self
 
-
+    # helper
     @staticmethod
     def _throw_if(code):
         if code == 0:

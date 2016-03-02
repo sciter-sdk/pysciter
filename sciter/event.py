@@ -2,17 +2,21 @@
 
 import ctypes
 
+import sciter.scdef
+
 from sciter.scbehavior import *
 from sciter.scdom import SCDOM_RESULT, HELEMENT
-import sciter.scdef
 
 _api = sciter.SciterAPI()
 
 
 class EventHandler:
-    """."""
+    """DOM event handler which can be attached to any DOM element."""
 
-    def __init__(self, window=None, element=None, subscription=EVENT_GROUPS.HANDLE_ALL):
+    ALL_EVENTS = EVENT_GROUPS.HANDLE_ALL
+    DEFAULT_EVENTS = EVENT_GROUPS.HANDLE_INITIALIZATION | EVENT_GROUPS.HANDLE_SIZE | EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL
+
+    def __init__(self, window=None, element=None, subscription=DEFAULT_EVENTS):
         """Attach event handler to dom::element or sciter::window."""
         super().__init__()
         self.subscription = subscription
@@ -29,7 +33,7 @@ class EventHandler:
         assert(not self.element)
         pass
 
-    def attach(self, window=None, element=None, subscription=EVENT_GROUPS.HANDLE_ALL):
+    def attach(self, window=None, element=None, subscription=DEFAULT_EVENTS):
         """Attach event handler to dom::element or sciter::window."""
         assert(window or element)
         self.subscription = subscription
@@ -54,10 +58,12 @@ class EventHandler:
             ok = _api.SciterWindowDetachEventHandler(self._attached_to_window, self._event_handler_proc, tag)
             if ok != SCDOM_RESULT.SCDOM_OK:
                 raise sciter.SciterError("Could not detach from window")
+            self._attached_to_window = None
         elif self._attached_to_element:
             ok = _api.SciterDetachEventHandler(self._attached_to_element, self._event_handler_proc, tag)
             if ok != SCDOM_RESULT.SCDOM_OK:
                 raise sciter.SciterError("Could not attach from element")
+            self._attached_to_element = None
         pass
 
     def dispatch(self, name, args):
@@ -82,9 +88,11 @@ class EventHandler:
     ## @param target - target element of this event
 
     def attached(self, he):
+        """Called when handler was attached to element."""
         pass
 
     def detached(self, he):
+        """Called when handler was detached from element."""
         pass
 
     def document_complete(self):
@@ -127,7 +135,7 @@ class EventHandler:
         handlers = {}
         for name in dir(self):
             member = getattr(self, name, None)
-            
+
             # check optional attribute for name mapping
             attr = getattr(member, '_from_sciter', False)
             fnname = attr if isinstance(attr, str) else name
@@ -156,7 +164,7 @@ class EventHandler:
             return True
         return False
 
-
+    # event handler native callback
     def _element_proc(self, tag, he, evt, params):
         he = HELEMENT(he)
         if evt == EVENT_GROUPS.SUBSCRIPTIONS_REQUEST:
@@ -198,7 +206,7 @@ class EventHandler:
                 event = BEHAVIOR_EVENTS(code)   # not all codes enumerated in BEHAVIOR_EVENTS :-\
             except ValueError:
                 event = code
-            handled = self.on_event(HELEMENT(m.he), HELEMENT(m.heTarget), code, phase, reason)
+            handled = self.on_event(HELEMENT(m.he), HELEMENT(m.heTarget), event, phase, reason)
             return handled or False
 
         elif evt == EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL:
@@ -213,3 +221,4 @@ class EventHandler:
             return handled or False
 
         return False
+    pass
