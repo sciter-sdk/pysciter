@@ -3,12 +3,12 @@
 import enum
 import ctypes
 
-from sciter.scdom import HELEMENT
-from sciter.scvalue import SCITER_VALUE
-from sciter.scgraphics import HGFX
-from sciter.sctypes import *
+from sciter.capi.scdom import HELEMENT
+from sciter.capi.scvalue import SCITER_VALUE
+from sciter.capi.scgraphics import HGFX
+from sciter.capi.sctypes import *
 
-import sciter.sctiscript as sctiscript
+import sciter.capi.sctiscript as sctiscript
 
 
 class EVENT_GROUPS(enum.IntEnum):
@@ -37,7 +37,7 @@ class PHASE_MASK(enum.IntEnum):
     BUBBLING = 0
     SINKING = 0x8000
     HANDLED = 0x10000
-
+    SINKING_HANDLED = HANDLED|SINKING
 
 class MOUSE_BUTTONS(enum.IntEnum):
     """."""

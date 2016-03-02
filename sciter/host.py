@@ -3,8 +3,8 @@
 import ctypes
 import os.path
 
-from sciter.scdef import *
-from sciter.sctypes import HWINDOW
+from sciter.capi.scdef import *
+from sciter.capi.sctypes import HWINDOW
 
 import sciter
 import sciter.dom

@@ -1,12 +1,13 @@
 """Sciter bindings for Python."""
 
-from .scapi import SciterAPI
+from .capi.scapi import SciterAPI
+from .capi.sctypes import SCITER_WIN, SCITER_OSX, SCITER_LNX
+
 from .value import value as Value
 from .window import Window
 from .dom import Element
 from .event import EventHandler
 from .error import SciterError, ScriptError, ScriptException, ValueError
-from .sctypes import SCITER_WIN, SCITER_OSX, SCITER_LNX
 
 sapi = api = SciterAPI()
 gapi = sapi.GetSciterGraphicsAPI if sapi else None

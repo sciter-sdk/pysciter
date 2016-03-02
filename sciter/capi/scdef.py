@@ -1,16 +1,16 @@
 """Common Sciter declarations."""
 
-from enum import IntEnum
+import enum
 
 from ctypes import *
 
-from sciter.sctypes import *
-from sciter.scdom import HELEMENT
-from sciter.screquest import HREQUEST
-from sciter.scvalue import PSCITER_VALUE
+from sciter.capi.sctypes import *
+from sciter.capi.scdom import HELEMENT
+from sciter.capi.screquest import HREQUEST
+from sciter.capi.scvalue import PSCITER_VALUE
 
 
-class LOAD_RESULT(IntEnum):
+class LOAD_RESULT(enum.IntEnum):
     """."""
     LOAD_OK = 0       # do default loading if data not set
     LOAD_DISCARD = 1  # discard request completely
@@ -19,7 +19,7 @@ class LOAD_RESULT(IntEnum):
     LOAD_MYSELF = 3   # Use sciter-x-request.h[pp] API functions with SCN_LOAD_DATA::requestId handle .
 
 
-class SciterNotification(IntEnum):
+class SciterNotification(enum.IntEnum):
     """."""
     SC_LOAD_DATA = 0x01
     SC_DATA_LOADED = 0x02
@@ -29,7 +29,7 @@ class SciterNotification(IntEnum):
     SC_GRAPHICS_CRITICAL_FAILURE = 0x07
 
 
-class SCITER_RT_OPTIONS(IntEnum):
+class SCITER_RT_OPTIONS(enum.IntEnum):
     SCITER_SMOOTH_SCROLL = 1       # value:TRUE - enable, value:FALSE - disable, enabled by default
     SCITER_CONNECTION_TIMEOUT = 2  # value: milliseconds, connection timeout of http client
     SCITER_HTTPS_ERROR = 3         # value: 0 - drop connection, 1 - use builtin dialog, 2 - accept connection silently
@@ -49,34 +49,34 @@ class SCITER_RT_OPTIONS(IntEnum):
     SCITER_ALPHA_WINDOW  = 12      #  hWnd, value - TRUE/FALSE - window uses per pixel alpha (e.g. WS_EX_LAYERED/UpdateLayeredWindow() window)
 
 
-class SCRIPT_RUNTIME_FEATURES(IntEnum):
+class SCRIPT_RUNTIME_FEATURES(enum.IntEnum):
     ALLOW_FILE_IO = 0x00000001
     ALLOW_SOCKET_IO = 0x00000002
     ALLOW_EVAL = 0x00000004
     ALLOW_SYSINFO = 0x00000008
 
 
-class GFX_LAYER(IntEnum):
+class GFX_LAYER(enum.IntEnum):
     GFX_LAYER_GDI      = 1
     GFX_LAYER_WARP     = 2
     GFX_LAYER_D2D      = 3
     GFX_LAYER_AUTO     = 0xFFFF
 
 
-class OUTPUT_SUBSYTEMS(IntEnum):
+class OUTPUT_SUBSYTEMS(enum.IntEnum):
     DOM = 0       # html parser & runtime
     CSSS = 1      # csss! parser & runtime
     CSS = 2       # css parser
     TIS = 3       # TIS parser & runtime
 
 
-class OUTPUT_SEVERITY(IntEnum):
+class OUTPUT_SEVERITY(enum.IntEnum):
     INFO = 0
     WARNING = 1
     ERROR = 2
 
 
-class SCITER_CREATE_WINDOW_FLAGS(IntEnum):
+class SCITER_CREATE_WINDOW_FLAGS(enum.IntEnum):
     SW_CHILD      = (1 << 0)    # child window only, if this flag is set all other flags ignored
     SW_TITLEBAR   = (1 << 1)    # toplevel window, has titlebar
     SW_RESIZEABLE = (1 << 2)    # has resizeable frame

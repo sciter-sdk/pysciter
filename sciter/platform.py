@@ -2,9 +2,9 @@
 import ctypes
 
 import sciter
-import sciter.scdef
+import sciter.capi.scdef
 
-from sciter.sctypes import *
+from sciter.capi.sctypes import *
 
 _api = sciter.SciterAPI()
 
@@ -15,8 +15,8 @@ if SCITER_OS == 'win32':
 
         def _create(self, flags, rect, parent):
             if rect is None:
-                rect = sciter.sctypes.RECT()
-            self._msg_delegate = sciter.scdef.SciterWindowDelegate(self._on_msg_delegate)
+                rect = sciter.capi.sctypes.RECT()
+            self._msg_delegate = sciter.capi.scdef.SciterWindowDelegate(self._on_msg_delegate)
             return _api.SciterCreateWindow(flags, ctypes.byref(rect), self._msg_delegate, None, parent)
 
         def collapse(self, hide=False):
@@ -115,7 +115,7 @@ elif SCITER_OS == 'darwin':
         def expand(self, maximize=False):
             """Show or maximize window."""
             wnd = self._window()
-            if self.window_flags & sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR:
+            if self.window_flags & sciter.capi.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR:
                 # bring the main window foreground
                 self.objc(self.nsApp, 'activateIgnoringOtherApps:', True)
             self.objc(wnd, 'makeKeyAndOrderFront:', None)

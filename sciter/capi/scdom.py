@@ -1,9 +1,9 @@
-"""DOM access methods, C interface"""
+"""DOM access methods, C interface."""
 
 import enum
-
 import ctypes
-from sciter.sctypes import INT, UINT, LPCWSTR, UTF16LEField
+
+from sciter.capi.sctypes import INT, UINT, LPCWSTR, UTF16LEField
 
 HELEMENT = ctypes.c_void_p
 HNODE = ctypes.c_void_p

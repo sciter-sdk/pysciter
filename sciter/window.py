@@ -1,36 +1,37 @@
 """High level window wrapper."""
 
-import sciter.scdef
+import sciter.capi.scdef
+import sciter.capi.sctypes
 import sciter.host
 import sciter.event
-import sciter.sctypes
-import sciter.scplatform
+import sciter.platform
 
 _api = sciter.SciterAPI()
 
 
-class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventHandler):
+class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHandler):
     """Basic Sciter window."""
 
     def __init__(self, ismain=False, ispopup=False, ischild=False, resizeable=True, parent=None, uni_theme=False, debug=True):
         """Create a new window and setup the sciter and dom callbacks."""
         super().__init__()
+        from sciter.capi.scdef import SCITER_CREATE_WINDOW_FLAGS
 
-        flags = sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS
+        flags = SCITER_CREATE_WINDOW_FLAGS.SW_CONTROLS
         if resizeable:
-            flags = flags | sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE
+            flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE
         if ismain:
-            flags = flags | sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR
+            flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR
         elif ispopup:
-            flags = flags | sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_POPUP
+            flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_POPUP
         elif ischild:
-            flags = flags | sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_CHILD
+            flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_CHILD
 
         if uni_theme:
-            _api.SciterSetOption(None, sciter.scdef.SCITER_RT_OPTIONS.SCITER_SET_UX_THEMING, True)
+            _api.SciterSetOption(None, sciter.capi.scdef.SCITER_RT_OPTIONS.SCITER_SET_UX_THEMING, True)
 
         if debug:
-            flags = flags | sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG
+            flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG
         self.window_flags = flags
         self._title_changed = False
         self.hwnd = self._create(flags, rect=None, parent=None)
@@ -88,7 +89,7 @@ class Window(sciter.scplatform.BaseWindow, sciter.host.Host, sciter.event.EventH
 
     def document_close(self):
         # Quit application if main window was closed
-        if self.window_flags & sciter.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR:
+        if self.window_flags & sciter.capi.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR:
             self.quit_app()
         super().document_close()
         pass

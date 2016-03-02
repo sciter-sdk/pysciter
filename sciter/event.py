@@ -2,10 +2,10 @@
 
 import ctypes
 
-import sciter.scdef
+import sciter.capi.scdef
 
-from sciter.scbehavior import *
-from sciter.scdom import SCDOM_RESULT, HELEMENT
+from sciter.capi.scbehavior import *
+from sciter.capi.scdom import SCDOM_RESULT, HELEMENT
 
 _api = sciter.SciterAPI()
 
@@ -37,7 +37,7 @@ class EventHandler:
         """Attach event handler to dom::element or sciter::window."""
         assert(window or element)
         self.subscription = subscription
-        self._event_handler_proc = sciter.scdef.ElementEventProc(self._element_proc)
+        self._event_handler_proc = sciter.capi.scdef.ElementEventProc(self._element_proc)
         tag = id(self)
         if window:
             self._attached_to_window = window

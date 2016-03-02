@@ -4,10 +4,10 @@ import inspect
 import ctypes
 
 import sciter
-import sciter.scdef
-import sciter.sctypes
+import sciter.capi.scdef
+import sciter.capi.sctypes
 
-from sciter.scvalue import *
+from sciter.capi.scvalue import *
 
 _api = sciter.SciterAPI()
 byref = ctypes.byref
@@ -412,7 +412,7 @@ class value():
             return float(v.value)
         elif t == VALUE_TYPE.T_STRING:
             if sciter.SCITER_OSX:
-                v = sciter.sctypes.c_utf16_p()
+                v = sciter.capi.sctypes.c_utf16_p()
                 n = ctypes.c_uint32()
                 ok = _api.ValueStringData(self, byref(v), byref(n))
                 self._throw_if(ok)
@@ -587,8 +587,8 @@ class _NativeFunctor():
     def __init__(self, func):
         super().__init__()
         self.func = func
-        self.scinvoke = sciter.scdef.NATIVE_FUNCTOR_INVOKE(self.invoke)
-        self.screlease = sciter.scdef.NATIVE_FUNCTOR_RELEASE(self.release)
+        self.scinvoke = sciter.capi.scdef.NATIVE_FUNCTOR_INVOKE(self.invoke)
+        self.screlease = sciter.capi.scdef.NATIVE_FUNCTOR_RELEASE(self.release)
         pass
 
     def store(self, svalue):

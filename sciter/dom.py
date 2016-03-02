@@ -3,11 +3,11 @@
 import ctypes
 
 import sciter.error
-import sciter.scdef
+import sciter.capi.scdef
 
-from sciter.scdom import *
-from sciter.screquest import SciterResourceType
-from sciter.scbehavior import BEHAVIOR_EVENTS, EVENT_REASON
+from sciter.capi.scdom import *
+from sciter.capi.screquest import SciterResourceType
+from sciter.capi.scbehavior import BEHAVIOR_EVENTS, EVENT_REASON
 
 _api = sciter.SciterAPI()
 
@@ -217,7 +217,7 @@ class Node:
         txt = []
         def w2s(wsz, n, ctx):
             txt.append(wsz[0:n])
-        cb = sciter.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
         ok = _api.SciterNodeGetText(self, cb, None)
         self._throw_if(ok)
         return ''.join(txt)
@@ -270,7 +270,7 @@ class Element:
     def from_point(cls, hwnd, x, y):
         """Find DOM element of the Sciter document by coordinates."""
         p = HELEMENT()
-        pt = sciter.sctypes.POINT(x, y)
+        pt = sciter.capi.sctypes.POINT(x, y)
         ok = _api.SciterFindElement(hwnd, pt, ctypes.byref(p))
         return Element(p)
 
@@ -397,7 +397,7 @@ class Element:
         txt = []
         def a2s(asz, n, ctx):
             txt.append(asz[0:n].decode('utf-8'))
-        cb = sciter.scdef.LPCSTR_RECEIVER(a2s)
+        cb = sciter.capi.scdef.LPCSTR_RECEIVER(a2s)
         ok = _api.SciterGetElementTypeCB(self, cb, None)
         self._throw_if(ok)
         return ''.join(txt)
@@ -427,7 +427,7 @@ class Element:
         txt = []
         def w2s(wsz, n, ctx):
             txt.append(wsz[0:n])
-        cb = sciter.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
         ok = _api.SciterGetElementTextCB(self, cb, None)
         self._throw_if(ok)
         return ''.join(txt)
@@ -443,7 +443,7 @@ class Element:
         txt = []
         def a2s(asz, n, ctx):
             txt.append(asz[0:n])
-        cb = sciter.scdef.LPCBYTE_RECEIVER(a2s)
+        cb = sciter.capi.scdef.LPCBYTE_RECEIVER(a2s)
         ok = _api.SciterGetElementHtmlCB(self, outer, cb, None)
         self._throw_if(ok)
         return b''.join(txt)
@@ -468,14 +468,14 @@ class Element:
 
     def get_hwnd(self, for_root: bool):
         """Get HWINDOW of containing window."""
-        hwnd = sciter.sctypes.HWINDOW()
+        hwnd = sciter.capi.sctypes.HWINDOW()
         ok = _api.SciterGetElementHwnd(self, ctypes.byref(hwnd), for_root)
         self._throw_if(ok)
         return hwnd
 
     def get_location(self, kind=ELEMENT_AREAS.SELF_RELATIVE | ELEMENT_AREAS.CONTENT_BOX):
         """Get bounding rectangle of the element."""
-        rc = sciter.sctypes.RECT(0, 0, 0, 0)
+        rc = sciter.capi.sctypes.RECT(0, 0, 0, 0)
         ok = _api.SciterGetElementLocation(self, ctypes.byref(rc), kind)
         self._throw_if(ok)
         return rc
@@ -515,7 +515,7 @@ class Element:
 
     def send_event(self, code: BEHAVIOR_EVENTS, reason=EVENT_REASON.SYNTHESIZED, source=None):
         """Send sinking/bubbling event to the child/parent chain of the element."""
-        handled = sciter.sctypes.BOOL()
+        handled = sciter.capi.sctypes.BOOL()
         ok = _api.SciterSendEvent(self, code, source if source else self.h, reason, ctypes.byref(handled))
         self._throw_if(ok)
         return handled != False
@@ -528,14 +528,14 @@ class Element:
 
     def fire_event(self, source, target, code: BEHAVIOR_EVENTS, reason=EVENT_REASON.SYNTHESIZED, post=True, data=None):
         """Send or post sinking/bubbling event to the child/parent chain of he element."""
-        params = sciter.scbehavior.BEHAVIOR_EVENT_PARAMS()
+        params = sciter.capi.scbehavior.BEHAVIOR_EVENT_PARAMS()
         params.cmd = code
         params.reason = reason
         params.he = source
         params.heTarget = target
         if data is not None:
             sciter.Value.pack_to(params.data, data)
-        handled = sciter.sctypes.BOOL()
+        handled = sciter.capi.sctypes.BOOL()
         ok = _api.SciterFireEvent(ctypes.byref(params), post, ctypes.byref(handled))
         self._throw_if(ok)
         return handled != False
@@ -581,7 +581,7 @@ class Element:
         txt = []
         def w2s(wsz, n, ctx):
             txt.append(wsz[0:n])
-        cb = sciter.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
         ok = _api.SciterGetNthAttributeNameCB(self, n, cb, None)
         self._throw_if(ok)
         return ''.join(txt)
@@ -591,7 +591,7 @@ class Element:
         txt = []
         def w2s(wsz, n, ctx):
             txt.append(wsz[0:n])
-        cb = sciter.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
         if isinstance(name_or_index, int):
             ok = _api.SciterGetNthAttributeValueCB(self, name_or_index, cb, None)
         elif isinstance(name_or_index, str):
@@ -631,7 +631,7 @@ class Element:
         txt = []
         def w2s(wsz, n, ctx):
             txt.append(wsz[0:n])
-        cb = sciter.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
         ok = _api.SciterGetStyleAttributeCB(self, name.encode('utf-8'), cb, None)
         self._throw_if(ok)
         return ''.join(txt)
@@ -665,14 +665,14 @@ class Element:
 
     def is_enabled(self):
         """Deep enable state, determines if element enabled - is not disabled by itself or no one of its parents is disabled."""
-        n = sciter.sctypes.BOOL()
+        n = sciter.capi.sctypes.BOOL()
         ok = _api.SciterIsElementEnabled(self, ctypes.byref(n))
         self._throw_if(ok)
         return bool(n.value)
 
     def is_visible(self):
         """Deep visibility, determines if element visible - has no visiblity:hidden and no display:none defined for itself or for any its parents."""
-        n = sciter.sctypes.BOOL()
+        n = sciter.capi.sctypes.BOOL()
         ok = _api.SciterIsElementVisible(self, ctypes.byref(n))
         self._throw_if(ok)
         return bool(n.value)
@@ -779,7 +779,7 @@ class Element:
             el = Element(HELEMENT(he))
             stop = callback(el)
             return stop
-        scfunc = sciter.scdef.SciterElementCallback(on_element)
+        scfunc = sciter.capi.scdef.SciterElementCallback(on_element)
         ok = _api.SciterSelectElements(self, selector.encode('utf-8'), scfunc, None)
         self._throw_if(ok)
         return self
@@ -827,7 +827,7 @@ class Element:
 
     def set_scroll_pos(self, x, y, smooth=True):
         """Set scroll position of element with overflow:scroll or auto."""
-        pt = sciter.sctypes.POINT(x,y)
+        pt = sciter.capi.sctypes.POINT(x,y)
         ok = _api.SciterSetScrollPos(self, pt, smooth)
         self._throw_if(ok)
         return self
@@ -840,9 +840,9 @@ class Element:
                 name = field[0]
                 rv[name] = getattr(st, name)
             return rv
-        pos = sciter.sctypes.POINT()
-        view = sciter.sctypes.RECT()
-        size = sciter.sctypes.SIZE()
+        pos = sciter.capi.sctypes.POINT()
+        view = sciter.capi.sctypes.RECT()
+        size = sciter.capi.sctypes.SIZE()
         ok = _api.SciterGetScrollInfo(self, ctypes.byref(pos), ctypes.byref(view), ctypes.byref(size))
         self._throw_if(ok)
         return dict(scroll_pos=struct2dict(pos), view_rect=struct2dict(view), content_size=struct2dict(size))
@@ -870,7 +870,7 @@ class Element:
 
     def refresh(self, area=None):
         """Refresh element area in its window."""
-        assert area is None or isinstance(area, sciter.sctypes.RECT)
+        assert area is None or isinstance(area, sciter.capi.sctypes.RECT)
         if area is None:
             area = self.get_location(ELEMENT_AREAS.SELF_RELATIVE | ELEMENT_AREAS.CONTENT_BOX)
         ok = _api.SciterRefreshElementArea(self, area)
@@ -879,7 +879,7 @@ class Element:
 
     def start_timer(self, ms: int, timer_id=None):
         """Start Timer for the element. Element will receive on_timer event."""
-        p = sciter.sctypes.UINT_PTR(timer_id)
+        p = sciter.capi.sctypes.UINT_PTR(timer_id)
         ok = _api.SciterSetTimer(self, ms, p)
         self._throw_if(ok)
         return self
@@ -887,7 +887,7 @@ class Element:
     def stop_timer(self, timer_id=None):
         """Stop Timer for the element."""
         if self.h:
-            p = sciter.sctypes.UINT_PTR(timer_id)
+            p = sciter.capi.sctypes.UINT_PTR(timer_id)
             ok = _api.SciterSetTimer(self, 0, p)
             self._throw_if(ok)
         return self

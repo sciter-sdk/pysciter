@@ -1,14 +1,14 @@
 """Sciter C API interface."""
 from ctypes import *
 
-from sciter.sctypes import *
-from sciter.scdef import *
-from sciter.scdom import SCDOM_RESULT, HELEMENT, HNODE, HSARCHIVE, METHOD_PARAMS, REQUEST_PARAM
-from sciter.scbehavior import BEHAVIOR_EVENT_PARAMS
-from sciter.scvalue import VALUE_RESULT, SCITER_VALUE, FLOAT_VALUE
-from sciter.sctiscript import HVM, tiscript_native_interface
-from sciter.scgraphics import LPSciterGraphicsAPI
-from sciter.screquest import LPSciterRequestAPI
+from sciter.capi.sctypes import *
+from sciter.capi.scdef import *
+from sciter.capi.scdom import SCDOM_RESULT, HELEMENT, HNODE, HSARCHIVE, METHOD_PARAMS, REQUEST_PARAM
+from sciter.capi.scbehavior import BEHAVIOR_EVENT_PARAMS
+from sciter.capi.scvalue import VALUE_RESULT, SCITER_VALUE, FLOAT_VALUE
+from sciter.capi.sctiscript import HVM, tiscript_native_interface
+from sciter.capi.scgraphics import LPSciterGraphicsAPI
+from sciter.capi.screquest import LPSciterRequestAPI
 
 
 #
