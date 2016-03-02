@@ -16,6 +16,34 @@ def scriptmethod(name=None):
     return decorator(func)
 
 
+class RootEventHandler(sciter.EventHandler):
+    def __init__(self, el, frame):
+        super().__init__(element=el)
+        self.parent = frame
+        pass
+
+    def on_event(self, source, target, code, phase, reason):
+        he = sciter.Element(source)
+        #print("-> event:", code, phase, he)
+        pass
+
+    @scriptmethod('mcall')
+    def method_call(self, *args):
+        #
+        # `root.mcall()` (see handlers.htm) calls behavior method of the root dom element (native equivalent is `Element.call_method()`),
+        #  so we need to attach a "behavior" to that element to catch and handle such calls.
+        # Also it can be handled at script by several ways: 
+        # * `behavior` - Element subclassing with full control
+        # * `aspect` - provides partial handling by attaching a single function to the dom element
+        # *  manually attaching function to Element via code like `root.mcall = function(args..) {};`
+        # 
+        print("->mcall args:", "\t".join(map(str, args)))
+        # explicit null for example, in other cases you can return any python object like None or True
+        return sciter.Value.null() 
+
+    pass
+
+
 class Frame(sciter.Window):
         
     def __init__(self):
@@ -37,12 +65,6 @@ class Frame(sciter.Window):
         v = root.call_function('gFunc', "function call", 10300)
         print("function call successfully:", v)
         pass
-
-    @scriptmethod
-    def mcall(self, *args):
-        print("->mcall args:", "\t".join(args))
-        # explicit null for example, in other cases you can return any python object like None or True
-        return sciter.Value.null() 
 
     # Functions called from script:
 
@@ -81,9 +103,14 @@ class Frame(sciter.Window):
     def on_event(self, source, target, code, phase, reason):
         # events from html controls (behaviors)
         he = sciter.Element(source)
+        #print(".. event:", code, phase)
 
-        if code == sciter.event.BEHAVIOR_EVENTS.CLICK and he.test('#native'):
-            print("native handler called")
+        # TODO: following statement looks ugly.
+        # Guess it wasn't a nice idea to split event mask to separate code and phase values
+        # Or we may pack all event arguments to single object (dict) to eliminate such parameters bloat
+        # 
+        if code == sciter.event.BEHAVIOR_EVENTS.BUTTON_CLICK and phase == sciter.event.PHASE_MASK.SINKING and he.test('#native'):
+            print("native button clicked!")
             return True
         pass
 
@@ -95,11 +122,15 @@ if __name__ == "__main__":
     # create window
     frame = Frame()
 
-    # enable debug
-    frame.setup_debug()#frame.get_hwnd())
+    # enable debug only for this window
+    frame.setup_debug()
 
     # load file
     frame.load_file("examples/handlers.htm")
+    #frame.load_html(b"""<html><body><button id='native'>Click</button></body></html>""")
+
+    # install additional handler
+    ev2 = RootEventHandler(frame.get_root(), frame)
 
     frame.test_call()
 
