@@ -411,7 +411,7 @@ class value():
             self._throw_if(ok)
             return float(v.value)
         elif t == VALUE_TYPE.T_STRING:
-            if sciter.SCITER_OSX:
+            if not sciter.SCITER_WIN:
                 v = sciter.capi.sctypes.c_utf16_p()
                 n = ctypes.c_uint32()
                 ok = _api.ValueStringData(self, byref(v), byref(n))
@@ -523,7 +523,7 @@ class value():
 
     def _assign_str(self, val: str, units: int):
         val = str(val)
-        if sciter.SCITER_OSX:
+        if not sciter.SCITER_WIN:
             bval = val.encode('utf-16le')
             n = len(bval) >> 1
             ok = _api.ValueStringDataSet(self, bval, n, units)

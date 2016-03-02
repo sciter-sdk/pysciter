@@ -464,7 +464,8 @@ def SciterAPI():
         except OSError:
             pass
 
-    elif SCITER_OSX:
+    else:
+        # same behavior for OSX & Linux
         import ctypes.util
         sclib = ctypes.util.find_library(SCITER_DLL_NAME)
         if sclib:

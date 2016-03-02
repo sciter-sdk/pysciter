@@ -11,7 +11,7 @@ config = {
     'url': 'http://github.com/pravic/pysciter/',
     'download_url': 'http://github.com/pravic/pysciter/',
     'version': '0.3',
-    'packages': ['sciter'],
+    'packages': ['sciter', 'sciter.capi'],
     'install_requires': [''],
     'scripts': [],
     'keywords': ['gui', 'sciter', 'tiscript', 'htmlayout', 'html', 'css', 'web', 'cross-platform',],

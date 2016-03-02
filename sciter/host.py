@@ -171,7 +171,7 @@ class Host():
         """This output function will be used for reprting problems found while loading html and css documents."""
         sysname = OUTPUT_SUBSYTEMS(subsystem).name.lower()
         sevname = OUTPUT_SEVERITY(severity).name.lower()
-        if sciter.SCITER_OSX:
+        if not sciter.SCITER_WIN:
             text = text.value
         message = text.replace("\r", "\n").rstrip()
         if message:

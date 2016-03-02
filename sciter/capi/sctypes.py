@@ -116,8 +116,7 @@ if SCITER_WIN:
     IDXGISurface = c_void_p
 
 elif SCITER_OSX:
-    assert sys.maxsize > 2**32, "Only 64-bit supported."
-
+    # sciter-osx-32 since 3.3.1.8
     SCITER_DLL_NAME = "sciter-osx-64" if sys.maxsize > 2**32 else "sciter-osx-32"
     SCITER_DLL_EXT = ".dylib"
 
@@ -125,6 +124,19 @@ elif SCITER_OSX:
     SC_CALLBACK = ctypes.CFUNCTYPE
 
     HWINDOW = c_void_p  # NSView*
+
+    BOOL = c_byte
+    LPCWSTR = LPWSTR = c_utf16_p
+
+elif SCITER_LNX:
+    assert sys.maxsize > 2**32, "Only 64-bit build supported."
+    SCITER_DLL_NAME = "sciter-gtk-64" if sys.maxsize > 2**32 else "sciter-gtk-32"
+    SCITER_DLL_EXT = ".so"
+
+    SCFN = ctypes.CFUNCTYPE
+    SC_CALLBACK = ctypes.CFUNCTYPE
+
+    HWINDOW = c_void_p  # GtkWidget*
 
     BOOL = c_byte
     LPCWSTR = LPWSTR = c_utf16_p

@@ -8,7 +8,7 @@ from sciter.capi.sctypes import *
 
 _api = sciter.SciterAPI()
 
-if SCITER_OS == 'win32':
+if SCITER_WIN:
 
     class WindowsWindow:
         """Win32 window."""
@@ -77,17 +77,17 @@ if SCITER_OS == 'win32':
     BaseWindow = WindowsWindow
 
 
-elif SCITER_OS == 'darwin':
+elif SCITER_OSX:
 
     class OsxWindow:
-        """."""
+        """Mac OS X Window (Cocoa backend)."""
 
         def __init__(self):
             super().__init__()
             self.objc = ObjC()
             self.nsApp = None
             self._msg_delegate = None
-            
+
             NSApplication = self.objc.getClass('NSApplication')
             self.nsApp = self.objc(NSApplication, 'sharedApplication')
             pass
@@ -255,10 +255,70 @@ elif SCITER_OS == 'darwin':
         pass
 
 
-elif SCITER_OS == 'linux':
+elif SCITER_LNX:
 
     class LinuxWindow:
-        """."""
+        """Linux window (GTK3 backend)."""
+
+        def __init__(self):
+            super().__init__()
+            import ctypes.util
+            self._gtk = ctypes.cdll.LoadLibrary(ctypes.util.find_library('gtk-3'))
+            pass
+
+        def _create(self, flags, rect, parent):
+            # no delegate, no param
+            wnd = _api.SciterCreateWindow(flags, ctypes.byref(rect) if rect else None, None, None, parent)
+            return wnd
+
+        def _window(self, hwnd=None):
+            if hwnd is None:
+                hwnd = self.hwnd
+            wnd = self._gtk.gtk_widget_get_toplevel(hwnd)
+            return wnd
+
+        def collapse(self, hide=False):
+            """Minimize or hide window."""
+            if hide:
+                self._gtk.gtk_widget_hide(self.hwnd)
+            else:
+                self._gtk.gtk_window_iconify(self._window())
+            return self
+
+        def expand(self, maximize=False):
+            """Show or maximize window."""
+            wnd = self._window()
+            if maximize:
+                self._gtk.gtk_window_maximize(wnd)
+            else:
+                self._gtk.gtk_window_present(wnd)
+            return self
+
+        def dismiss(self):
+            """Close window."""
+            self._gtk.gtk_window_close(self._window())
+            return self
+
+        def set_title(self, title: str):
+            """Set native window title."""
+            self._gtk.gtk_window_set_title(self._window(), title.encode('utf-8'))
+            return self
+
+        def get_title(self):
+            """Get native window title."""
+            self._gtk.gtk_window_get_title.restype = ctypes.c_char_p
+            return self._gtk.gtk_window_get_title(self._window()).decode('utf-8')
+
+        def run_app(self):
+            """Run the main app message loop until window been closed."""
+            self._gtk.gtk_main()
+            return 0
+
+        def quit_app(self, code=0):
+            """Post quit message."""
+            self._gtk.gtk_main_quit()
+            return self
+
         pass
 
     BaseWindow = LinuxWindow
