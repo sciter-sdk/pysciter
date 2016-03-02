@@ -227,6 +227,32 @@ class TestSciterValue(unittest.TestCase):
         self.assertNotIn('8', xval)
         pass
 
+    def test_19explicit(self):
+        # null
+        xval = value.null()
+        self.assertTrue(xval.is_null())
+        self.assertFalse(xval)
+        
+        # #symbol
+        xval = value.symbol('hello')
+        self.assertTrue(xval.is_symbol())
+        self.assertTrue(xval.is_string())   # string is a generic type for error, symbol and string itself
+        self.assertEqual(xval.get_value(), 'hello')
+
+        # secure string
+        xval = value.secure_string('secure')
+        self.assertTrue(xval.is_string())
+        self.assertEqual(xval.get_type(with_unit=True), (VALUE_TYPE.T_STRING, 2))  # VALUE_UNIT_TYPE_STRING.UT_STRING_SECURE
+        self.assertEqual(xval.get_value(), 'secure')
+
+        # error
+        xval = value(ValueError('error'))
+        self.assertTrue(xval.is_error_string())
+        self.assertEqual(xval.get_value(), 'error') # doesn't raise exception.
+
+        pass
+
+
 
     # Sequence operations
     # Mapping sequence operations

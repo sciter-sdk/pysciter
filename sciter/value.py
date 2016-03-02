@@ -380,7 +380,14 @@ class value():
         if not with_unit:
             return t
         else:
-            return (t, VALUE_UNIT_TYPE(self.data.u))
+            subtypes = {VALUE_TYPE.T_LENGTH: VALUE_UNIT_TYPE,
+                        VALUE_TYPE.T_STRING: VALUE_UNIT_TYPE_STRING,
+                        VALUE_TYPE.T_DATE:   VALUE_UNIT_TYPE_DATE,
+                        VALUE_TYPE.T_OBJECT: VALUE_UNIT_TYPE_OBJECT,
+                        }
+            unit_type = subtypes.get(t, None)
+            unit = unit_type(self.data.u) if unit_type else self.data.u
+            return (t, unit)
         pass
 
     def get_value(self):
