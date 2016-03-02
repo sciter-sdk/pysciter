@@ -98,6 +98,7 @@ class UTF16LEField(object):
 
 if SCITER_WIN:
     SCITER_DLL_NAME = "sciter64" if sys.maxsize > 2**32 else "sciter32"
+    SCITER_DLL_EXT = ".dll"
 
     SCFN = ctypes.WINFUNCTYPE
     SC_CALLBACK = ctypes.WINFUNCTYPE
@@ -118,6 +119,7 @@ elif SCITER_OSX:
     assert sys.maxsize > 2**32, "Only 64-bit supported."
 
     SCITER_DLL_NAME = "sciter-osx-64" if sys.maxsize > 2**32 else "sciter-osx-32"
+    SCITER_DLL_EXT = ".dylib"
 
     SCFN = ctypes.CFUNCTYPE
     SC_CALLBACK = ctypes.CFUNCTYPE

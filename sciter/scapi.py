@@ -225,6 +225,7 @@ if SCITER_WIN:
 
 
 class ISciterAPI(Structure):
+    """Sciter API functions."""
     sciter_api = [
         "SciterClassName",
         "SciterVersion",
@@ -265,7 +266,7 @@ class ISciterAPI(Structure):
         "SciterCreateNSView",
         # endif
         # if defined(LINUX)
-        "SciterCreateWidget",
+        "SciterCreateWidget",           # since 3.2.0.1
         # endif
 
         "SciterCreateWindow",
@@ -409,26 +410,34 @@ class ISciterAPI(Structure):
 
         "SciterGetVM",
 
+        # since 3.1.0.12
         "Sciter_v2V",
         "Sciter_V2v",
 
+        # since 3.1.0.18
         "SciterOpenArchive",
         "SciterGetArchiveItem",
         "SciterCloseArchive",
 
+        # since 3.2.0.0
         "SciterFireEvent",
 
         "SciterGetCallbackParam",
         "SciterPostCallback",
 
+        # since 3.3.1.0
         "GetSciterGraphicsAPI",
+
+        # since 3.3.1.6 and it brokes compatibility with DX functions below
         "GetSciterRequestAPI",
 
         # ifdef WINDOWS
+        # since 3.3.1.4
         "SciterCreateOnDirectXWindow",
         "SciterRenderOnDirectXWindow",
         "SciterRenderOnDirectXTexture",
         ]
+    # END OF ISciterAPI.
 
     def _make_fields(names):
         context = globals()
@@ -439,34 +448,38 @@ class ISciterAPI(Structure):
     _fields_ = _make_fields(sciter_api)
 # end
 
+SCITER_LOAD_ERROR = """%s%s was not found in PATH.
+  Please verify that Sciter SDK is installed and its binaries (SDK/bin, bin.osx or bin.gtk) available at the path.""" % (SCITER_DLL_NAME, SCITER_DLL_EXT)
+
 
 def SciterAPI():
+    """Bind Sciter API."""
     if hasattr(SciterAPI, "_api"):
         return SciterAPI._api
 
     scdll = None
     if SCITER_WIN:
-        scdll = WinDLL(SCITER_DLL_NAME)
-        if not scdll:
-            print("error: sciter dll not found.")
-            exit(2)
+        try:
+            scdll = WinDLL(SCITER_DLL_NAME)
+        except OSError:
+            pass
 
     elif SCITER_OSX:
-
         import ctypes.util
         sclib = ctypes.util.find_library(SCITER_DLL_NAME)
-        if not sclib:
-            exit(2)
-        scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
-        if not scdll:
-            print("error: sciter dll not found.")
-            exit(2)
+        if sclib:
+            try:
+                scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
+            except OSError:
+                pass
+
+    if not scdll:
+        raise ImportError(SCITER_LOAD_ERROR)
 
     scdll.SciterAPI.restype = POINTER(ISciterAPI)
     SciterAPI._api = scdll.SciterAPI().contents
     return SciterAPI._api
 # end
-
 
 
 if __name__ == "__main__":
@@ -480,5 +493,5 @@ if __name__ == "__main__":
     low = scapi.SciterVersion(False)
     version = (high >> 16, high & 0xFFFF, low >> 16, low & 0xFFFF)
 
-    print("sciter version %s, api v%d, class name: %s" % ('.'.join(map(lambda x: str(x), version)), apiver, clsname))
+    print("sciter version %s, api v%d, class name: %s" % ('.'.join(map(str, version)), apiver, clsname))
     scapi = None
