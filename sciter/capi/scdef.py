@@ -164,3 +164,37 @@ KeyValueCallback = SC_CALLBACK(BOOL, LPVOID, PSCITER_VALUE, PSCITER_VALUE)
 
 NATIVE_FUNCTOR_INVOKE = CFUNCTYPE(VOID, LPVOID, UINT, PSCITER_VALUE, PSCITER_VALUE)
 NATIVE_FUNCTOR_RELEASE = CFUNCTYPE(VOID, LPVOID)
+
+
+class StringReceiver():
+    """LPCWSTR_RECEIVER wrapper."""
+
+    def __init__(self, string_type: str):
+        """Construct callback by one of 'char', 'wchar' or 'byte' string type."""
+        self.text = None
+        if string_type == 'char':
+            self.cb = LPCSTR_RECEIVER(self._a2s)
+        elif string_type == 'byte':
+            self.cb = LPCBYTE_RECEIVER(self._b2s)
+        elif string_type == 'wchar':
+            self.cb = LPCWSTR_RECEIVER(self._w2s)
+        else:
+            raise ValueError("Unknown callback type. Use one of 'char', 'byte' or 'wchar'.")
+        self._as_parameter_ = self.cb
+        pass
+
+    def _w2s(self, sz, n, ctx):
+        # wchar_t
+        self.text = sz if SCITER_WIN else sz.value
+        pass
+
+    def _a2s(self, sz, n, ctx):
+        # char
+        self.text = sz.decode('utf-8')
+        pass
+
+    def _b2s(self, sz, n, ctx):
+        # byte
+        self.text = sz.decode('utf-8')
+        pass
+    pass

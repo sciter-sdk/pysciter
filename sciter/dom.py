@@ -214,13 +214,10 @@ class Node:
 
     def get_text(self):
         """Get contents of text/comment node."""
-        txt = []
-        def w2s(wsz, n, ctx):
-            txt.append(wsz[0:n])
-        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.StringReceiver('wchar')
         ok = _api.SciterNodeGetText(self, cb, None)
         self._throw_if(ok)
-        return ''.join(txt)
+        return cb.text
 
     def set_text(self, text: str):
         """Set contents of text/comment node."""
@@ -394,13 +391,10 @@ class Element:
 
     def tag(self):
         """Return element tag as string (e.g. 'div', 'body')."""
-        txt = []
-        def a2s(asz, n, ctx):
-            txt.append(asz[0:n].decode('utf-8'))
-        cb = sciter.capi.scdef.LPCSTR_RECEIVER(a2s)
+        cb = sciter.capi.scdef.StringReceiver('char')
         ok = _api.SciterGetElementTypeCB(self, cb, None)
         self._throw_if(ok)
-        return ''.join(txt)
+        return cb.text
 
     def clear(self):
         """Clear content of the element."""
@@ -424,13 +418,10 @@ class Element:
 
     def get_text(self) -> str:
         """Get inner text of the element as string."""
-        txt = []
-        def w2s(wsz, n, ctx):
-            txt.append(wsz[0:n])
-        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.StringReceiver('wchar')
         ok = _api.SciterGetElementTextCB(self, cb, None)
         self._throw_if(ok)
-        return ''.join(txt)
+        return cb.text
 
     def set_text(self, text: str):
         """Set inner text of the element."""
@@ -440,13 +431,10 @@ class Element:
 
     def get_html(self, outer=True) -> bytes:
         """Get html representation of the element as utf-8 bytes."""
-        txt = []
-        def a2s(asz, n, ctx):
-            txt.append(asz[0:n])
-        cb = sciter.capi.scdef.LPCBYTE_RECEIVER(a2s)
+        cb = sciter.capi.scdef.StringReceiver('byte')
         ok = _api.SciterGetElementHtmlCB(self, outer, cb, None)
         self._throw_if(ok)
-        return b''.join(txt)
+        return cb.text
 
     def set_html(self, html: bytes, where=SET_ELEMENT_HTML.SIH_REPLACE_CONTENT):
         """Set inner or outer html of the element."""
@@ -578,20 +566,14 @@ class Element:
 
     def attribute_name(self, n):
         """Get attribute name by its index."""
-        txt = []
-        def w2s(wsz, n, ctx):
-            txt.append(wsz[0:n])
-        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.StringReceiver('wchar')
         ok = _api.SciterGetNthAttributeNameCB(self, n, cb, None)
         self._throw_if(ok)
-        return ''.join(txt)
+        return cb.text
 
     def attribute(self, name_or_index, default=None):
         """Get attribute value by its name or index."""
-        txt = []
-        def w2s(wsz, n, ctx):
-            txt.append(wsz[0:n])
-        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.StringReceiver('wchar')
         if isinstance(name_or_index, int):
             ok = _api.SciterGetNthAttributeValueCB(self, name_or_index, cb, None)
         elif isinstance(name_or_index, str):
@@ -601,7 +583,7 @@ class Element:
         if ok == SCDOM_RESULT.SCDOM_OK_NOT_HANDLED:
             return default
         self._throw_if(ok)
-        return ''.join(txt)
+        return cb.text
 
     def set_attribute(self, name: str, val: str):
         """Add or replace attribute."""
@@ -628,13 +610,10 @@ class Element:
 
     def style_attribute(self, name: str):
         """Get style attribute of the element by its name."""
-        txt = []
-        def w2s(wsz, n, ctx):
-            txt.append(wsz[0:n])
-        cb = sciter.capi.scdef.LPCWSTR_RECEIVER(w2s)
+        cb = sciter.capi.scdef.StringReceiver('wchar')
         ok = _api.SciterGetStyleAttributeCB(self, name.encode('utf-8'), cb, None)
         self._throw_if(ok)
-        return ''.join(txt)
+        return cb.text
 
     def set_style_attribute(self, name: str, val: str):
         """Set style attribute."""
