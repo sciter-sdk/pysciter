@@ -154,31 +154,31 @@ class TestSciterValue(unittest.TestCase):
         items = ['[3,4,5]', '{"five": 5, "seven": 7}']
         with self.subTest(val=items[0]):
             xval = value.parse(items[0])
-            
+
             self.assertEqual(xval[0], value(3))
             self.assertEqual(xval[1], value(4))
             self.assertEqual(xval[-1],value(5))
 
             with self.assertRaises(IndexError):
                 r = xval[20]
-            
+
             with self.assertRaises(TypeError):
                 r = xval['key']
 
         with self.subTest(val=items[1]):
             xval = value.parse(items[1])
-            
+
             self.assertEqual(xval['five'], value(5))
 
             with self.assertRaises(KeyError):
                 r = xval['not exist']
         pass
-    
+
     def test_16setitem(self):
-        xval = value([1,2,3])
+        xval = value([1, 2, 3])
         xval[0] = 7
         xval[-1] = 7
-        self.assertEqual(xval, value([7,2,7]))
+        self.assertEqual(xval, value([7, 2, 7]))
 
         xval = value({'0': 0})
         xval['0'] = 'zero'
@@ -196,7 +196,7 @@ class TestSciterValue(unittest.TestCase):
         self.assertEqual(xval[0], value(7))
 
         with self.assertRaises(KeyError):
-            xval = value([]) # array
+            xval = value([])  # array
             xval['key'] = 'value'
 
         # undefined -> map
@@ -214,9 +214,9 @@ class TestSciterValue(unittest.TestCase):
         items = [i for i in range(5)]
         item = dict(zip(map(lambda x: str(x), items), items))
         xval = value(item)
-        del xval['2'] # middle
-        del xval['0'] # first
-        del xval['4'] # last
+        del xval['2']  # middle
+        del xval['0']  # first
+        del xval['4']  # last
         self.assertEqual(xval, value({1: 1, 3: 3}))
         pass
 
@@ -232,7 +232,7 @@ class TestSciterValue(unittest.TestCase):
         xval = value.null()
         self.assertTrue(xval.is_null())
         self.assertFalse(xval)
-        
+
         # #symbol
         xval = value.symbol('hello')
         self.assertTrue(xval.is_symbol())
@@ -248,11 +248,9 @@ class TestSciterValue(unittest.TestCase):
         # error
         xval = value(ValueError('error'))
         self.assertTrue(xval.is_error_string())
-        self.assertEqual(xval.get_value(), 'error') # doesn't raise exception.
+        self.assertEqual(xval.get_value(), 'error')  # doesn't raise exception.
 
         pass
-
-
 
     # Sequence operations
     # Mapping sequence operations

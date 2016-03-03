@@ -308,7 +308,7 @@ class value():
         rv = value()
         argc, argv, this = sciter.Value.pack_args(*args, **kwargs)
         name = kwargs.get('name')
-        ok = _api.ValueInvoke(self, this, argc, argv, rv, )
+        ok = _api.ValueInvoke(self, this, argc, argv, rv, name)
         sciter.Value.raise_from(rv, ok <= VALUE_RESULT.HV_OK, name)
         self._throw_if(ok)
         return rv.get_value()
@@ -562,7 +562,7 @@ class value():
         for i, v in enumerate(args):
             sv = sciter.Value(v)
             sv.copy_to(argv[i])
-        this = kwargs.get('this')
+        this = value(kwargs.get('this'))
         return (argc, argv, this)
 
     @staticmethod
