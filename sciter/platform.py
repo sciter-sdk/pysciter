@@ -153,8 +153,10 @@ elif SCITER_OSX:
 
     BaseWindow = OsxWindow
 
-
+    # objc interop
     class ObjC():
+        """."""
+
         def __init__(self):
             import ctypes.util
 
@@ -257,13 +259,24 @@ elif SCITER_OSX:
 
 elif SCITER_LNX:
 
+    def _init_lib():
+        if hasattr(_init_lib, '_dll'):
+            return _init_lib._dll
+
+        import ctypes.util
+        lib = ctypes.cdll.LoadLibrary(ctypes.util.find_library('gtk-3'))
+        _init_lib._dll = lib
+
+        lib.gtk_init(None, None)
+        return lib
+
+    #
     class LinuxWindow:
         """Linux window (GTK3 backend)."""
 
         def __init__(self):
             super().__init__()
-            import ctypes.util
-            self._gtk = ctypes.cdll.LoadLibrary(ctypes.util.find_library('gtk-3'))
+            self._gtk = _init_lib()
             pass
 
         def _create(self, flags, rect, parent):
