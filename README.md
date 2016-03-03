@@ -16,8 +16,8 @@ Check <http://sciter.com> website and its [documentation resources](http://scite
 _Right now, before PySciter will not be published on PYPI_
 
 1. Download [Sciter SDK](http://sciter.com/download/) and extract it somewhere.
-2. Add target platform binaries to PATH: `bin` (for Windows), `bin.osx` or `bin.gtk`
-3. Install pysciter: `python3 setup.py install`
+2. Add target platform binaries to PATH (`bin`, `bin.osx` or `bin.gtk`) and install Sciter shared library to your LIBRARY_PATH.
+3. Install pysciter: `python3 setup.py install`.
 4. Run minimal pysciter sample: `python3 examples/minimal.py`. Also you can run script from zip archive directly: `python3 ./archive.zip` :)
 
 
@@ -77,18 +77,21 @@ _Check [pysciter/examples](https://github.com/pravic/pysciter/tree/master/exampl
 
 ## What supported right now:
 
-* [sciter::window](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-window.hpp) which brings together window creation, host and event handlers
-* [sciter::host](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-host-callback.h) extensible implementation with transparent script calls from python code
-* [sciter::event_handler](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-behavior.h) with basic event handling (attached, document_complete, on_script_call), additional handlers will come
-* [sciter::dom](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-dom.hpp) for HTML DOM access and manipulation methods
-* [sciter::value](https://github.com/c-smile/sciter-sdk/blob/master/include/value.hpp) pythonic wrapper with sciter::script_error and sciter::native_function support
+* [x] [sciter::window](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-window.hpp) which brings together window creation, host and event handlers
+* [x] [sciter::host](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-host-callback.h) extensible implementation with transparent script calls from python code
+* [x] [sciter::event_handler](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-behavior.h) with basic event handling (attached, document_complete, on_script_call), additional handlers will come
+* [x] [sciter::dom](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-dom.hpp) for HTML DOM access and manipulation methods
+* [x] [sciter::value](https://github.com/c-smile/sciter-sdk/blob/master/include/value.hpp) pythonic wrapper with sciter::script_error and sciter::native_function support
+* [ ] [sciter::graphics](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-graphics.hpp) - platform independent graphics native interface (can be used in native behaviors)
+* [ ] [sciter::request](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-request.hpp) - resource request object, used for custom resource downloading and handling
+* [ ] [sciter::video](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-video-api.h) - custom video rendering
 
 
 ### Platforms:
 
 * [x] Windows
 * [x] OSX
-* [ ] Linux (in development)
+* [x] Linux
 
 Python 3.x (2.7 in near future).
 
