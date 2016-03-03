@@ -225,6 +225,8 @@ class Node:
         self._throw_if(ok)
         return self
 
+    text = property(get_text, set_text)
+
     @staticmethod
     def _throw_if(code, skip_not_handled=False):
         if code == 0:
@@ -355,7 +357,7 @@ class Element:
         # tag#id.class
         if not self.h:
             return 'None'
-        tag = self.tag()
+        tag = self.get_tag()
         typ, name, id, cls = (self.attribute('type'), self.attribute('name'), self.attribute('id'), self.attribute('class'))
         fmt = [tag]
         if id:
@@ -383,13 +385,13 @@ class Element:
 
     ## @name Common methods:
 
-    def uid(self):
+    def get_uid(self):
         """Get element UID - identifier suitable for storage."""
         n = ctypes.c_uint()
         ok = _api.SciterGetElementUID(self, ctypes.byref(n))
         return n.value
 
-    def tag(self):
+    def get_tag(self):
         """Return element tag as string (e.g. 'div', 'body')."""
         cb = sciter.capi.scdef.StringReceiver('char')
         ok = _api.SciterGetElementTypeCB(self, cb, None)
@@ -402,7 +404,7 @@ class Element:
         self._throw_if(ok)
         return self
 
-    def value(self):
+    def get_value(self):
         """Get value of the element."""
         rv = sciter.Value()
         ok = _api.SciterGetValue(self, rv)
@@ -556,6 +558,11 @@ class Element:
 
 
     ## @name Attributes:
+    uid = property(get_uid)
+    tag = property(get_tag)
+    text = property(get_text, set_text)
+    html = property(get_html, set_html)
+    value = property(get_value, set_value)
 
     def attribute_count(self):
         """Get number of the attributes."""
