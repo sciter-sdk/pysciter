@@ -7,7 +7,7 @@ from .value import value as Value
 from .window import Window
 from .dom import Element
 from .event import EventHandler
-from .error import SciterError, ScriptError, ScriptException, ValueError
+from .error import SciterError, ScriptError, ScriptException
 
 sapi = api = SciterAPI()
 gapi = sapi.GetSciterGraphicsAPI if sapi else None

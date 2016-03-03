@@ -145,7 +145,7 @@ class TestSciterValue(unittest.TestCase):
                     self.assertTrue(xval)
                 else:
                     self.assertFalse(xval)
-        with self.assertRaises(sciter.ValueError):
+        with self.assertRaises(sciter.value.ValueError):
             item = '{item: '
             xval = value.parse(item)
         pass
@@ -246,7 +246,7 @@ class TestSciterValue(unittest.TestCase):
         self.assertEqual(xval.get_value(), 'secure')
 
         # error
-        xval = value(ValueError('error'))
+        xval = value(TypeError('error'))
         self.assertTrue(xval.is_error_string())
         self.assertEqual(xval.get_value(), 'error')  # doesn't raise exception.
 

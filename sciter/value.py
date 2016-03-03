@@ -4,6 +4,7 @@ import inspect
 import ctypes
 
 import sciter
+import sciter.error
 import sciter.capi.scdef
 import sciter.capi.sctypes
 
@@ -37,6 +38,20 @@ _value_subtypes = {VALUE_TYPE.T_LENGTH: _subtype_name(VALUE_UNIT_TYPE),
                    }
 
 
+# TODO: Rename it.
+class ValueError(sciter.error.SciterError):
+    """Raised by sciter.Value operations."""
+
+    def __init__(self, hv_code, script=None):
+        """."""
+        msg = "Incompatible type" if hv_code == 2 else "Bad parameter"
+        if script:
+            msg = msg + " at " + script
+        super().__init__(msg)
+    pass
+
+
+# sciter.value
 class value():
     """sciter::value pythonic wrapper."""
 
@@ -48,7 +63,7 @@ class value():
         rv = value()
         ok = _api.ValueFromString(rv, json, len(json), how)
         if ok != 0 and throw:
-            raise sciter.ValueError(VALUE_RESULT.HV_BAD_PARAMETER, "value.parse")
+            raise sciter.value.ValueError(VALUE_RESULT.HV_BAD_PARAMETER, "value.parse")
         return rv
 
     @classmethod
@@ -538,7 +553,7 @@ class value():
             return
         import inspect
         context = inspect.stack()[1][3]
-        raise sciter.ValueError(code, "value." + context)
+        raise sciter.value.ValueError(code, "value." + context)
 
     # utility methods
     @staticmethod
