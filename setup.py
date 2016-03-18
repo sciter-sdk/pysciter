@@ -14,7 +14,7 @@ config = {
     'url': 'http://github.com/pravic/pysciter/',
     'download_url': 'https://github.com/pravic/pysciter/releases',
     'bugtrack_url': 'https://github.com/pravic/pysciter/issues',
-    'version': '0.4',
+    'version': '0.4.1',
     'platforms': ['Windows', 'Linux', 'MacOS X', ],
     'packages': ['sciter', 'sciter.capi'],
     'install_requires': [''],
