@@ -21,7 +21,7 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
         if resizeable:
             flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_RESIZEABLE
         if ismain:
-            flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR
+            flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_MAIN | SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR
         elif ispopup:
             flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_POPUP
         elif ischild:
@@ -85,13 +85,6 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
         title = root.find_first('html > head > title')
         if title:
             self.set_title(title.get_text())
-        pass
-
-    def document_close(self):
-        # Quit application if main window was closed
-        if self.window_flags & sciter.capi.scdef.SCITER_CREATE_WINDOW_FLAGS.SW_TITLEBAR:
-            self.quit_app()
-        super().document_close()
         pass
 
     pass
