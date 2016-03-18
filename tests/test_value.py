@@ -252,6 +252,30 @@ class TestSciterValue(unittest.TestCase):
 
         pass
 
+    def test_20clear(self):
+        xval = value()
+        self.assertTrue(xval.is_undefined())
+        xval.clear()
+        self.assertTrue(xval.is_undefined())
+
+        xval = value.null()
+        self.assertTrue(xval.is_null())
+        xval.clear()
+        self.assertTrue(xval.is_undefined())
+
+        xval = value.symbol('hello')
+        self.assertTrue(xval.is_symbol())
+        xval.clear()
+        self.assertTrue(xval.is_undefined())
+
+        xval = value(17)
+        self.assertTrue(xval.is_int())
+        xval.clear()
+        self.assertTrue(xval.is_undefined())
+
+        pass
+
+
     # Sequence operations
     # Mapping sequence operations
 
