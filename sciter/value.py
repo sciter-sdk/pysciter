@@ -269,14 +269,14 @@ class value():
     def append(self, val):
         """Append value to the end of T_ARRAY sciter::value."""
         xval = value(val)
-        ok = _api.ValueNthElementSet(self.length(), xval)
+        ok = _api.ValueNthElementValueSet(self.length(), xval)
         self._throw_if(ok)
         return self
 
     def insert(self, i, val):
         """Insert or set value at given index of T_ARRAY, T_MAP, T_FUNCTION and T_OBJECT sciter::value."""
         xval = value(val)
-        ok = _api.ValueNthElementSet(i, xval)
+        ok = _api.ValueNthElementValueSet(i, xval)
         self._throw_if(ok)
         return self
 
