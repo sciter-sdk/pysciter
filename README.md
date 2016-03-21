@@ -1,5 +1,9 @@
 # Python bindings for Sciter
 
+_Check [this page](http://sciter.com/developers/sciter-sdk-bindings/) for another languages._
+
+----
+
 Sciter is an embeddable [multiplatform](http://sciter.com/sciter/crossplatform/) HTML/CSS/script engine with GPU accelerated rendering designed to render modern desktop application UI. It's a compact, single dll/dylib/so file (4-8 mb), engine without any additional dependencies.
 
 Check the [screenshot gallery](https://github.com/oskca/sciter#sciter-desktop-ui-examples) of the desktop UI examples.
@@ -34,6 +38,7 @@ _Right now, before PySciter will not be published on PYPI_
 ## Brief look:
 
 Minimal sciter app is extremely small:
+
 ```python
 import sciter
 
