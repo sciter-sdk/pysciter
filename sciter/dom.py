@@ -594,7 +594,7 @@ class Element:
 
     def attribute_name(self, n):
         """Get attribute name by its index."""
-        cb = sciter.capi.scdef.StringReceiver('wchar')
+        cb = sciter.capi.scdef.StringReceiver('char')
         ok = _api.SciterGetNthAttributeNameCB(self, n, cb, None)
         self._throw_if(ok)
         return cb.text
