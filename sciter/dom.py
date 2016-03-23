@@ -12,6 +12,27 @@ from sciter.capi.scbehavior import BEHAVIOR_EVENTS, EVENT_REASON
 _api = sciter.SciterAPI()
 
 # TODO: behaviors support, create behavior
+#
+# Not implemented or not used APIs:
+#
+# SciterAttachHwndToElement
+# SciterCallBehaviorMethod
+# SciterCombineURL
+# SciterControlGetType
+# SciterGetElementIntrinsicHeight
+# SciterGetElementIntrinsicWidths
+# SciterGetElementNamespace
+# SciterGetElementType
+# SciterGetObject
+# SciterHidePopup
+# SciterNodeCastFromElement
+# SciterSelectElementsW
+# SciterSelectParentW
+# SciterShowPopup
+# SciterShowPopupAt
+# SciterSortElements
+# SciterTraverseUIEvent
+#
 
 
 class DomError(sciter.error.SciterError):
@@ -282,7 +303,7 @@ class Element:
         return Element(p) if p else None
 
     @classmethod
-    def from_uid(cls, uid: int):
+    def from_uid(cls, hwnd, uid: int):
         """Get element handle by its UID."""
         p = HELEMENT()
         ok = _api.SciterGetElementByUID(hwnd, uid, ctypes.byref(p))
@@ -612,6 +633,12 @@ class Element:
             self.remove_attribute(name)
         return self
 
+    def clear_attributes(self):
+        """Remove all attributes from the element."""
+        ok = _api.SciterClearAttributes(self)
+        self._throw_if(ok)
+        return self
+
 
     ## @name Style attributes:
 
@@ -640,7 +667,7 @@ class Element:
     def state(self):
         """Get UI state bits of the element as set of ELEMENT_STATE_BITS."""
         n = ctypes.c_uint()
-        ok = SciterGetElementState(self, ctypes.byref(n))
+        ok = _api.SciterGetElementState(self, ctypes.byref(n))
         self._throw_if(ok)
         return ELEMENT_STATE_BITS(n.value)
 
@@ -721,6 +748,13 @@ class Element:
         if not dad or len(dad) == 0:
             return None
         return dad[len(dad)-1]
+
+    def children_count(self):
+        """Get number of child elements."""
+        n = ctypes.c_uint()
+        ok = _api.SciterGetChildrenCount(self, ctypes.byref(n))
+        self._throw_if(ok)
+        return n.value
 
     def insert(self, child, index: int):
         """Insert element at index position of this element."""
