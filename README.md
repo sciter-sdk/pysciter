@@ -1,6 +1,6 @@
 # Python bindings for Sciter
 
-_Check [this page](http://sciter.com/developers/sciter-sdk-bindings/) for another languages._
+_Check [this page](http://sciter.com/developers/sciter-sdk-bindings/) for another language bindings._
 
 ----
 
@@ -69,7 +69,7 @@ def GetNativeApi(): # called from sciter.EventHandler.on_script_call
 
   def on_sub(a, b):
       raise Exception("sub(%d,%d) raised exception" % (a, b))
-      
+
   api = { 'add': on_add,  # plain function
           'sub': on_sub,  # raise exception at script
           'mul': lambda a,b: a * b }   # lambdas supported too
@@ -83,8 +83,8 @@ So, we can access our api now:
 
 var api = view.GetNativeApi();
 
-// returned `api` object looks like {add: function(a,b) { return a + b; }}; 
-stdout.println("2 + 3 = " + api.add(2, 3)); 
+// returned `api` object looks like {add: function(a,b) { return a + b; }};
+stdout.println("2 + 3 = " + api.add(2, 3));
 ```
 
 _Check [pysciter/examples](https://github.com/pravic/pysciter/tree/master/examples) folder for more complex usage_.
@@ -97,6 +97,7 @@ _Check [pysciter/examples](https://github.com/pravic/pysciter/tree/master/exampl
 * [x] [sciter::event_handler](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-behavior.h) with basic event handling (attached, document_complete, on_script_call), additional handlers will come
 * [x] [sciter::dom](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-dom.hpp) for HTML DOM access and manipulation methods
 * [x] [sciter::value](https://github.com/c-smile/sciter-sdk/blob/master/include/value.hpp) pythonic wrapper with sciter::script_error and sciter::native_function support
+* [ ] [sciter::behavior_factory](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-behavior.h) - global factory for native behaviors
 * [ ] [sciter::graphics](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-graphics.hpp) - platform independent graphics native interface (can be used in native behaviors)
 * [ ] [sciter::request](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-request.hpp) - resource request object, used for custom resource downloading and handling
 * [ ] [sciter::video](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-video-api.h) - custom video rendering

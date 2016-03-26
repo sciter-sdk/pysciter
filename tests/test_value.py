@@ -275,6 +275,18 @@ class TestSciterValue(unittest.TestCase):
 
         pass
 
+    def test_21items(self):
+        item = {'5': 5, '6': 6}
+        xval = value(item)
+        self.assertEqual(len(xval), 2)
+
+        items = list(item.items())
+        xitems = list(xval.items())
+
+        self.assertEqual(len(xitems), 2)
+        self.assertEqual(xitems[0][0].get_value(), items[0][0])
+        self.assertEqual(xitems[1][1].get_value(), items[1][1])
+        pass
 
     # Sequence operations
     # Mapping sequence operations

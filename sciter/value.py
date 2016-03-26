@@ -1,5 +1,7 @@
 """Python interface to sciter::value."""
 
+# TODO: Date support.
+
 import inspect
 import ctypes
 
@@ -300,14 +302,11 @@ class value():
         if not self.get_type() in (VALUE_TYPE.T_MAP, VALUE_TYPE.T_FUNCTION, VALUE_TYPE.T_OBJECT):
             raise AttributeError("'%s' has no attribute '%s'" % (self.get_type(), 'items'))
         r = []
-        for n in range(self.length()):
-            xkey = value()
-            xval = value()
-            ok = _api.ValueNthElementKey(self, n, xkey)
-            self._throw_if(ok)
-            ok = _api.ValueNthElementValue(self, n, xval)
-            self._throw_if(ok)
-            r.append((xkey, xval))
+        def on_element(param, key, val):
+            r.append((value(key.contents), value(val.contents)))
+            return True
+        scfunc = sciter.capi.scdef.KeyValueCallback(on_element)
+        ok = _api.ValueEnumElements(self, scfunc, None)
         return tuple(r)
 
 
@@ -382,6 +381,15 @@ class value():
         """."""
         t = self.get_type()
         return t == VALUE_TYPE.T_MAP
+
+    def is_function(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_FUNCTION
+
+    def is_native_function(self):
+        """."""
+        return _api.ValueIsNativeFunctor(self) != 0
 
     def get_type(self, py=False, with_unit=False):
         """Return python type or sciter type with (optionally) unit subtype of sciter::value."""
