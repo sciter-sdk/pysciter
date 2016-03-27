@@ -16,6 +16,23 @@ Physically Sciter is a mono library which contains:
 * [Graphics](http://sciter.com/docs/content/sciter/Graphics.htm) module using excellent AGG library of Maxim Shemanarev at [www.antigrain.com](http://antigrain.com).
 * Network communication module, it relies on [Libcurl](http://curl.haxx.se/), the Great.
 
+
+Internally it contains the following modules:
+
+* **CSS** – CSS parser and collection of parsed CSS rules, etc.
+* **HTML DOM** – HTML parser and DOM tree implementation.
+* **layout managers** – collection of various layout managers – text layout, default block layout, flex layouts. Support of positioned floating elements is also here. This module does layout calculations heavy lifting. This module is also responsible for rendering of layouts.
+* **input behaviors** – collection of built-in behaviors – code behind "active" DOM elements: `<input>`, `<select>`, `<textarea>`, etc.
+* **script module** – source-to-bytecode compiler and virtual machine (VM) with compacting garbage collector (GC). This module also contains runtime implementation of standard classes and objects: Array, Object, Function and others.
+* **script DOM** – runtime classes that expose DOM and DOM view (a.k.a. window) to the script.
+* **graphics abstraction layer** – abstract graphics implementation that isolates modules above from particular platform details
+    * Direct2D/DirectWrite graphics backend implementation (Windows);
+    * GDI+ graphics backend implementation (Windows);
+    * CoreGraphics backend implementation (Mac OS X);
+    * Cairo backend implementation (GTK on all platforms including Linuxes);
+* **core primitives** – set of common primitives: string, arrays, hash maps and so on.
+
+
 Sciter supports all standard elements defined in HTML5 specification [with some additions](http://sciter.com/developers/for-web-programmers/). CSS extended to better support Desktop UI development, e.g. flow and flex units, vertical and horizontal alignment, OS theming.
 
 [Sciter SDK](http://sciter.com/download/) comes with demo "browser" with builtin DOM inspector, script debugger and documentation browser:
