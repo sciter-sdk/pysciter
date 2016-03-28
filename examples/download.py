@@ -24,7 +24,7 @@ class Frame(sciter.Window):
         pass
 
     def on_data_loaded(self, nm):
-        # called on every downloaded resource 
+        # called on every downloaded resource
         print("data loaded, uri:", nm.uri, nm.dataSize, "bytes")
         pass
 
@@ -46,7 +46,7 @@ class Frame(sciter.Window):
 
         # install event handler to content frame to print data_arrived events
         self.handler = ContentEventHandler(element=content)
-        
+
         # make http request to download url and place result as inner of #content
         print("load content")
         content.request_html(url)
@@ -58,11 +58,10 @@ if __name__ == '__main__':
 
     print("Sciter version:", sciter.version(as_str=True))
 
-    if len(sys.argv) < 2:
-        sys.exit("at least one Sciter compatible page url is needed")
-    print(sys.argv[1])
+    url = "http://httpbin.org/html" if len(sys.argv) < 2 else sys.argv[1]
+    print(url)
 
     frame = Frame()
-    frame.load(sys.argv[1])
+    frame.load(url)
     frame.expand()
     frame.run_app(False)

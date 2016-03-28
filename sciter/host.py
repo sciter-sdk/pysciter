@@ -145,7 +145,7 @@ class Host():
         """This function is used as response to SCN_LOAD_DATA request."""
         if not hwnd:
             hwnd = self.hwnd
-        if request_id:
+        if request_id is not None:
             ok = _api.SciterDataReadyAsync(hwnd, uri, data, len(data), request_id)
         else:
             ok = _api.SciterDataReady(hwnd, uri, data, len(data))

@@ -32,14 +32,13 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
 
         if debug:
             flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG
+            self.setup_debug()
         self.window_flags = flags
         self._title_changed = False
         self.hwnd = self._create(flags, rect=None, parent=None)
         if not self.hwnd:
             raise sciter.SciterError("Could not create window")
 
-        if debug:
-            self.setup_debug()
         self.setup_callback(self.hwnd)
         self.attach(window=self.hwnd)
         pass

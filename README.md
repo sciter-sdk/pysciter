@@ -50,7 +50,7 @@ _Right now, before PySciter will not be published on PYPI_
 
 1. Download [Sciter SDK](http://sciter.com/download/) and extract it somewhere.
 2. Add target platform binaries to PATH (`bin`, `bin.osx` or `bin.gtk`) and install Sciter shared library to your LIBRARY_PATH.
-3. Install pysciter: `python3 setup.py install`.
+3. Install pysciter: `python3 setup.py install` or `pip install pysciter`.
 4. Run minimal pysciter sample: `python3 examples/minimal.py`. Also you can run script from zip archive directly: `python3 ./archive.zip` :)
 
 

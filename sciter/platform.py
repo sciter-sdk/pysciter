@@ -86,7 +86,6 @@ elif SCITER_OSX:
             super().__init__()
             self.objc = ObjC()
             self.nsApp = None
-            self._msg_delegate = None
 
             NSApplication = self.objc.getClass('NSApplication')
             self.nsApp = self.objc(NSApplication, 'sharedApplication')
@@ -195,7 +194,7 @@ elif SCITER_OSX:
             #  const UniChar * CFStringGetCharactersPtr ( CFStringRef theString );
             self.cf.CFStringGetCharactersPtr.restype = ctypes.c_char_p
             self.cf.CFStringGetCharactersPtr.argtypes = [ctypes.c_void_p]
-            
+
             # CFStringGetLength
             self.cf.CFStringGetLength.restype = ctypes.c_int
             self.cf.CFStringGetLength.argtypes = [ctypes.c_void_p]
