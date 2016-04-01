@@ -1,5 +1,7 @@
 # Python bindings for Sciter
 
+[![Join the chat at https://gitter.im/pravic/pysciter](https://badges.gitter.im/pravic/pysciter.svg)](https://gitter.im/pravic/pysciter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 _Check [this page](http://sciter.com/developers/sciter-sdk-bindings/) for another language bindings._
 
 ----
