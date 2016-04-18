@@ -1,6 +1,6 @@
 # Python bindings for Sciter
 
-[![Join the chat at https://gitter.im/pravic/pysciter](https://badges.gitter.im/pravic/pysciter.svg)](https://gitter.im/pravic/pysciter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/pravic/pysciter](https://badges.gitter.im/pravic/pysciter.png)](https://gitter.im/pravic/pysciter)
 
 _Check [this page](http://sciter.com/developers/sciter-sdk-bindings/) for another language bindings._
 
@@ -131,3 +131,7 @@ _Check [pysciter/examples](https://github.com/pravic/pysciter/tree/master/exampl
 
 Python 3.x (2.7 in near future).
 
+
+## License
+
+Bindings library licensed under [MIT license](http://opensource.org/licenses/MIT). Sciter Engine has the [own license terms](http://sciter.com/prices/) and [end used license agreement](https://github.com/c-smile/sciter-sdk/blob/master/license.htm) for SDK usage.

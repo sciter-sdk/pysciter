@@ -1,4 +1,19 @@
-"""Sciter bindings for Python."""
+"""Sciter bindings for Python.
+
+Read about library at github: https://github.com/pravic/pysciter.
+
+This component uses Sciter Engine,
+copyright Terra Informatica Software, Inc.
+(http://terrainformatica.com/).
+
+:license: MIT
+
+Bindings library licensed under [MIT license](http://opensource.org/licenses/MIT).
+Sciter Engine has the [own license terms](http://sciter.com/prices/)
+and [end used license agreement](https://github.com/c-smile/sciter-sdk/blob/master/license.htm)
+for SDK usage.
+
+"""
 
 from .capi.scapi import SciterAPI
 from .capi.sctypes import SCITER_WIN, SCITER_OSX, SCITER_LNX
