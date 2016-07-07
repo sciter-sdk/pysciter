@@ -468,6 +468,17 @@ def SciterAPI():
         # same behavior for OSX & Linux
         import ctypes.util
         sclib = ctypes.util.find_library(SCITER_DLL_NAME)
+        if not sclib:
+            # try LD_LIBRARY_PATH
+            def find_in_path(dllname, envname):
+                import os
+                for directory in os.environ[envname].split(os.pathsep):
+                    fname = os.path.join(directory, dllname)
+                    if os.path.isfile(fname):
+                        return fname
+                return None
+
+            sclib = find_in_path(SCITER_DLL_NAME + SCITER_DLL_EXT, 'LD_LIBRARY_PATH')
         if sclib:
             try:
                 scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
