@@ -511,17 +511,15 @@ class value():
         pass
 
     def _assign_list(self, val):
-        # special case to explicitly make an empty array
-        json = '[]'
-        ok = _api.ValueFromString(self, json, len(json), VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL)
+        # explicit array creation since 3.3.2.6
+        ok = _api.ValueIntDataSet(self, len(val), VALUE_TYPE.T_ARRAY, 0)
         for i, v in enumerate(val):
             self[i] = v
         return ok
 
     def _assign_dict(self, val):
-        # special case to explicitly make an empty dict
-        json = '{}'
-        ok = _api.ValueFromString(self, json, len(json), VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL)
+        # explicit map creation since 3.3.2.6
+        ok = _api.ValueIntDataSet(self, 0, VALUE_TYPE.T_MAP, 0)
         for k, v in val.items():
             self[k] = v
         return ok
