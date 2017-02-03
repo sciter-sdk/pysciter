@@ -121,6 +121,7 @@ _Check [pysciter/examples](https://github.com/pravic/pysciter/tree/master/exampl
 * [ ] [sciter::request](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-request.hpp) - resource request object, used for custom resource downloading and handling
 * [ ] [sciter::video](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-video-api.h) - custom video rendering
 * [ ] [sciter::archive](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-host-callback.h) - Sciter's compressed archive produced by sdk/bin/packfolder
+* [ ] [sciter::msg](https://github.com/c-smile/sciter-sdk/blob/master/include/sciter-x-msg) - Backend-independent input event processing
 
 
 ### Platforms:

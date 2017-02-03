@@ -99,7 +99,7 @@ class MOUSE_PARAMS(ctypes.Structure):
         ("cursor_type", UINT),   # CURSOR_TYPE to set, see CURSOR_TYPE
         ("is_on_icon", BOOL),    # mouse is over icon (foreground-image, foreground-repeat:no-repeat)
         ("dragging", HELEMENT),      # element that is being dragged over, this field is not NULL if (cmd & DRAGGING) != 0
-        ("dragging_mode", UINT), # see DRAGGING_TYPE. 
+        ("dragging_mode", UINT), # see DRAGGING_TYPE.
     ]
 
 
@@ -297,10 +297,10 @@ class BEHAVIOR_EVENTS(enum.IntEnum):
                                  # is sent for example by behavior:richtext when caret position/selection has changed.
 
     FORM_SUBMIT = 0x96             # behavior:form detected submission event. BEHAVIOR_EVENT_PARAMS::data field contains data to be posted.
-                                 # BEHAVIOR_EVENT_PARAMS::data is of type T_MAP in this case key/value pairs of data that is about 
+                                 # BEHAVIOR_EVENT_PARAMS::data is of type T_MAP in this case key/value pairs of data that is about
                                  # to be submitted. You can modify the data or discard submission by returning true from the handler.
     FORM_RESET = 0x97              # behavior:form detected reset event (from button type=reset). BEHAVIOR_EVENT_PARAMS::data field contains data to be reset.
-                                 # BEHAVIOR_EVENT_PARAMS::data is of type T_MAP in this case key/value pairs of data that is about 
+                                 # BEHAVIOR_EVENT_PARAMS::data is of type T_MAP in this case key/value pairs of data that is about
                                  # to be rest. You can modify the data or discard reset by returning true from the handler.
 
     DOCUMENT_COMPLETE = 0x98       # document in behavior:frame or root document is complete.
@@ -319,7 +319,7 @@ class BEHAVIOR_EVENTS(enum.IntEnum):
     DOCUMENT_CREATED  = 0xC0       # document created, script namespace initialized. target -> the document
     DOCUMENT_CLOSE_REQUEST = 0xC1  # document is about to be closed, to cancel closing do: evt.data = sciter::value("cancel");
     DOCUMENT_CLOSE    = 0xC2       # last notification before document removal from the DOM
-    DOCUMENT_READY    = 0xC3       # document has got DOM structure, styles and behaviors of DOM elements. Script loading run is complete at this moment. 
+    DOCUMENT_READY    = 0xC3       # document has got DOM structure, styles and behaviors of DOM elements. Script loading run is complete at this moment.
 
     VIDEO_INITIALIZED = 0xD1       # <video> "ready" notification
     VIDEO_STARTED     = 0xD2       # <video> playback started notification
@@ -347,10 +347,11 @@ class BEHAVIOR_EVENTS(enum.IntEnum):
     # HTMLayoutSend/PostEvent API.
 
 
-class EVENT_REASON(enum.IntEnum):
+class CLICK_REASON(enum.IntEnum):
     BY_MOUSE_CLICK = 0
     BY_KEY_CLICK = 1
     SYNTHESIZED = 2  # synthesized, programmatically generated.
+    BY_MOUSE_ON_ICON = 3
 
 
 class EDIT_CHANGED_REASON(enum.IntEnum):
@@ -358,6 +359,7 @@ class EDIT_CHANGED_REASON(enum.IntEnum):
     BY_INS_CHARS = 1  # character range insertion, clipboard
     BY_DEL_CHAR = 2   # single char deletion
     BY_DEL_CHARS = 3  # character range deletion (selection)
+    BY_UNDO_REDO = 4  # undo/redo
 
 
 class BEHAVIOR_EVENT_PARAMS(ctypes.Structure):
@@ -366,7 +368,7 @@ class BEHAVIOR_EVENT_PARAMS(ctypes.Structure):
         ("heTarget", HELEMENT),     # target element handler, in MENU_ITEM_CLICK this is owner element that caused this menu - e.g. context menu owner
                                     # In scripting this field named as Event.owner
         ("he", HELEMENT),           # source element e.g. in SELECTION_CHANGED it is new selected <option>, in MENU_ITEM_CLICK it is menu item (LI) element
-        ("reason", UINT_PTR),       # EVENT_REASON or EDIT_CHANGED_REASON - UI action causing change.
+        ("reason", UINT_PTR),       # CLICK_REASON or EDIT_CHANGED_REASON - UI action causing change.
                                     # In case of custom event notifications this may be any
                                     # application specific value.
         ("data", SCITER_VALUE),     # auxiliary data accompanied with the event. E.g. FORM_SUBMIT event is using this field to pass collection of values.
@@ -398,8 +400,8 @@ class BEHAVIOR_METHOD_IDENTIFIERS(enum.IntEnum):
     TEXT_EDIT_CHAR_POS_AT_XY = 11       # p - TEXT_EDIT_CHAR_POS_AT_XY_PARAMS
 
     IS_EMPTY      = 0xFC        # p - IS_EMPTY_PARAMS  # set VALUE_PARAMS::is_empty (false/true) reflects :empty state of the element.
-    GET_VALUE     = 0xFD        # p - VALUE_PARAMS 
-    SET_VALUE     = 0xFE        # p - VALUE_PARAMS 
+    GET_VALUE     = 0xFD        # p - VALUE_PARAMS
+    SET_VALUE     = 0xFE        # p - VALUE_PARAMS
 
     FIRST_APPLICATION_METHOD_ID = 0x100
 

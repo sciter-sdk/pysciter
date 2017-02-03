@@ -112,7 +112,7 @@ class EventHandler:
         # Return something except None to indicate that function handled (e.g. found).
         pass
 
-    def on_event(self, source: HELEMENT, target: HELEMENT, code: BEHAVIOR_EVENTS, phase: PHASE_MASK, reason: EVENT_REASON):
+    def on_event(self, source: HELEMENT, target: HELEMENT, code: BEHAVIOR_EVENTS, phase: PHASE_MASK, reason: CLICK_REASON):
         """Notification event from builtin behaviors."""
         pass
 
@@ -201,7 +201,7 @@ class EventHandler:
 
             code = (m.cmd & 0xFFF)
             phase = PHASE_MASK(m.cmd & 0xFFFFF000)
-            reason = m.reason                   # reason can be EVENT_REASON or EDIT_CHANGED_REASON, so leave it as int
+            reason = m.reason                   # reason can be CLICK_REASON or EDIT_CHANGED_REASON, so leave it as int
             try:
                 event = BEHAVIOR_EVENTS(code)   # not all codes enumerated in BEHAVIOR_EVENTS :-\
             except ValueError:

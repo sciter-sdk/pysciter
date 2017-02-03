@@ -97,13 +97,15 @@ class UTF16LEField(object):
 
 
 if SCITER_WIN:
-    SCITER_DLL_NAME = "sciter64" if sys.maxsize > 2**32 else "sciter32"
+    # sciter.dll since 4.0.0.0
+    SCITER_DLL_NAME = "sciter"
     SCITER_DLL_EXT = ".dll"
 
     SCFN = ctypes.WINFUNCTYPE
     SC_CALLBACK = ctypes.WINFUNCTYPE
 
     HWINDOW = c_void_p  # HWND
+    HDC = c_void_p      # HDC
 
     BOOL = c_int32
     LPCWSTR = LPWSTR = ctypes.c_wchar_p
@@ -124,6 +126,7 @@ elif SCITER_OSX:
     SC_CALLBACK = ctypes.CFUNCTYPE
 
     HWINDOW = c_void_p  # NSView*
+    HDC = c_void_p      # CGContextRef
 
     BOOL = c_byte
     LPCWSTR = LPWSTR = c_utf16_p
@@ -138,6 +141,7 @@ elif SCITER_LNX:
     SC_CALLBACK = ctypes.CFUNCTYPE
 
     HWINDOW = c_void_p  # GtkWidget*
+    HDC = c_void_p      # cairo_t
 
     BOOL = c_byte
     LPCWSTR = LPWSTR = c_utf16_p

@@ -7,7 +7,7 @@ import sciter.capi.scdef
 
 from sciter.capi.scdom import *
 from sciter.capi.screquest import SciterResourceType
-from sciter.capi.scbehavior import BEHAVIOR_EVENTS, EVENT_REASON
+from sciter.capi.scbehavior import BEHAVIOR_EVENTS, CLICK_REASON
 
 _api = sciter.SciterAPI()
 
@@ -524,20 +524,20 @@ class Element:
         self._throw_if(ok)
         return self
 
-    def send_event(self, code: BEHAVIOR_EVENTS, reason=EVENT_REASON.SYNTHESIZED, source=None):
+    def send_event(self, code: BEHAVIOR_EVENTS, reason=CLICK_REASON.SYNTHESIZED, source=None):
         """Send sinking/bubbling event to the child/parent chain of the element."""
         handled = sciter.capi.sctypes.BOOL()
         ok = _api.SciterSendEvent(self, code, source if source else self.h, reason, ctypes.byref(handled))
         self._throw_if(ok)
         return handled != False
 
-    def post_event(self, code: BEHAVIOR_EVENTS, reason=EVENT_REASON.SYNTHESIZED, source=None):
+    def post_event(self, code: BEHAVIOR_EVENTS, reason=CLICK_REASON.SYNTHESIZED, source=None):
         """Post sinking/bubbling event to the child/parent chain of the element."""
         ok = _api.SciterPostEvent(self, code, source if source else self.h, reason)
         self._throw_if(ok)
         return self
 
-    def fire_event(self, code: BEHAVIOR_EVENTS, reason=EVENT_REASON.SYNTHESIZED, source=None, post=True, data=None):
+    def fire_event(self, code: BEHAVIOR_EVENTS, reason=CLICK_REASON.SYNTHESIZED, source=None, post=True, data=None):
         """Send or post sinking/bubbling event to the child/parent chain of the element."""
         params = sciter.capi.scbehavior.BEHAVIOR_EVENT_PARAMS()
         params.cmd = code

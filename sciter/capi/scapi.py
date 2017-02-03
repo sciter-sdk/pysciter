@@ -9,6 +9,7 @@ from sciter.capi.scvalue import VALUE_RESULT, SCITER_VALUE, FLOAT_VALUE
 from sciter.capi.sctiscript import HVM, tiscript_native_interface
 from sciter.capi.scgraphics import LPSciterGraphicsAPI
 from sciter.capi.screquest import LPSciterRequestAPI
+from sciter.capi.scmsg import SCITER_X_MSG
 
 
 #
@@ -216,6 +217,9 @@ SciterPostCallback = SCFN(UINT_PTR, HWINDOW, UINT_PTR, UINT_PTR, UINT)
 # Graphics API
 GetSciterGraphicsAPI = SCFN(LPSciterGraphicsAPI)
 GetSciterRequestAPI = SCFN(LPSciterRequestAPI)
+
+SciterProcX = SCFN(BOOL, HWINDOW, POINTER(SCITER_X_MSG))
+
 
 if SCITER_WIN:
     # DirectX API
@@ -436,6 +440,10 @@ class ISciterAPI(Structure):
         "SciterCreateOnDirectXWindow",
         "SciterRenderOnDirectXWindow",
         "SciterRenderOnDirectXTexture",
+
+        # since 4.0.0.0
+        "SciterProcX",
+
         ]
     # END OF ISciterAPI.
 
@@ -458,11 +466,19 @@ def SciterAPI():
         return SciterAPI._api
 
     scdll = None
+
+    import ctypes
     if SCITER_WIN:
+        # load 4.x version by default
         try:
-            scdll = WinDLL(SCITER_DLL_NAME)
+            scdll = ctypes.WinDLL(SCITER_DLL_NAME)
         except OSError:
-            pass
+            # try to find 3.x version
+            try:
+                dllname = "sciter64" if sys.maxsize > 2**32 else "sciter32"
+                scdll = ctypes.WinDLL(dllname)
+            except OSError:
+                pass
 
     else:
         # same behavior for OSX & Linux
