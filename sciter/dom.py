@@ -537,13 +537,13 @@ class Element:
         self._throw_if(ok)
         return self
 
-    def fire_event(self, source, target, code: BEHAVIOR_EVENTS, reason=EVENT_REASON.SYNTHESIZED, post=True, data=None):
-        """Send or post sinking/bubbling event to the child/parent chain of he element."""
+    def fire_event(self, code: BEHAVIOR_EVENTS, reason=EVENT_REASON.SYNTHESIZED, source=None, post=True, data=None):
+        """Send or post sinking/bubbling event to the child/parent chain of the element."""
         params = sciter.capi.scbehavior.BEHAVIOR_EVENT_PARAMS()
         params.cmd = code
         params.reason = reason
-        params.he = source
-        params.heTarget = target
+        params.he = source if source else self.h
+        params.heTarget = self.h
         if data is not None:
             sciter.Value.pack_to(params.data, data)
         handled = sciter.capi.sctypes.BOOL()
