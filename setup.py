@@ -14,7 +14,7 @@ config = {
     'url': 'http://github.com/pravic/pysciter/',
     'download_url': 'https://github.com/pravic/pysciter/releases',
     'bugtrack_url': 'https://github.com/pravic/pysciter/issues',
-    'version': '0.4.6',
+    'version': '0.4.10',
     'platforms': ['Windows', 'Linux', 'MacOS X', ],
     'packages': ['sciter', 'sciter.capi'],
     'install_requires': [''],
@@ -28,6 +28,8 @@ config = {
         'Operating System :: Microsoft :: Windows :: Windows XP',
         'Operating System :: Microsoft :: Windows :: Windows Vista',
         'Operating System :: Microsoft :: Windows :: Windows 7',
+        'Operating System :: Microsoft :: Windows :: Windows 8',
+        'Operating System :: Microsoft :: Windows :: Windows 10',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX :: Linux',
         'Environment :: MacOS X',
@@ -38,6 +40,7 @@ config = {
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Desktop Environment',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
@@ -72,7 +75,7 @@ Compatibility
 
 PySciter requires Python 3.x (2.7 is planned in near future).
 
-Sciter works on Microsoft Windows XP and above (x86/x64), Apple OS X v 10.7 and above (64-bit/32-bit) and Linux/GTK (GTK v 3.0 and above, 64-bit only).
+Sciter works on Microsoft Windows XP and above (x86/x64), Apple OS X v 10.7 and above (64-bit) and Linux/GTK (GTK v 3.0 and above, 64-bit only).
 
 Feedback and getting involved
 =============================
