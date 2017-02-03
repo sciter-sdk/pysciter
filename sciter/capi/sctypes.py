@@ -129,6 +129,7 @@ elif SCITER_OSX:
     LPCWSTR = LPWSTR = c_utf16_p
 
 elif SCITER_LNX:
+    # libsciter since 3.3.1.7
     assert sys.maxsize > 2**32, "Only 64-bit build supported."
     SCITER_DLL_NAME = "libsciter-gtk-64" if sys.maxsize > 2**32 else "libsciter-gtk-32"
     SCITER_DLL_EXT = ".so"

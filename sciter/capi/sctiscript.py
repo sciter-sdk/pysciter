@@ -12,4 +12,5 @@ class tiscript_native_interface(ctypes.Structure):
     """."""
     _fields_ = [
         ("create_vm", ctypes.c_void_p),
+        # TODO: rest of TIScript API
         ]

@@ -16,7 +16,7 @@ class LOAD_RESULT(enum.IntEnum):
     LOAD_DISCARD = 1  # discard request completely
     LOAD_DELAYED = 2  # data will be delivered later by the host application.
 
-    LOAD_MYSELF = 3   # Use sciter-x-request.h[pp] API functions with SCN_LOAD_DATA::requestId handle .
+    LOAD_MYSELF = 3   # Use sciter-x-request.h[pp] API functions with SCN_LOAD_DATA::requestId handle.
 
 
 class SciterNotification(enum.IntEnum):
@@ -43,7 +43,7 @@ class SCITER_RT_OPTIONS(enum.IntEnum):
     SCITER_SET_SCRIPT_RUNTIME_FEATURES = 8,  # value - combination of SCRIPT_RUNTIME_FEATURES flags.
     SCITER_SET_GFX_LAYER = 9       # hWnd = NULL, value - GFX_LAYER
     SCITER_SET_DEBUG_MODE = 10     # hWnd, value - TRUE/FALSE
-    SCITER_SET_UX_THEMING = 11     # hWnd = NULL, value - BOOL, TRUE - the engine will use "unisex" theme that is common for all platforms. 
+    SCITER_SET_UX_THEMING = 11     # hWnd = NULL, value - BOOL, TRUE - the engine will use "unisex" theme that is common for all platforms.
                                    # That UX theme is not using OS primitives for rendering input elements. Use it if you want exactly
                                    # the same (modulo fonts) look-n-feel on all platforms.
     SCITER_ALPHA_WINDOW  = 12      #  hWnd, value - TRUE/FALSE - window uses per pixel alpha (e.g. WS_EX_LAYERED/UpdateLayeredWindow() window)

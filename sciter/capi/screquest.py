@@ -56,6 +56,7 @@ class SciterRequestAPI(Structure):
     _fields_ = [
         ("RequestUse", RequestUse),
         ("RequestUnUse", RequestUnUse),
+        # TODO: rest of Request API
     ]
 
 LPSciterRequestAPI = POINTER(SciterRequestAPI)

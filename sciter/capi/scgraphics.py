@@ -3,8 +3,8 @@
 Incomplete.
 """
 import enum
-from ctypes import *
 
+from ctypes import Structure, POINTER, c_void_p
 from sciter.capi.sctypes import SCFN, UINT, BOOL
 
 HGFX = c_void_p
@@ -29,6 +29,7 @@ class SciterGraphicsAPI(Structure):
     """Sciter Graphics ABI."""
     _fields_ = [
         ("imageCreate", imageCreate),
+        # TODO: rest of Graphics API
     ]
 
 
