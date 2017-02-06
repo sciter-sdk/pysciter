@@ -1,14 +1,23 @@
 # Python bindings for Sciter
 
-[![Join the chat at https://gitter.im/pravic/pysciter](https://badges.gitter.im/pravic/pysciter.png)](https://gitter.im/pravic/pysciter)
+[![Join the chat at https://gitter.im/pravic/sciter](https://badges.gitter.im/pravic/sciter.png)](https://gitter.im/pravic/sciter)
 
-_Check [this page](http://sciter.com/developers/sciter-sdk-bindings/) for another language bindings._
+Check [this page](http://sciter.com/developers/sciter-sdk-bindings/) for another language bindings (Delphi / D / Go / .NET / Python / Rust).
 
 ----
 
+
+## Introduction
+
 Sciter is an embeddable [multiplatform](http://sciter.com/sciter/crossplatform/) HTML/CSS/script engine with GPU accelerated rendering designed to render modern desktop application UI. It's a compact, single dll/dylib/so file (4-8 mb), engine without any additional dependencies.
 
-Check the [screenshot gallery](https://github.com/oskca/sciter#sciter-desktop-ui-examples) of the desktop UI examples.
+
+## Screenshots
+
+Check [screenshot gallery](https://github.com/oskca/sciter#sciter-desktop-ui-examples) of the desktop UI examples.
+
+
+## Description
 
 Physically Sciter is a mono library which contains:
 
