@@ -1,4 +1,4 @@
-<html>
+<html window-icon="icon.png">
   <head>
     <title>PySciter sample</title>
     <style>
@@ -7,26 +7,26 @@
         background: radial-gradient(75% 75%, circle farthest-side, white, orange, rgb(0,0,204));
         color:#fff;
       }
-      
+
       html:rtl {
         mapping: left-to-right(background);
       }
 
     </style>
     <script type="text/tiscript">
-    
+
       view.caption = $(head > title).value;
 
       $(#machine).text = Sciter.machineName();
-      
+
       var counter = 0;
-      
+
       $(button#append).on("click", function(){
         $(body).$append(<h1#test>{++counter }</h1>);
       });
-      
+
       $(button#open).on("click", function(){
-      
+
         var fn = view.selectFile(#open,
           "HTML Files (*.htm,*.html)|*.HTM;*.HTML|All Files (*.*)|*.*" , "html" );
 
@@ -62,14 +62,14 @@
         stdout.println(String.printf("2 * 3 = %d", view.api.mul(2, 3)));
         stdout.println(String.printf("2 - 3 = %d", view.api.sub(2, 3)));
       });
-    
+
     </script>
   </head>
 <body>
 
   <h1>Pythonic Sciter Application</h1>
   <p>Running on <em #machine /> machine</p>
-  
+
   <button #append>Append</button>
   <button #open>Open</button>
   <button #ti2py>Call python</button>
