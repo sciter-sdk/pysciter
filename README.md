@@ -115,7 +115,7 @@ var api = view.GetNativeApi();
 stdout.println("2 + 3 = " + api.add(2, 3));
 ```
 
-_Check [pysciter/examples](https://github.com/pravic/pysciter/tree/master/examples) folder for more complex usage_.
+_Check [pysciter/examples](https://github.com/sciter-sdk/pysciter/tree/master/examples) folder for more complex usage_.
 
 
 ## What supported right now:

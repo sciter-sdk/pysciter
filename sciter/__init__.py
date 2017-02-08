@@ -1,6 +1,6 @@
 """Sciter bindings for Python.
 
-Read about library at github: https://github.com/pravic/pysciter.
+Read about library at github: https://github.com/sciter-sdk/pysciter.
 
 This component uses Sciter Engine,
 copyright Terra Informatica Software, Inc.

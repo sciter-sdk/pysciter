@@ -11,10 +11,10 @@ config = {
     'author': 'pravic',
     'author_email': 'ehysta@gmail.com',
     'description': 'Python bindings for the Sciter - Embeddable HTML/CSS/script engine (cross-platform desktop GUI toolkit).',
-    'url': 'http://github.com/pravic/pysciter/',
-    'download_url': 'https://github.com/pravic/pysciter/releases',
-    'bugtrack_url': 'https://github.com/pravic/pysciter/issues',
-    'version': '0.4.10',
+    'url': 'http://github.com/sciter-sdk/pysciter/',
+    'download_url': 'https://github.com/sciter-sdk/pysciter/releases',
+    'bugtrack_url': 'https://github.com/sciter-sdk/pysciter/issues',
+    'version': '0.4.11',
     'platforms': ['Windows', 'Linux', 'MacOS X', ],
     'packages': ['sciter', 'sciter.capi'],
     'install_requires': [''],
@@ -65,7 +65,7 @@ Check the `screenshot gallery <https://github.com/oskca/sciter#sciter-desktop-ui
 Installation
 ============
 
-For installation instructions and usage examples please refer to `github project page <https://github.com/pravic/pysciter#getting-started>`_.
+For installation instructions and usage examples please refer to `github project page <https://github.com/sciter-sdk/pysciter#getting-started>`_.
 
 
 Compatibility
@@ -77,8 +77,8 @@ Sciter works on Microsoft Windows XP and above (x86/x64), Apple OS X v 10.7 and 
 
 Feedback and getting involved
 =============================
-- PySciter Code Repository: https://github.com/pravic/pysciter
-- Issue tracker: https://github.com/pravic/pysciter/issues
+- PySciter Code Repository: https://github.com/sciter-sdk/pysciter
+- Issue tracker: https://github.com/sciter-sdk/pysciter/issues
 - Sciter official website: http://sciter.com
 - Sciter forum: http://sciter.com/forums/
 - Sciter SDK: https://github.com/c-smile/sciter-sdk
