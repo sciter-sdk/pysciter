@@ -266,6 +266,21 @@ elif SCITER_LNX:
         lib = ctypes.cdll.LoadLibrary(ctypes.util.find_library('gtk-3'))
         _init_lib._dll = lib
 
+        lib.gtk_widget_get_toplevel.restype = LPCVOID
+        lib.gtk_widget_get_toplevel.argtypes = [LPCVOID]
+
+        lib.gtk_init.argtypes = [LPCVOID, LPCVOID]
+        lib.gtk_widget_get_toplevel.argtypes = [LPCVOID]
+        lib.gtk_widget_hide.argtypes = [LPCVOID]
+        lib.gtk_window_iconify.argtypes = [LPCVOID]
+        lib.gtk_window_maximize.argtypes = [LPCVOID]
+        lib.gtk_window_present.argtypes = [LPCVOID]
+        lib.gtk_window_close.argtypes = [LPCVOID]
+        lib.gtk_window_get_title.argtypes = [LPCVOID]
+        lib.gtk_window_set_title.argtypes = [LPCVOID, LPCSTR]
+        lib.gtk_main.argtypes = []
+        lib.gtk_main_quit.argtypes = []
+
         lib.gtk_init(None, None)
         return lib
 

@@ -488,18 +488,23 @@ def SciterAPI():
             # try LD_LIBRARY_PATH
             def find_in_path(dllname, envname):
                 import os
-                for directory in os.environ[envname].split(os.pathsep):
-                    fname = os.path.join(directory, dllname)
-                    if os.path.isfile(fname):
-                        return fname
+                if envname in os.environ:
+                    for directory in os.environ[envname].split(os.pathsep):
+                        fname = os.path.join(directory, dllname)
+                        if os.path.isfile(fname):
+                            return fname
                 return None
 
-            sclib = find_in_path(SCITER_DLL_NAME + SCITER_DLL_EXT, 'LD_LIBRARY_PATH')
-        if sclib:
-            try:
-                scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
-            except OSError:
-                pass
+            sclib = find_in_path(SCITER_DLL_NAME + SCITER_DLL_EXT, 'DYLD_LIBRARY_PATH' if SCITER_OSX else 'LD_LIBRARY_PATH')
+
+        if not sclib:
+            # last chance: try to load .so
+            sclib = SCITER_DLL_NAME + SCITER_DLL_EXT
+
+        try:
+            scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
+        except OSError:
+            pass
 
     if not scdll:
         raise ImportError(SCITER_LOAD_ERROR)
