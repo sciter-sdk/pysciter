@@ -13,7 +13,12 @@ if SCITER_WIN:
     class WindowsWindow:
         """Win32 window."""
 
+        _initialized = False
+
         def _create(self, flags, rect, parent):
+            if not WindowsWindow._initialized:
+                ctypes.windll.ole32.OleInitialize(None)
+                WindowsWindow._initialized = True
             if rect is None:
                 rect = sciter.capi.sctypes.RECT()
             self._msg_delegate = sciter.capi.scdef.SciterWindowDelegate(self._on_msg_delegate)
