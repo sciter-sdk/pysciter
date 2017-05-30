@@ -382,6 +382,11 @@ class value():
         t = self.get_type()
         return t == VALUE_TYPE.T_MAP
 
+    def is_object(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_OBJECT
+
     def is_function(self):
         """."""
         t = self.get_type()
@@ -390,6 +395,11 @@ class value():
     def is_native_function(self):
         """."""
         return _api.ValueIsNativeFunctor(self) != 0
+
+    def is_object_function(self):
+        """."""
+        t, u = self.get_type(with_unit=True)
+        return t == VALUE_TYPE.T_OBJECT and u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_FUNCTION
 
     def get_type(self, py=False, with_unit=False):
         """Return python type or sciter type with (optionally) unit subtype of sciter::value."""
@@ -458,6 +468,12 @@ class value():
             return self._get_list()
         elif t == VALUE_TYPE.T_MAP:
             return self._get_dict()
+        elif t == VALUE_TYPE.T_OBJECT:
+            u = self.data.u
+            if u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_ARRAY:
+                return self._get_list()
+            elif u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_OBJECT:
+                return self._get_dict()
         t, u = self.get_type(with_unit=True)
         u = str(u).rpartition('.')[2]
         raise TypeError("%s (%s) is unsupported python type" % (str(t), str(u)))
