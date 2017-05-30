@@ -68,13 +68,13 @@ class EventHandler:
 
     def dispatch(self, name, args):
         """Route script call to python handler directly."""
-        fn = getattr(self, name, None)
-        if fn is not None:
-            return fn(*args)
+        # fn = getattr(self, name, None)
+        # if fn is not None:
+        #     return fn(*args)
         pass
 
     def set_dispatch_options(self, enable=True, require_attribute=True, dynamic_handlers=False):
-        """Set a various script dispatch options."""
+        """Set the various script dispatch options."""
         self._dispatcher['enabled'] = enable                # enable or disable dispatching of script calls to class handlers
         self._dispatcher['runtime'] = dynamic_handlers      # class handlers may be added at runtime, so we won't cache it
         self._dispatcher['require'] = require_attribute     # class handlers require @sciter.script attribute
@@ -108,7 +108,7 @@ class EventHandler:
         return self.subscription
 
     def on_script_call(self, name: str, args: list):
-        """Script calls from CSSS! script and TIScript."""
+        """Script calls from CSSS! script and TIScript. Arguments are Sciter types. Return something to prevent @script handlers to be executed."""
         # Return something except None to indicate that function handled (e.g. found).
         pass
 
@@ -147,19 +147,36 @@ class EventHandler:
     def _on_script_call(self, f):
         # update handlers on every call if needed
         self._dispatcher_update()
+
         fname = f.name.decode('utf-8')
         fn = self._dispatcher['handlers'].get(fname)
-        args = sciter.Value.unpack_from(f.argv, f.argc)
-        try:
-            if fn:
-                handler_called = True
-                rv = fn(*args)
-            else:
-                handler_called = False
+        rv = None
+
+        # call raw handler first
+        if True:
+            try:
+                args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
                 rv = self.on_script_call(fname, args)
-        except Exception as e:
-            rv = e
-        if handler_called or rv is not None:
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                rv = e
+
+        # if not handled, call decorated method
+        if rv is None and fn:
+            cfg = getattr(fn, '_sciter_cfg', {})
+            skip_exception = not cfg.get('safe', True)
+            try:
+                if cfg.get('convert'):
+                    args = sciter.Value.unpack_from(f.argv, f.argc)
+                rv = fn(*args)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                rv = str(e) if skip_exception else e
+
+        # if handled, pack result for Sciter
+        if fn or rv is not None:
             sciter.Value.pack_to(f.result, rv)
             return True
         return False

@@ -37,16 +37,25 @@ def version(as_str=False):
     return ".".join(map(str, ver)) if as_str else ver
 
 
-def script(name=None):
+def script(name=None, convert=True, safe=True):
     """Annotation decorator for the functions that called from script."""
     # @script def -> script(def)
     # @script('name') def -> script(name)(def)
+
+    # `convert`: Convert Sciter values to Python types
+    # `safe`: Pass exceptions to Sciter or ignore them
+
     def decorator(func):
         attr = True if name is None else name
         func._from_sciter = attr
+        func._sciter_cfg = dict(name=name, convert=convert, safe=safe)
         return func
-    if isinstance(name, str):
+
+    # script('name')
+    if name is None or isinstance(name, str):
         return decorator
+
+    # script(def)
     func = name
     name = None
     return decorator(func)
