@@ -12,7 +12,7 @@ _api = sciter.SciterAPI()
 class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHandler):
     """Basic Sciter window."""
 
-    def __init__(self, ismain=False, ispopup=False, ischild=False, resizeable=True, parent=None, uni_theme=False, debug=True):
+    def __init__(self, ismain=False, ispopup=False, ischild=False, resizeable=True, parent=None, uni_theme=False, debug=True, pos=None, size=None):
         """Create a new window and setup the sciter and dom callbacks."""
         super().__init__()
         from sciter.capi.scdef import SCITER_CREATE_WINDOW_FLAGS
@@ -33,9 +33,19 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
         if debug:
             flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG
             self.setup_debug()
+
         self.window_flags = flags
         self._title_changed = False
-        self.hwnd = self._create(flags, rect=None, parent=None)
+
+        rect = sciter.capi.sctypes.RECT()
+        if pos is not None:
+            rect.left = pos[0]
+            rect.top = pos[1]
+        if size is not None:
+            rect.right = size[0]
+            rect.bottom = size[1]
+
+        self.hwnd = self._create(flags, rect=rect, parent=None)
         if not self.hwnd:
             raise sciter.SciterError("Could not create window")
 
