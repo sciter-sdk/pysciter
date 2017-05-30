@@ -27,11 +27,11 @@ _python_types = {VALUE_TYPE.T_UNDEFINED: type(None),
                  VALUE_TYPE.T_BYTES: bytes,
                  }
 
-_value_type_names = [name.lower()[2:] for name, val in VALUE_TYPE.__members__.items()]
+_value_type_names = {val: name.lower()[2:] for name, val in VALUE_TYPE.__members__.items()}
 
 
 def _subtype_name(subtype):
-    return [name.split('_')[-1].lower() for name, val in subtype.__members__.items()]
+    return {val: name.split('_')[-1].lower() for name, val in subtype.__members__.items()}
 
 _value_subtypes = {VALUE_TYPE.T_LENGTH: _subtype_name(VALUE_UNIT_TYPE),
                    VALUE_TYPE.T_DATE: _subtype_name(VALUE_UNIT_TYPE_DATE),
@@ -115,14 +115,14 @@ class value():
     def __repr__(self):
         """Machine-like value visualization."""
         t = VALUE_TYPE(self.data.t)
-        tname = _value_type_names[self.data.t]
+        tname = _value_type_names.get(self.data.t, hex(self.data.t))
         if t in (VALUE_TYPE.T_UNDEFINED, VALUE_TYPE.T_NULL):
             return "<%s>" % (tname)
 
         if self.data.u != 0:
             subtypes = _value_subtypes.get(t)
             if subtypes:
-                tname = tname + ':' + subtypes[self.data.u]
+                tname = tname + ':' + subtypes.get(self.data.u, hex(self.data.u))
 
         return "<%s: %s>" % (tname, str(self))
 
@@ -458,9 +458,9 @@ class value():
             return self._get_list()
         elif t == VALUE_TYPE.T_MAP:
             return self._get_dict()
-        else:
-            raise TypeError(str(t) + " is unsupported python type")
-        pass
+        t, u = self.get_type(with_unit=True)
+        u = str(u).rpartition('.')[2]
+        raise TypeError("%s (%s) is unsupported python type" % (str(t), str(u)))
 
     def set_value(self, val):
         """Set Python object to the sciter::value.
