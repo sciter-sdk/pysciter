@@ -42,6 +42,11 @@ class VALUE_TYPE(enum.IntEnum):
     T_BYTES = 12       # sequence of bytes - e.g. image data
     T_OBJECT = 13      # scripting object proxy (TISCRIPT/SCITER)
     T_DOM_OBJECT = 14  # DOM object (CSSS!), use get_object_data to get HELEMENT
+    T_RESOURCE = 15    #
+    T_RANGE = 16       # integer range N..M
+    T_DURATION = 17    # time duration in seconds, stored as float
+    T_ANGLE = 18       # angle value in radians, stored as float
+    T_COLOR = 19       # color value, stored as 0xAABBGGRR integer
 
 
 class VALUE_UNIT_TYPE(enum.IntEnum):
@@ -61,8 +66,8 @@ class VALUE_UNIT_TYPE(enum.IntEnum):
     UT_PC = 12              # picas (1 pica = 12 points).
     UT_DIP = 13
     reserved3 = 14
-    UT_COLOR = 15           # color in int
-    UT_URL = 16             # url in string
+    reserved4 = 15
+    UT_URL = 22             # url in string
 
 
 class VALUE_UNIT_TYPE_DATE(enum.IntEnum):
@@ -77,7 +82,7 @@ class VALUE_UNIT_TYPE_OBJECT(enum.IntEnum):
     """Sciter object subtype."""
     UT_OBJECT_ARRAY  = 0  # type T_OBJECT of type Array
     UT_OBJECT_OBJECT = 1  # type T_OBJECT of type Object
-    UT_OBJECT_CLASS  = 2  # type T_OBJECT of type Type (class or namespace)
+    UT_OBJECT_CLASS  = 2  # type T_OBJECT of type Class (class or namespace)
     UT_OBJECT_NATIVE = 3  # type T_OBJECT of native Type with data slot (LPVOID)
     UT_OBJECT_FUNCTION= 4 # type T_OBJECT of type Function
     UT_OBJECT_ERROR = 5   # type T_OBJECT of type Error
@@ -88,6 +93,7 @@ class VALUE_UNIT_TYPE_STRING(enum.IntEnum):
     UT_STRING_STRING = 0       # string
     UT_STRING_ERROR = 1        # is an error string
     UT_STRING_SECURE = 2       # secure string ("wiped" on destroy)
+    UT_STRING_FILE = 0xfffe    #
     UT_STRING_SYMBOL = 0xffff  # symbol in tiscript sense
 
 

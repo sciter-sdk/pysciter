@@ -250,6 +250,23 @@ class TestSciterValue(unittest.TestCase):
         self.assertTrue(xval.is_error_string())
         self.assertEqual(xval.get_value(), 'error')  # doesn't raise exception.
 
+        if sciter.version_num() > 0x04000100:
+
+            # color
+            xval = value.color(0x0000FFFF)      # yellow R255, G255, B000 in 0xAABBGGRR form
+            self.assertTrue(xval.is_color())
+            self.assertEqual(xval.get_value(), 0x0000FFFF)
+
+            # duration
+            xval = value.duration(12.5)
+            self.assertTrue(xval.is_duration())
+            self.assertEqual(xval.get_value(), 12.5)
+
+            # angle
+            xval = value.angle(1.0)
+            self.assertTrue(xval.is_angle())
+            self.assertEqual(xval.get_value(), 1.0)
+            pass
         pass
 
     def test_20clear(self):

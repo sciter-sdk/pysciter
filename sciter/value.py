@@ -25,6 +25,9 @@ _python_types = {VALUE_TYPE.T_UNDEFINED: type(None),
                  VALUE_TYPE.T_ARRAY: list,
                  VALUE_TYPE.T_MAP: dict,
                  VALUE_TYPE.T_BYTES: bytes,
+                 VALUE_TYPE.T_DURATION: float,
+                 VALUE_TYPE.T_ANGLE: float,
+                 VALUE_TYPE.T_COLOR: int,
                  }
 
 _value_type_names = {val: name.lower()[2:] for name, val in VALUE_TYPE.__members__.items()}
@@ -89,6 +92,29 @@ class value():
         rv._assign_str(val, VALUE_UNIT_TYPE_STRING.UT_STRING_SECURE)
         return rv
 
+    @classmethod
+    def color(cls, val):
+        """Make explicit value of color type, in 0xAABBGGRR form."""
+        rv = value()
+        ok = _api.ValueIntDataSet(rv, val, VALUE_TYPE.T_COLOR, 0)
+        rv._throw_if(ok)
+        return rv
+
+    @classmethod
+    def duration(cls, val):
+        """Make explicit duration value, in seconds."""
+        rv = value()
+        ok = _api.ValueFloatDataSet(rv, val, VALUE_TYPE.T_DURATION, 0)
+        rv._throw_if(ok)
+        return rv
+
+    @classmethod
+    def angle(cls, val):
+        """Make explicit angle value, in radians."""
+        rv = value()
+        ok = _api.ValueFloatDataSet(rv, val, VALUE_TYPE.T_ANGLE, 0)
+        rv._throw_if(ok)
+        return rv
 
     ## @name Value methods:
 
@@ -372,6 +398,21 @@ class value():
         t, u = self.get_type(with_unit=True)
         return t == VALUE_TYPE.T_STRING and u == VALUE_UNIT_TYPE_STRING.UT_STRING_SYMBOL
 
+    def is_color(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_COLOR
+
+    def is_duration(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_DURATION
+
+    def is_angle(self):
+        """."""
+        t = self.get_type()
+        return t == VALUE_TYPE.T_ANGLE
+
     def is_array(self):
         """."""
         t = self.get_type()
@@ -474,9 +515,27 @@ class value():
                 return self._get_list()
             elif u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_OBJECT:
                 return self._get_dict()
+        elif t == VALUE_TYPE.T_DURATION:
+            v = ctypes.c_double()
+            ok = _api.ValueFloatData(self, byref(v))
+            self._throw_if(ok)
+            return float(v.value)
+        elif t == VALUE_TYPE.T_ANGLE:
+            v = ctypes.c_double()
+            ok = _api.ValueFloatData(self, byref(v))
+            self._throw_if(ok)
+            return float(v.value)
+        elif t == VALUE_TYPE.T_COLOR:
+            v = ctypes.c_int32()
+            ok = _api.ValueIntData(self, byref(v))
+            self._throw_if(ok)
+            return int(v.value)
+
+        # unsupported:
         t, u = self.get_type(with_unit=True)
         u = str(u).rpartition('.')[2]
         raise TypeError("%s (%s) is unsupported python type" % (str(t), str(u)))
+        pass
 
     def set_value(self, val):
         """Set Python object to the sciter::value.

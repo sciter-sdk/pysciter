@@ -37,6 +37,12 @@ def version(as_str=False):
     return ".".join(map(str, ver)) if as_str else ver
 
 
+def version_num():
+    """Return version of Sciter engine as 0x03030107 number."""
+    a, b, c, d = version()
+    return (a << 24) | (b << 16) | (c << 8) | (d << 0)
+
+
 def script(name=None, convert=True, safe=True):
     """Annotation decorator for the functions that called from script."""
     # @script def -> script(def)
