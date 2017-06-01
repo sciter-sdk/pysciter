@@ -113,6 +113,7 @@ class TestSciterValue(unittest.TestCase):
                 xval = value(item)
                 with self.assertRaises(TypeError):
                     bval = bytes(xval)
+                    print(bval)
                 continue
         item = b'hello, world'
         xval = value(item)
@@ -157,7 +158,7 @@ class TestSciterValue(unittest.TestCase):
 
             self.assertEqual(xval[0], value(3))
             self.assertEqual(xval[1], value(4))
-            self.assertEqual(xval[-1],value(5))
+            self.assertEqual(xval[-1], value(5))
 
             with self.assertRaises(IndexError):
                 r = xval[20]
@@ -172,6 +173,7 @@ class TestSciterValue(unittest.TestCase):
 
             with self.assertRaises(KeyError):
                 r = xval['not exist']
+                print(r)
         pass
 
     def test_16setitem(self):
@@ -251,7 +253,6 @@ class TestSciterValue(unittest.TestCase):
         self.assertEqual(xval.get_value(), 'error')  # doesn't raise exception.
 
         if sciter.version_num() > 0x04000100:
-
             # color
             xval = value.color(0x0000FFFF)      # yellow R255, G255, B000 in 0xAABBGGRR form
             self.assertTrue(xval.is_color())
