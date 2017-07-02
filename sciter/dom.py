@@ -651,7 +651,7 @@ class Element:
 
     def set_style_attribute(self, name: str, val: str):
         """Set style attribute."""
-        ok = _api.SciterSetStyleAttribute(name.encode('utf-8'), val)
+        ok = _api.SciterSetStyleAttribute(self, name.encode('utf-8'), val)
         self._throw_if(ok)
         return self
 
