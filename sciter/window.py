@@ -41,9 +41,13 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
         if pos is not None:
             rect.left = pos[0]
             rect.top = pos[1]
+            if size is None:
+                raise ValueError("`size` is required if `pos` is provided!")
         if size is not None:
             rect.right = size[0]
             rect.bottom = size[1]
+        if not pos and not size:
+            rect = None
 
         self.hwnd = self._create(flags, rect=rect, parent=None)
         if not self.hwnd:
