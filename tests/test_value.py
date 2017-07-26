@@ -120,6 +120,19 @@ class TestSciterValue(unittest.TestCase):
         self.assertEqual(bytes(xval), bytes(item))
         pass
 
+    def test_11func(self):
+        def inner_fn():
+            return 17
+
+        v = value(inner_fn)
+        r = v.call()
+        self.assertEqual(r, 17)
+
+        v = value(lambda x, y: x + y)
+        r = v.call(42, 1)
+        self.assertEqual(r, 43)
+        pass
+
     def test_12len(self):
         items = [[], {}, [3, 4], {'5': 5, '6': 6}]
         for item in items:
