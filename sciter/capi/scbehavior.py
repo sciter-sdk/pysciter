@@ -320,6 +320,7 @@ class BEHAVIOR_EVENTS(enum.IntEnum):
     DOCUMENT_CLOSE_REQUEST = 0xC1  # document is about to be closed, to cancel closing do: evt.data = sciter::value("cancel");
     DOCUMENT_CLOSE    = 0xC2       # last notification before document removal from the DOM
     DOCUMENT_READY    = 0xC3       # document has got DOM structure, styles and behaviors of DOM elements. Script loading run is complete at this moment.
+    DOCUMENT_PARSED   = 0xC4       # document just finished parsing - has got DOM structure. This event is generated before the `DOCUMENT_READY`. Since 4.0.3.
 
     VIDEO_INITIALIZED = 0xD1       # <video> "ready" notification
     VIDEO_STARTED     = 0xD2       # <video> playback started notification
