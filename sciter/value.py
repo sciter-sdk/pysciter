@@ -247,6 +247,8 @@ class value():
         """Convert T_OBJECT value types to T_MAP or T_ARRAY.
 
         It will convert all object-arrays to plain JSON arrays – removing all references of script objects.
+
+        Also must be used if you need to pass values between different threads.
         """
         ok = _api.ValueIsolate(self)
         self._throw_if(ok)
