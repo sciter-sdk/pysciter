@@ -3,19 +3,6 @@
 import sciter
 
 
-def scriptmethod(name=None):
-    """Style decorator for method, called from script."""
-    def decorator(func):
-        attr = True if name is None else name
-        func._from_sciter = attr
-        return func
-    if isinstance(name, str):
-        return decorator
-    func = name
-    name = None
-    return decorator(func)
-
-
 class RootEventHandler(sciter.EventHandler):
     def __init__(self, el, frame):
         super().__init__(element=el)
@@ -27,25 +14,25 @@ class RootEventHandler(sciter.EventHandler):
         #print("-> event:", code, phase, he)
         pass
 
-    @scriptmethod('mcall')
+    @sciter.script("mcall")
     def method_call(self, *args):
         #
         # `root.mcall()` (see handlers.htm) calls behavior method of the root dom element (native equivalent is `Element.call_method()`),
         #  so we need to attach a "behavior" to that element to catch and handle such calls.
-        # Also it can be handled at script by several ways: 
+        # Also it can be handled at script by several ways:
         # * `behavior` - Element subclassing with full control
         # * `aspect` - provides partial handling by attaching a single function to the dom element
         # *  manually attaching function to Element via code like `root.mcall = function(args..) {};`
-        # 
+        #
         print("->mcall args:", "\t".join(map(str, args)))
         # explicit null for example, in other cases you can return any python object like None or True
-        return sciter.Value.null() 
+        return sciter.Value.null()
 
     pass
 
 
 class Frame(sciter.Window):
-        
+
     def __init__(self):
         super().__init__(ismain=True, uni_theme=False, debug=False)
         self.set_dispatch_options(enable=True, require_attribute=False)
@@ -79,7 +66,7 @@ class Frame(sciter.Window):
         rv['str'] = "a string"
         rv['f'] = fn
         return rv
-    
+
     @sciter.script
     def sumall(self, *args):
         sum = 0
@@ -108,7 +95,7 @@ class Frame(sciter.Window):
         # TODO: following statement looks ugly.
         # Guess it wasn't a nice idea to split event mask to separate code and phase values
         # Or we may pack all event arguments to single object (dict) to eliminate such parameters bloat
-        # 
+        #
         if code == sciter.event.BEHAVIOR_EVENTS.BUTTON_CLICK and phase == sciter.event.PHASE_MASK.SINKING and he.test('#native'):
             print("native button clicked!")
             return True
