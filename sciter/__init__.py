@@ -17,6 +17,7 @@ for SDK usage.
 
 from .capi.scapi import SciterAPI
 from .capi.sctypes import SCITER_WIN, SCITER_OSX, SCITER_LNX
+from .capi.scdef import SCITER_RT_OPTIONS
 
 from .value import value as Value
 from .window import Window
@@ -41,6 +42,13 @@ def version_num():
     """Return version of Sciter engine as 0x03030107 number."""
     a, b, c, d = version()
     return (a << 24) | (b << 16) | (c << 8) | (d << 0)
+
+def set_option(option, value):
+    """Set various sciter engine global options, see the SCITER_RT_OPTIONS."""
+    ok = api.SciterSetOption(None, option, value)
+    if not ok:
+        raise sciter.SciterError("Could not set option " + str(option) + "=" + str(value))
+    return True
 
 
 def script(name=None, convert=True, safe=True):

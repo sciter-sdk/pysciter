@@ -30,23 +30,24 @@ class SciterNotification(enum.IntEnum):
 
 
 class SCITER_RT_OPTIONS(enum.IntEnum):
-    SCITER_SMOOTH_SCROLL = 1       # value:TRUE - enable, value:FALSE - disable, enabled by default
-    SCITER_CONNECTION_TIMEOUT = 2  # value: milliseconds, connection timeout of http client
-    SCITER_HTTPS_ERROR = 3         # value: 0 - drop connection, 1 - use builtin dialog, 2 - accept connection silently
+    """Sciter engine options (global or per-window)."""
+    SCITER_SMOOTH_SCROLL = 1       # value: TRUE - enable, value: FALSE - disable, enabled by default
+    SCITER_CONNECTION_TIMEOUT = 2  # global; value: milliseconds, connection timeout of http client
+    SCITER_HTTPS_ERROR = 3         # global; value: 0 - drop connection, 1 - use builtin dialog, 2 - accept connection silently
     SCITER_FONT_SMOOTHING = 4      # value: 0 - system default, 1 - no smoothing, 2 - std smoothing, 3 - clear type
 
     SCITER_TRANSPARENT_WINDOW = 6  # Windows Aero support, value:
                                    # 0 - normal drawing,
                                    # 1 - window has transparent background after calls DwmExtendFrameIntoClientArea() or DwmEnableBlurBehindWindow().
-    SCITER_SET_GPU_BLACKLIST  = 7  # hWnd = NULL,
+    SCITER_SET_GPU_BLACKLIST  = 7  # global;
                                    # value = LPCBYTE, json - GPU black list, see: gpu-blacklist.json resource.
-    SCITER_SET_SCRIPT_RUNTIME_FEATURES = 8,  # value - combination of SCRIPT_RUNTIME_FEATURES flags.
-    SCITER_SET_GFX_LAYER = 9       # hWnd = NULL, value - GFX_LAYER
-    SCITER_SET_DEBUG_MODE = 10     # hWnd, value - TRUE/FALSE
-    SCITER_SET_UX_THEMING = 11     # hWnd = NULL, value - BOOL, TRUE - the engine will use "unisex" theme that is common for all platforms.
+    SCITER_SET_SCRIPT_RUNTIME_FEATURES = 8,  # global or window; value - combination of SCRIPT_RUNTIME_FEATURES flags.
+    SCITER_SET_GFX_LAYER = 9       # global; value - GFX_LAYER
+    SCITER_SET_DEBUG_MODE = 10     # global or window; value - TRUE/FALSE
+    SCITER_SET_UX_THEMING = 11     # global; value - BOOL, TRUE - the engine will use "unisex" theme that is common for all platforms.
                                    # That UX theme is not using OS primitives for rendering input elements. Use it if you want exactly
                                    # the same (modulo fonts) look-n-feel on all platforms.
-    SCITER_ALPHA_WINDOW  = 12      #  hWnd, value - TRUE/FALSE - window uses per pixel alpha (e.g. WS_EX_LAYERED/UpdateLayeredWindow() window)
+    SCITER_ALPHA_WINDOW  = 12      # hWnd, value - TRUE/FALSE - window uses per pixel alpha (e.g. WS_EX_LAYERED/UpdateLayeredWindow() window)
 
 
 class SCRIPT_RUNTIME_FEATURES(enum.IntEnum):
