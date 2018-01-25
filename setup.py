@@ -11,7 +11,7 @@ config = {
     'author': 'pravic',
     'author_email': 'ehysta@gmail.com',
     'description': 'Python bindings for the Sciter - Embeddable HTML/CSS/script engine (cross-platform desktop GUI toolkit).',
-    'url': 'http://github.com/sciter-sdk/pysciter/',
+    'url': 'https://github.com/sciter-sdk/pysciter/',
     'download_url': 'https://github.com/sciter-sdk/pysciter/releases',
     'bugtrack_url': 'https://github.com/sciter-sdk/pysciter/issues',
     'version': '0.4.19',
@@ -49,7 +49,7 @@ config = {
     'long_description': """
 Introduction
 ============
-Sciter (http://sciter.com) is an embeddable HTML/CSS/script engine with GPU accelerated rendering for desktop application UI.
+Sciter (https://sciter.com) is an embeddable HTML/CSS/script engine with GPU accelerated rendering for desktop application UI.
 It's a compact, single dll/dylib/so file (4-8 mb), engine without any additional dependencies.
 
 Sciter uses Direct2D GPU accelerated graphics on modern Windows versions and GDI+ on XP.
@@ -79,8 +79,8 @@ Feedback and getting involved
 =============================
 - PySciter Code Repository: https://github.com/sciter-sdk/pysciter
 - Issue tracker: https://github.com/sciter-sdk/pysciter/issues
-- Sciter official website: http://sciter.com
-- Sciter forum: http://sciter.com/forums/
+- Sciter official website: https://sciter.com
+- Sciter forum: https://sciter.com/forums/
 - Sciter SDK: https://github.com/c-smile/sciter-sdk
 
 """,

@@ -47,7 +47,7 @@ def utf16tostr(addr, size=-1):
 
 class c_utf16_p(ctypes.c_char_p):
     """A ctypes wrapper for UTF-16 string pointer."""
-    # Taken from http://stackoverflow.com/a/35507014/736762, thanks to @eryksun.
+    # Taken from https://stackoverflow.com/a/35507014/736762, thanks to @eryksun.
     def __init__(self, value=None):
         super(c_utf16_p, self).__init__()
         if value is not None:
@@ -79,7 +79,7 @@ class c_utf16_p(ctypes.c_char_p):
 
 class UTF16LEField(object):
     """Structure member wrapper for UTF-16 string pointers."""
-    # Taken from http://stackoverflow.com/a/35507014/736762, thanks to @eryksun.
+    # Taken from https://stackoverflow.com/a/35507014/736762, thanks to @eryksun.
     def __init__(self, name):
         self.name = name
 

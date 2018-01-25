@@ -8,8 +8,8 @@ copyright Terra Informatica Software, Inc.
 
 :license: MIT
 
-Bindings library licensed under [MIT license](http://opensource.org/licenses/MIT).
-Sciter Engine has the [own license terms](http://sciter.com/prices/)
+Bindings library licensed under [MIT license](https://opensource.org/licenses/MIT).
+Sciter Engine has the [own license terms](https://sciter.com/prices/)
 and [end used license agreement](https://github.com/c-smile/sciter-sdk/blob/master/license.htm)
 for SDK usage.
 
