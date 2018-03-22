@@ -482,29 +482,38 @@ def SciterAPI():
 
     else:
         # same behavior for OSX & Linux
-        import ctypes.util
-        sclib = ctypes.util.find_library(SCITER_DLL_NAME)
-        if not sclib:
-            # try LD_LIBRARY_PATH
-            def find_in_path(dllname, envname):
-                import os
-                if envname in os.environ:
-                    for directory in os.environ[envname].split(os.pathsep):
-                        fname = os.path.join(directory, dllname)
-                        if os.path.isfile(fname):
-                            return fname
-                return None
+        def find_sciter(dllname):
+            import ctypes.util
+            sclib = ctypes.util.find_library(dllname)
+            if not sclib:
+                # try LD_LIBRARY_PATH
+                def find_in_path(dllname, envname):
+                    import os
+                    if envname in os.environ:
+                        for directory in os.environ[envname].split(os.pathsep):
+                            fname = os.path.join(directory, dllname)
+                            if os.path.isfile(fname):
+                                return fname
+                    return None
 
-            sclib = find_in_path(SCITER_DLL_NAME + SCITER_DLL_EXT, 'DYLD_LIBRARY_PATH' if SCITER_OSX else 'LD_LIBRARY_PATH')
+                sclib = find_in_path(dllname + SCITER_DLL_EXT, 'DYLD_LIBRARY_PATH' if SCITER_OSX else 'LD_LIBRARY_PATH')
 
-        if not sclib:
-            # last chance: try to load .so
-            sclib = SCITER_DLL_NAME + SCITER_DLL_EXT
+            if not sclib:
+                # last chance: try to load .so
+                sclib = dllname + SCITER_DLL_EXT
+            try:
+                scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
+            except OSError:
+                pass
+            return scdll
 
-        try:
-            scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
-        except OSError:
-            pass
+        # try default name (4.1.4+)
+        scdll = find_sciter(SCITER_DLL_NAME)
+
+        if SCITER_LNX and scdll is None:
+            # try the old name
+            import sys
+            scdll = find_sciter("libsciter-gtk-64" if sys.maxsize > 2**32 else "libsciter-gtk-32")
 
     if not scdll:
         raise ImportError(SCITER_LOAD_ERROR)
