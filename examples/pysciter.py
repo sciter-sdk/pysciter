@@ -19,10 +19,12 @@ class Frame(sciter.Window):
         return self.dispatch(name, args)
 
 
-    ## @name Following functions called from scripts:
+    ## @name The following functions are called from scripts:
+    @sciter.script
     def PythonCall(self, arg):
         return "Pythonic window (%s)" % str(arg)
 
+    @sciter.script
     def GetNativeApi(self):
 
         def on_add(a, b):
@@ -30,13 +32,14 @@ class Frame(sciter.Window):
 
         def on_sub(a, b):
             raise Exception("sub(%d,%d) raised exception" % (a, b))
-                
+
         api = { 'add': on_add,              # plain function
-                'sub': on_sub,              # raised exception will propagated to script 
+                'sub': on_sub,              # raised exception will propagated to script
                 'mul': lambda a,b: a * b,   # lambdas support
                 }
         return api
 
+    @sciter.script
     def ScriptCallTest(self):
         print("calling 'hello'")
         answer = self.call_function('hello', "hello, python")
