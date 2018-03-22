@@ -14,7 +14,7 @@ config = {
     'url': 'https://github.com/sciter-sdk/pysciter/',
     'download_url': 'https://github.com/sciter-sdk/pysciter/releases',
     'bugtrack_url': 'https://github.com/sciter-sdk/pysciter/issues',
-    'version': '0.4.20',
+    'version': '0.4.21',
     'platforms': ['Windows', 'Linux', 'MacOS X', ],
     'packages': ['sciter', 'sciter.capi'],
     'install_requires': [''],
