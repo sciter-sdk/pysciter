@@ -134,7 +134,6 @@ elif SCITER_OSX:
 elif SCITER_LNX:
     # libsciter since 3.3.1.7
     # libsciter-gtk.so instead of libsciter-gtk-64.so since 4.1.4
-    assert sys.maxsize > 2**32, "Only 64-bit build supported."
     SCITER_DLL_NAME = "libsciter-gtk"
     SCITER_DLL_EXT = ".so"
 
