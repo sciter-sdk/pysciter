@@ -1,5 +1,7 @@
 # Python bindings for Sciter
 
+[![Build status](https://ci.appveyor.com/api/projects/status/github/sciter-sdk/pysciter)](https://ci.appveyor.com/project/pravic/pysciter)
+[![Build Status](https://travis-ci.org/sciter-sdk/pysciter.svg?branch=master)](https://travis-ci.org/sciter-sdk/pysciter)
 [![Join the chat at https://gitter.im/pravic/sciter](https://badges.gitter.im/pravic/sciter.png)](https://gitter.im/pravic/sciter)
 
 Check [this page](https://sciter.com/developers/sciter-sdk-bindings/) for other language bindings (Delphi / D / Go / .NET / Python / Rust).
