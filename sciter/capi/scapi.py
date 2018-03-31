@@ -457,7 +457,7 @@ class ISciterAPI(Structure):
 # end
 
 SCITER_LOAD_ERROR = """%s%s was not found in PATH.
-  Please verify that Sciter SDK is installed and its binaries (SDK/bin, bin.osx or bin.gtk) available at the path.""" % (SCITER_DLL_NAME, SCITER_DLL_EXT)
+  Please verify that Sciter SDK is installed and its binaries (SDK/bin, bin.osx or bin.gtk) are available in the path.""" % (SCITER_DLL_NAME, SCITER_DLL_EXT)
 
 
 def SciterAPI():
@@ -465,20 +465,25 @@ def SciterAPI():
     if hasattr(SciterAPI, "_api"):
         return SciterAPI._api
 
-    scdll = None
-
+    import sys
     import ctypes
+
+    scdll = None
+    errors = []
+
     if SCITER_WIN:
         # load 4.x version by default
         try:
             scdll = ctypes.WinDLL(SCITER_DLL_NAME)
-        except OSError:
+        except OSError as e:
+            errors.append("'%s': %s" % (SCITER_DLL_NAME, str(e)))
+
             # try to find 3.x version
             try:
                 dllname = "sciter64" if sys.maxsize > 2**32 else "sciter32"
                 scdll = ctypes.WinDLL(dllname)
-            except OSError:
-                pass
+            except OSError as e:
+                errors.append("'%s': %s" % (dllname, str(e)))
 
     else:
         # same behavior for OSX & Linux
@@ -502,10 +507,11 @@ def SciterAPI():
                 # last chance: try to load .so
                 sclib = dllname + SCITER_DLL_EXT
             try:
-                scdll = ctypes.CDLL(sclib, ctypes.RTLD_LOCAL)
-            except OSError:
-                pass
-            return scdll
+                RTLD_LAZY = 1
+                return ctypes.CDLL(sclib, ctypes.RTLD_LOCAL | RTLD_LAZY)
+            except OSError as e:
+                errors.append(str(e))
+                return None
 
         # try default name (4.1.4+)
         scdll = find_sciter(SCITER_DLL_NAME)
@@ -516,7 +522,7 @@ def SciterAPI():
             scdll = find_sciter("libsciter-gtk-64" if sys.maxsize > 2**32 else "libsciter-gtk-32")
 
     if not scdll:
-        raise ImportError(SCITER_LOAD_ERROR)
+        raise ImportError(SCITER_LOAD_ERROR + "\n" + "\n".join(errors))
 
     scdll.SciterAPI.restype = POINTER(ISciterAPI)
     SciterAPI._api = scdll.SciterAPI().contents
