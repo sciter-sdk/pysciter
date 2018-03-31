@@ -141,6 +141,7 @@ _Check [pysciter/examples](https://github.com/sciter-sdk/pysciter/tree/master/ex
 * [x] Windows
 * [x] OSX
 * [x] Linux
+* [x] Raspberry Pi
 
 Python 3.x (2.7 in near future).
 
