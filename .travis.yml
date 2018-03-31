@@ -1,0 +1,58 @@
+# Based on the "trust" template v0.1.2
+# https://github.com/japaric/trust/tree/v0.1.2
+
+dist: trusty
+sudo: false
+language: python
+
+notifications:
+  email: false
+
+python:
+  - "3.4"
+  - "3.6"
+
+os:
+  - linux
+  - osx
+
+branches:
+  only:
+    - master
+    - travis
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+
+    packages:
+    - libgtk-3-dev
+    - libgtk-3-0
+    - libstdc++-6-pic
+
+
+before_install:
+  - set -e
+
+install:
+  - export SDK_PATH=https://raw.githubusercontent.com/c-smile/sciter-sdk/master
+  - if [ "$TRAVIS_OS_NAME" = "osx"   ]; then curl -so "$TRAVIS_BUILD_DIR/sciter-osx-64.dylib" $SDK_PATH/bin.osx/sciter-osx-64.dylib; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then curl -so "$TRAVIS_BUILD_DIR/libsciter-gtk.so" $SDK_PATH/bin.gtk/x64/libsciter-gtk.so; fi
+
+before_script:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$TRAVIS_BUILD_DIR"; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cp "$TRAVIS_BUILD_DIR/sciter-osx-64.dylib" "$TRAVIS_BUILD_DIR/libsciter-osx-64.dylib"; fi
+
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$TRAVIS_BUILD_DIR"; fi
+
+  - export PATH="$PATH:$TRAVIS_BUILD_DIR"
+  - export LIBRARY_PATH="$LIBRARY_PATH:$TRAVIS_BUILD_DIR"
+  - python3 --version
+
+
+script:
+  - python3 setup.py develop
+  - python3 tests/test_value.py
+
+after_script: set +e
