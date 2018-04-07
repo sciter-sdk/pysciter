@@ -501,13 +501,13 @@ class Element:
         """Request HTML data download for this element."""
         return self.request_data(url, SciterResourceType.RT_DATA_HTML, initiator)
 
-    def send_request(self, url: str, params=None, method='GET', async=False, data_type=SciterResourceType.RT_DATA_HTML):
+    def send_request(self, url: str, params=None, method='GET', send_async=False, data_type=SciterResourceType.RT_DATA_HTML):
         """Send HTTP GET or POST request for the element."""
         if method not in ('GET', 'POST'):
             raise ValueError("Only GET or POST supported here.")
 
         # GET_ASYNC = 0, GET_SYNC = 2, POST_ASYNC = 1, POST_SYNC = 3
-        method_type = 2 if async is False else 0
+        method_type = 2 if send_async is False else 0
         method_type += 1 if method == 'POST' else 0
 
         if params:
