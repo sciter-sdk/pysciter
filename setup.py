@@ -73,9 +73,15 @@ For installation instructions and usage examples please refer to `github project
 Compatibility
 =============
 
-PySciter requires Python 3.x (2.7 is planned in near future).
+PySciter requires Python 3.x.
 
-Sciter works on Microsoft Windows XP and above (x86/x64), Apple OS X v 10.7 and above (64-bit) and Linux/GTK (GTK v 3.0 and above, 64-bit only).
+Sciter works on:
+
+- Microsoft Windows XP and above (x86/x64)
+- macOS v 10.7 and above (64-bit)
+- Linux/GTK (GTK v 3.0 and above, 64-bit only)
+- Raspberry Pi
+
 
 Feedback and getting involved
 =============================

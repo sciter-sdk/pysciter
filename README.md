@@ -143,7 +143,7 @@ _Check [pysciter/examples](https://github.com/sciter-sdk/pysciter/tree/master/ex
 * [x] Linux
 * [x] Raspberry Pi
 
-Python 3.x (2.7 in near future).
+Python 3.x.
 
 
 ## License
