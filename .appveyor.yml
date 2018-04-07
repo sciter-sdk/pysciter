@@ -13,6 +13,12 @@ environment:
   - TARGET: Python34-x64
     ARCH: 64
 
+  - TARGET: Python35
+    ARCH: 32
+
+  - TARGET: Python35-x64
+    ARCH: 64
+
   - TARGET: Python36
     ARCH: 32
 
