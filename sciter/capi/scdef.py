@@ -58,17 +58,22 @@ class SCRIPT_RUNTIME_FEATURES(enum.IntEnum):
 
 
 class GFX_LAYER(enum.IntEnum):
+    AUTO          = 0xFFFF
+    CPU           = 1
+
     if SCITER_WIN:
-        GFX_LAYER_GDI       = 1
+        GDI       = 1
     elif SCITER_LNX:
-        GFX_LAYER_CG        = 1
+        CG        = 1
     elif SCITER_OSX:
-        GFX_LAYER_CAIRO     = 1
-    GFX_LAYER_WARP          = 2
-    GFX_LAYER_D2D           = 3
-    GFX_LAYER_SKIA_CPU      = 4
-    GFX_LAYER_SKIA_OPENGL   = 5
-    GFX_LAYER_AUTO          = 0xFFFF
+        CAIRO     = 1
+
+    if SCITER_WIN:
+        WARP      = 2
+        D2D       = 3
+
+    SKIA_CPU      = 4
+    SKIA_OPENGL   = 5
 
 
 class OUTPUT_SUBSYTEMS(enum.IntEnum):
