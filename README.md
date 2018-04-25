@@ -4,7 +4,7 @@
 [![Build Status](https://img.shields.io/travis/sciter-sdk/pysciter/master.svg)](https://travis-ci.org/sciter-sdk/pysciter)
 [![PyPI](https://img.shields.io/pypi/v/pysciter.svg)](https://pypi.python.org/pypi/PySciter)
 [![License](https://img.shields.io/pypi/l/pysciter.svg)](https://pypi.python.org/pypi/PySciter)
-[![Join the chat at https://gitter.im/pravic/sciter](https://badges.gitter.im/pravic/sciter.svg)](https://gitter.im/pravic/sciter)
+[![Join the forums at https://sciter.com/forums](https://img.shields.io/badge/forum-sciter.com-orange.svg)](https://sciter.com/forums)
 
 Check [this page](https://sciter.com/developers/sciter-sdk-bindings/) for other language bindings (Delphi / D / Go / .NET / Python / Rust).
 
