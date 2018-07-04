@@ -48,6 +48,7 @@ class SCITER_RT_OPTIONS(enum.IntEnum):
                                    # That UX theme is not using OS primitives for rendering input elements. Use it if you want exactly
                                    # the same (modulo fonts) look-n-feel on all platforms.
     SCITER_ALPHA_WINDOW  = 12      # hWnd, value - TRUE/FALSE - window uses per pixel alpha (e.g. WS_EX_LAYERED/UpdateLayeredWindow() window)
+    SCITER_SET_INIT_SCRIPT = 13    # hWnd - N/A , value LPCSTR - UTF-8 encoded script source to be loaded into each view before any other script execution.
 
 
 class SCRIPT_RUNTIME_FEATURES(enum.IntEnum):
