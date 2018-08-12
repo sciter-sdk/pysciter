@@ -168,12 +168,22 @@ class SCROLL_EVENTS(enum.IntEnum):
     SCROLL_SLIDER_PRESSED) = range(11)
 
 
+class SCROLL_SOURCE(enum.IntEnum):
+    (SCROLL_SOURCE_UNKNOWN,
+    SCROLL_SOURCE_KEYBOARD,     # `SCROLL_PARAMS::reason` contains a key code
+    SCROLL_SOURCE_SCROLLBAR,    # `SCROLL_PARAMS::reason` contains a `SCROLLBAR_PART` enum
+    SCROLL_SOURCE_ANIMATOR,
+    ) = range(4)
+
+
 class SCROLL_PARAMS(ctypes.Structure):
     _fields_ = [
-        ("cmd", UINT),           # SCROLL_EVENTS
-        ("target", HELEMENT),        # target element
+        ("cmd", UINT),          # SCROLL_EVENTS
+        ("target", HELEMENT),   # target element
         ("pos", INT),           # scroll position if SCROLL_POS
-        ("vertical", BOOL),      # true if from vertical scrollbar
+        ("vertical", BOOL),     # true if from vertical scrollbar
+        ("source", UINT),       # SCROLL_SOURCE
+        ("reason", UINT),       # SCROLLBAR_PART or key code, see SCROLL_SOURCE
     ]
 
 
