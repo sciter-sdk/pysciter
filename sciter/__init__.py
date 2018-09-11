@@ -40,8 +40,9 @@ def version(as_str=False):
 
 def version_num():
     """Return version of Sciter engine as 0x03030107 number."""
+    # However, `4.0.2.5257` can't be represented as a 32-bit number, we return `0x04_00_02_00` instead.
     a, b, c, d = version()
-    return (a << 24) | (b << 16) | (c << 8) | (d << 0)
+    return (a << 24) | (b << 16) | (c << 8) | (0)
 
 def set_option(option, value):
     """Set various sciter engine global options, see the SCITER_RT_OPTIONS."""
