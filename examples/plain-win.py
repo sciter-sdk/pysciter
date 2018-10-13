@@ -94,8 +94,7 @@ def on_wnd_message(hWnd, Msg, wParam, lParam):
 
 def main():
     clsname = sapi.SciterClassName()
-
-    # sciter.set_option(sciter.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, 0x08)
+    sciter.runtime_features(allow_sysinfo=True)
 
     title = u"Win32 Sciter"
     clsname = u"PySciter"

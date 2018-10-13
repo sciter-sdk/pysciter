@@ -51,6 +51,19 @@ def set_option(option, value):
         raise sciter.SciterError("Could not set option " + str(option) + "=" + str(value))
     return True
 
+def runtime_features(file_io=True, socket_io=True, allow_eval=True, allow_sysinfo=True):
+    """Set runtime features that have been disabled by default since 4.2.5.0"""
+    from .capi.scdef import SCRIPT_RUNTIME_FEATURES
+    flags = 0
+    if file_io:
+        flags += SCRIPT_RUNTIME_FEATURES.ALLOW_FILE_IO
+    if socket_io:
+        flags += SCRIPT_RUNTIME_FEATURES.ALLOW_SOCKET_IO
+    if allow_eval:
+        flags += SCRIPT_RUNTIME_FEATURES.ALLOW_EVAL
+    if allow_sysinfo:
+        flags += SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO
+    return set_option(SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, flags)
 
 def script(name=None, convert=True, safe=True):
     """Annotation decorator for the functions that called from script."""

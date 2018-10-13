@@ -84,6 +84,8 @@ class Frame(sciter.Window):
 
 
 if __name__ == '__main__':
+    sciter.runtime_features(allow_sysinfo=True)
+
     import os
     htm = os.path.join(os.path.dirname(__file__), 'pysciter.htm')
     frame = Frame()
