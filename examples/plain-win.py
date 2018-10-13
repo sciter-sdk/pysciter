@@ -1,8 +1,9 @@
 """Sciter sample for Win32 API."""
 
 # sciter import
+import sciter
 from sciter import sapi
-from sciter.scdef import *
+from sciter.capi.scdef import *
 
 # ctypes import
 from ctypes import *
@@ -27,7 +28,7 @@ WHITE_BRUSH = 0
 
 IDC_ARROW = 31514
 
-WNDPROCTYPE = WINFUNCTYPE(c_int, HWND, c_uint, WPARAM, LPARAM)
+WNDPROCTYPE = WINFUNCTYPE(LRESULT, HWND, c_uint, WPARAM, LPARAM)
 
 
 class WNDCLASSEX(Structure):
@@ -84,14 +85,18 @@ def on_wnd_message(hWnd, Msg, wParam, lParam):
     try:
         return windll.user32.DefWindowProcW(hWnd, Msg, wParam, lParam)
     except:
-        # etype, evalue, estack = sys.exc_info()
+        import traceback
+        etype, evalue, estack = sys.exc_info()
         print("WndProc exception: %X, 0x%04X, 0x%X, 0x%X" % (hWnd, Msg, wParam, lParam))
-        # traceback.print_exception(etype, evalue, estack)
+        traceback.print_exception(etype, evalue, estack)
     return 0
 
 
 def main():
     clsname = sapi.SciterClassName()
+
+    # sciter.set_option(sciter.SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, 0x08)
+
     title = u"Win32 Sciter"
     clsname = u"PySciter"
 
