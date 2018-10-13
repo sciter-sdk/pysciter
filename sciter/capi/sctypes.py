@@ -20,6 +20,9 @@ SCITER_LNX = SCITER_OS == 'linux'
 
 def utf16tostr(addr, size=-1):
     """Read UTF-16 string from memory and encode as python string."""
+    if addr is None:
+        return None
+
     cb = size if size > 0 else 32
     bstr = ctypes.string_at(addr, cb)
     if size >= 0:
