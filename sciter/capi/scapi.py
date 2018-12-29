@@ -489,9 +489,10 @@ def SciterAPI():
         # same behavior for OSX & Linux
         def find_sciter(dllname):
             import ctypes.util
-            sclib = ctypes.util.find_library(dllname)
-            if not sclib:
-                # try LD_LIBRARY_PATH
+            dllfile = dllname + SCITER_DLL_EXT
+            dllpath = ctypes.util.find_library(dllname)
+            if not dllpath:
+                # try $LD_LIBRARY_PATH
                 def find_in_path(dllname, envname):
                     import os
                     if envname in os.environ:
@@ -501,14 +502,18 @@ def SciterAPI():
                                 return fname
                     return None
 
-                sclib = find_in_path(dllname + SCITER_DLL_EXT, 'DYLD_LIBRARY_PATH' if SCITER_OSX else 'LD_LIBRARY_PATH')
+                dllpath = find_in_path(dllfile, 'DYLD_LIBRARY_PATH' if SCITER_OSX else 'LD_LIBRARY_PATH')
 
-            if not sclib:
+                # try $PATH
+                if not dllpath:
+                    dllpath = find_in_path(dllfile, 'PATH')
+
+            if not dllpath:
                 # last chance: try to load .so
-                sclib = dllname + SCITER_DLL_EXT
+                dllpath = dllfile
             try:
                 RTLD_LAZY = 1
-                return ctypes.CDLL(sclib, ctypes.RTLD_LOCAL | RTLD_LAZY)
+                return ctypes.CDLL(dllpath, ctypes.RTLD_LOCAL | RTLD_LAZY)
             except OSError as e:
                 errors.append(str(e))
                 return None
