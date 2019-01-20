@@ -9,6 +9,8 @@ from sciter.capi.sctypes import HWINDOW
 import sciter
 import sciter.dom
 
+import sys
+
 _api = sciter.SciterAPI()
 
 
@@ -175,7 +177,7 @@ class Host():
             text = text.value
         message = text.replace("\r", "\n").rstrip()
         if message:
-            print("{}:{}: {}".format(sevname, sysname, message))
+            print("{}:{}: {}".format(sevname, sysname, message), file=sys.stderr)
         pass
 
     def handle_notification(self, pnm, param):
