@@ -234,6 +234,7 @@ class DRAW_EVENTS(enum.IntEnum):
     DRAW_BACKGROUND = 0
     DRAW_CONTENT = 1
     DRAW_FOREGROUND = 2
+    DRAW_OUTLINE = 3
 
 
 class DRAW_PARAMS(ctypes.Structure):
