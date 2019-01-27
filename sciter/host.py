@@ -177,7 +177,8 @@ class Host():
             text = text.value
         message = text.replace("\r", "\n").rstrip()
         if message:
-            print("{}:{}: {}".format(sevname, sysname, message), file=sys.stderr)
+            destination = sys.stdout if sevname == 'info' else sys.stderr
+            print("{}:{}: {}".format(sevname, sysname, message), file=destination)
         pass
 
     def handle_notification(self, pnm, param):
