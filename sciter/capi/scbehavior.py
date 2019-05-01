@@ -351,6 +351,8 @@ class BEHAVIOR_EVENTS(enum.IntEnum):
     PAGINATION_PAGE    = 0xE1      # behavior:pager paginated page no, reason -> page no
     PAGINATION_ENDS    = 0xE2      # behavior:pager end pagination, reason -> total pages
 
+    CUSTOM             = 0xF0      # event with custom name, since 4.2.8.0
+
     FIRST_APPLICATION_EVENT_CODE = 0x100
     # all custom event codes shall be greater
     # than this number. All codes below this will be used
@@ -385,6 +387,7 @@ class BEHAVIOR_EVENT_PARAMS(ctypes.Structure):
                                     # In case of custom event notifications this may be any
                                     # application specific value.
         ("data", SCITER_VALUE),     # auxiliary data accompanied with the event. E.g. FORM_SUBMIT event is using this field to pass collection of values.
+        ("name", LPCWSTR),          # name of a custom event (when `cmd` is `CUSTOM`), since 4.2.8.0
     ]
 
 
