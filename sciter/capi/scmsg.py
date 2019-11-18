@@ -1,4 +1,4 @@
-"""Message definitions to be passed to SciterProcX function.
+"""Message definitions to be passed to the SciterProcX function.
 
 """
 import enum
@@ -7,7 +7,7 @@ from ctypes import Structure, Union, c_void_p
 from sciter.capi.sctypes import UINT, BOOL, HDC
 from sciter.capi.scdef import ELEMENT_BITMAP_RECEIVER
 from sciter.capi.scdom import HELEMENT
-
+from sciter.capi.scbehavior import MOUSE_BUTTONS, MOUSE_EVENTS, KEYBOARD_STATES
 
 class SCITER_X_MSG_CODE(enum.IntEnum):
     """SCITER_X_MSG message/function identifier."""
@@ -15,6 +15,9 @@ class SCITER_X_MSG_CODE(enum.IntEnum):
     SXM_DESTROY = 1
     SXM_SIZE = 2
     SXM_PAINT = 3
+    SXM_RESOLUTION = 4
+    SXM_HEARTBIT = 5
+    SXM_MOUSE = 6
 # end
 
 
@@ -48,11 +51,34 @@ class SCITER_X_MSG_SIZE(Structure):
         ("height", UINT),
     ]
 
+class SCITER_X_MSG_RESOLUTION(Structure):
+    _fields_ = [
+        ("header", SCITER_X_MSG),
+        ("pixelsPerInch", UINT),
+    ]
+
+class SCITER_X_MSG_MOUSE(Structure):
+    _fields_ = [
+        ("header", SCITER_X_MSG),
+        ("button", MOUSE_BUTTONS),
+        ("event", MOUSE_EVENTS),
+        ("modifiers", KEYBOARD_STATES),
+        ("pos", POINT),
+    ]
+
+class SCITER_X_MSG_HEARTBIT(Structure):
+    _fields_ = [
+        ("header", SCITER_X_MSG),
+        ("time", UINT),
+
+    ]
 
 class SCITER_PAINT_TARGET_TYPE(enum.IntEnum):
     SPT_DEFAULT = 0     # default rendering target - window surface
     SPT_RECEIVER = 1    # target::receiver fields are valid
     SPT_DC = 2          # target::hdc is valid
+    SPT_OPENGL = 3      # target is not used - caller shall set current context on its side
+    SPT_OPENGLES = 4    # target is not used - caller shall set current context on its side
 
 
 class SCITER_X_MSG_PAINT_RECEIVER(Structure):
