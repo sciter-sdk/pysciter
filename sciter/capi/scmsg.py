@@ -4,7 +4,7 @@
 import enum
 
 from ctypes import Structure, Union, c_void_p
-from sciter.capi.sctypes import UINT, BOOL, HDC
+from sciter.capi.sctypes import UINT, BOOL, HDC, POINT
 from sciter.capi.scdef import ELEMENT_BITMAP_RECEIVER
 from sciter.capi.scdom import HELEMENT
 from sciter.capi.scbehavior import MOUSE_BUTTONS, MOUSE_EVENTS, KEYBOARD_STATES
