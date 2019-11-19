@@ -60,9 +60,9 @@ class SCITER_X_MSG_RESOLUTION(Structure):
 class SCITER_X_MSG_MOUSE(Structure):
     _fields_ = [
         ("header", SCITER_X_MSG),
-        ("button", MOUSE_BUTTONS),
-        ("event", MOUSE_EVENTS),
-        ("modifiers", KEYBOARD_STATES),
+        ("button", UINT),       # MOUSE_BUTTONS
+        ("event", UINT),        # MOUSE_EVENTS
+        ("modifiers", UINT),    # KEYBOARD_STATES
         ("pos", POINT),
     ]
 
