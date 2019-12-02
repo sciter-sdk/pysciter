@@ -51,6 +51,7 @@ def api_version():
     return api.version
 
 def is_windowless():
+    """Returns True for windowless builds."""
     return api_version() >= 0x00010001
 
 def set_option(option, value):
