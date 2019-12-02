@@ -44,6 +44,15 @@ def version_num():
     a, b, c, d = version()
     return (a << 24) | (b << 16) | (c << 8) | (0)
 
+def api_version():
+    """Return Sciter API version number, since 4.4.0.3."""
+    # `0x0000_0001` in regular builds
+    # `0x0001_0001` in windowless versions.
+    return api.version
+
+def is_windowless():
+    return api_version() >= 0x00010001
+
 def set_option(option, value):
     """Set various sciter engine global options, see the SCITER_RT_OPTIONS."""
     ok = api.SciterSetOption(None, option, value)
