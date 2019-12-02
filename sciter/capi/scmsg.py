@@ -18,6 +18,8 @@ class SCITER_X_MSG_CODE(enum.IntEnum):
     SXM_RESOLUTION = 4
     SXM_HEARTBIT = 5
     SXM_MOUSE = 6
+    SXM_KEY = 7
+    SXM_FOCUS = 8
 # end
 
 
@@ -60,10 +62,26 @@ class SCITER_X_MSG_RESOLUTION(Structure):
 class SCITER_X_MSG_MOUSE(Structure):
     _fields_ = [
         ("header", SCITER_X_MSG),
-        ("button", UINT),       # MOUSE_BUTTONS
+        #("button", UINT),      # this field has been reordered in 4.4.0.3
         ("event", UINT),        # MOUSE_EVENTS
+        ("button", UINT),       # MOUSE_BUTTONS
         ("modifiers", UINT),    # KEYBOARD_STATES
         ("pos", POINT),
+    ]
+
+class SCITER_X_MSG_KEY(Structure):
+    _fields_ = [
+        ("header", SCITER_X_MSG),
+        #("button", UINT),      # this field has been reordered in 4.4.0.3
+        ("event", UINT),        # MOUSE_EVENTS
+        ("code", UINT),         # key scan code
+        ("modifiers", UINT),    # KEYBOARD_STATES
+    ]
+
+class SCITER_X_MSG_FOCUS(Structure):
+    _fields_ = [
+        ("header", SCITER_X_MSG),
+        ("got", BOOL),
     ]
 
 class SCITER_X_MSG_HEARTBIT(Structure):

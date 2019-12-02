@@ -27,6 +27,8 @@ class SciterNotification(enum.IntEnum):
     SC_ENGINE_DESTROYED = 0x05
     SC_POSTED_NOTIFICATION = 0x06
     SC_GRAPHICS_CRITICAL_FAILURE = 0x07
+    SC_KEYBOARD_REQUEST = 0x08
+    SC_INVALIDATE_RECT = 0x09
 
 
 class SCITER_RT_OPTIONS(enum.IntEnum):
@@ -151,6 +153,22 @@ class SCN_ATTACH_BEHAVIOR(Structure):
         ("behaviorName", LPCSTR),
         ("elementProc", c_void_p),
         ("elementTag", LPVOID),
+    ]
+
+class SCN_KEYBOARD_REQUEST(Structure):
+    """."""
+    _fields_ = [
+        ("code", c_uint),
+        ("hwnd", HWINDOW),
+        ("keyboardMode", c_uint)
+    ]
+
+class SCN_INVALIDATE_RECT(Structure):
+    """."""
+    _fields_ = [
+        ("code", c_uint),
+        ("hwnd", HWINDOW),
+        ("invalidRect", RECT)
     ]
 
 
