@@ -473,17 +473,26 @@ def SciterAPI():
 
     if SCITER_WIN:
         # load 4.x version by default
+        # note: somehow `ctypes.WinDLL(dllname)` does not work in Python 3.8 anymore;
+        # now we use the full path if found.
+        import ctypes.util
         try:
-            scdll = ctypes.WinDLL(SCITER_DLL_NAME)
+            dll = ctypes.util.find_library(SCITER_DLL_NAME)
+            if not dll:
+                dll = SCITER_DLL_NAME
+            scdll = ctypes.WinDLL(dll)
         except OSError as e:
-            errors.append("'%s': %s" % (SCITER_DLL_NAME, str(e)))
+            errors.append("'%s': %s" % (dll, str(e)))
 
             # try to find 3.x version
             try:
-                dllname = "sciter64" if sys.maxsize > 2**32 else "sciter32"
-                scdll = ctypes.WinDLL(dllname)
+                dllname = "sciter64.dll" if sys.maxsize > 2**32 else "sciter32.dll"
+                dll = ctypes.util.find_library(dllname)
+                if not dll:
+                    dll = dllname
+                scdll = ctypes.WinDLL(dll)
             except OSError as e:
-                errors.append("'%s': %s" % (dllname, str(e)))
+                errors.append("'%s': %s" % (dll, str(e)))
 
     else:
         # same behavior for OSX & Linux
