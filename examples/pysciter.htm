@@ -21,17 +21,20 @@
 
       var counter = 0;
 
-      $(button#append).on("click", function(){
-        $(body).$append(<h1#test>{++counter }</h1>);
+      $(button#append).on("click", function() {
+        $(body).$append(<h1#test>{ ++counter }</h1>);
       });
 
-      $(button#open).on("click", function(){
+      $(button#open).on("click", function() {
 
         var fn = view.selectFile(#open,
           "HTML Files (*.htm,*.html)|*.HTM;*.HTML|All Files (*.*)|*.*" , "html" );
 
         stdout.println("selected file: " + fn);
-        $(body).$append(<h1#test>{fn}</h1>);
+
+        if (fn) {
+          $(body).$append(<h1#test>{fn}</h1>);
+        }
       });
 
       $(button#ti2py).on("click", function() {
