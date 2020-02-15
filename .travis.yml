@@ -18,6 +18,8 @@ matrix:
       python: "3.8"
 
     - os: osx
+      # python comes with `osx_image`, see
+      # https://blog.travis-ci.com/2019-08-07-extensive-python-testing-on-travis-ci
       language: shell
       osx_image: xcode10.2
 
