@@ -1,7 +1,7 @@
 # Based on the "trust" template v0.1.2
 # https://github.com/japaric/trust/tree/v0.1.2
 
-dist: trusty
+dist: xenial
 sudo: false
 language: python
 
@@ -13,14 +13,13 @@ matrix:
     - os: linux
       python: "3.4"
     - os: linux
-      python: "3.5"
+      python: "3.7"
     - os: linux
-      python: "3.6"
-    - os: linux
-      python: "3.7-dev"
+      python: "3.8"
 
     - os: osx
-      language: generic
+      language: shell
+      osx_image: xcode10.2
 
 branches:
   only:
@@ -40,13 +39,15 @@ addons:
 
 before_install:
   - set -e
+  - python3 --version
 
 install:
   - export SDK_PATH=https://raw.githubusercontent.com/c-smile/sciter-sdk/master
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then curl -so "$TRAVIS_BUILD_DIR/libsciter-gtk.so" $SDK_PATH/bin.lnx/x64/libsciter-gtk.so; fi
   - if [ "$TRAVIS_OS_NAME" = "osx"   ]; then curl -so "$TRAVIS_BUILD_DIR/sciter-osx-64.dylib" $SDK_PATH/bin.osx/sciter-osx-64.dylib; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx"   ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx"   ]; then brew install python || brew upgrade python; fi
+
+  - pip3 install -U pip
+  - pip3 install -U pytest
 
 before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$TRAVIS_BUILD_DIR"; fi
@@ -56,8 +57,6 @@ before_script:
 
   - export PATH="$PATH:$TRAVIS_BUILD_DIR"
   - export LIBRARY_PATH="$LIBRARY_PATH:$TRAVIS_BUILD_DIR"
-  - python3 --version
-
 
 script:
   - python3 setup.py develop
