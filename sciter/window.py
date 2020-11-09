@@ -44,8 +44,8 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
             if size is None:
                 raise ValueError("`size` is required if `pos` is provided!")
         if size is not None:
-            rect.right = size[0]
-            rect.bottom = size[1]
+            rect.right = rect.left + size[0]
+            rect.bottom = rect.top + size[1]
         if not pos and not size:
             rect = None
 
