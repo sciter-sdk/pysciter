@@ -156,6 +156,7 @@ class value():
         """Human-like value representation."""
         copy = self.copy()
         ok = _api.ValueToString(copy, VALUE_STRING_CVT_TYPE.CVT_JSON_LITERAL)
+        self._throw_if(ok)
         return copy.get_value()
 
     def __bool__(self):
@@ -335,6 +336,7 @@ class value():
             return True
         scfunc = sciter.capi.scdef.KeyValueCallback(on_element)
         ok = _api.ValueEnumElements(self, scfunc, None)
+        self._throw_if(ok)
         return tuple(r)
 
 

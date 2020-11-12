@@ -277,14 +277,16 @@ class Element:
         """Get root DOM element of the Sciter document."""
         p = HELEMENT()
         ok = _api.SciterGetRootElement(hwnd, ctypes.byref(p))
-        return Element(p)
+        Element._throw_if(ok)
+        return Element(p) if p else None
 
     @classmethod
     def from_focus(cls, hwnd):
         """Get focus DOM element of the Sciter document."""
         p = HELEMENT()
         ok = _api.SciterGetFocusElement(hwnd, ctypes.byref(p))
-        return Element(p)
+        Element._throw_if(ok)
+        return Element(p) if p else None
 
     @classmethod
     def from_point(cls, hwnd, x, y):
@@ -292,7 +294,8 @@ class Element:
         p = HELEMENT()
         pt = sciter.capi.sctypes.POINT(x, y)
         ok = _api.SciterFindElement(hwnd, pt, ctypes.byref(p))
-        return Element(p)
+        Element._throw_if(ok)
+        return Element(p) if p else None
 
     @classmethod
     def from_highlighted(cls, hwnd):
@@ -307,7 +310,8 @@ class Element:
         """Get element handle by its UID."""
         p = HELEMENT()
         ok = _api.SciterGetElementByUID(hwnd, uid, ctypes.byref(p))
-        return Element(p)
+        Element._throw_if(ok)
+        return Element(p) if p else None
 
     # instance methods
     def __init__(self, node=None):
@@ -337,6 +341,7 @@ class Element:
     def _unuse(self):
         if self.h:
             ok = _api.Sciter_UnuseElement(self.h)
+            self._throw_if(ok)
             self.h = None
             self._as_parameter_ = self.h
         pass
@@ -410,6 +415,7 @@ class Element:
         """Get element UID - identifier suitable for storage."""
         n = ctypes.c_uint()
         ok = _api.SciterGetElementUID(self, ctypes.byref(n))
+        self._throw_if(ok)
         return n.value
 
     def get_tag(self):
@@ -707,9 +713,9 @@ class Element:
 
     def parent(self):
         """Get parent element."""
-        # TODO: check root: return None or Error
         p = HELEMENT()
         ok = _api.SciterGetParentElement(self, ctypes.byref(p))
+        self._throw_if(ok)
         return Element(p) if p else None
 
     def index(self):
@@ -919,6 +925,6 @@ class Element:
             return
         import inspect
         context = inspect.stack()[1][3]
-        raise DomError(code, "Node." + context)
+        raise DomError(code, "Element." + context)
 
     pass
