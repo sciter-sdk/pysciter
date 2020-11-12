@@ -387,7 +387,7 @@ class value():
 
     def is_string(self):
         """."""
-        t, u = self.get_type(with_unit=True)
+        t, _ = self.get_type(with_unit=True)
         return t == VALUE_TYPE.T_STRING
 
     def is_error_string(self):
@@ -537,7 +537,6 @@ class value():
         t, u = self.get_type(with_unit=True)
         u = str(u).rpartition('.')[2]
         raise TypeError("%s (%s) is unsupported python type" % (str(t), str(u)))
-        pass
 
     def set_value(self, val):
         """Set Python object to the sciter::value.

@@ -138,7 +138,7 @@ class Host():
     def call_function(self, name: str, *args):
         """Call scripting function defined in the global namespace."""
         rv = sciter.Value()
-        argc, argv, this = sciter.Value.pack_args(*args)
+        argc, argv, _ = sciter.Value.pack_args(*args)
         ok = _api.SciterCall(self.hwnd, name.encode('utf-8'), argc, argv, rv)
         sciter.Value.raise_from(rv, ok != False, name)
         return rv
@@ -183,6 +183,8 @@ class Host():
 
     def handle_notification(self, pnm, param):
         """Sciter notification handler."""
+        # pylint: disable=assignment-from-none,assignment-from-no-return
+        # because the `self.on_` methods can be overloaded
         rv = 0
         nm = pnm.contents
         if nm.code == SciterNotification.SC_LOAD_DATA:
