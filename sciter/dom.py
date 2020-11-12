@@ -61,7 +61,7 @@ class Node:
             ok = _api.SciterCreateTextNode(text, len(text), ctypes.byref(rv))
         elif kind == NODE_TYPE.NT_COMMENT:
             ok = _api.SciterCreateCommentNode(text, len(text), ctypes.byref(rv))
-        self._throw_if(ok)
+        Node._throw_if(ok)
         return Node(rv)
 
     def __init__(self, node=None):
@@ -121,7 +121,7 @@ class Node:
 
     def _unuse(self):
         if self.h:
-            ok = _api.SciterNodeRelease(self.h)
+            _api.SciterNodeRelease(self.h)
             self.h = None
             self._as_parameter_ = self.h
         pass
@@ -562,7 +562,7 @@ class Element:
     def call_function(self, name: str, *args):
         """Call scripting function defined in the namespace of the element (a.k.a. global function)."""
         rv = sciter.Value()
-        argc, argv, this = sciter.Value.pack_args(*args)
+        argc, argv, _ = sciter.Value.pack_args(*args)
         ok = _api.SciterCallScriptingFunction(self, name.encode('utf-8'), argv, argc, rv)
         sciter.Value.raise_from(rv, ok == SCDOM_RESULT.SCDOM_OK, name)
         self._throw_if(ok)
@@ -571,7 +571,7 @@ class Element:
     def call_method(self, name: str, *args):
         """Call scripting method defined for the element."""
         rv = sciter.Value()
-        argc, argv, this = sciter.Value.pack_args(*args)
+        argc, argv, _ = sciter.Value.pack_args(*args)
         ok = _api.SciterCallScriptingMethod(self, name.encode('utf-8'), argv, argc, rv)
         sciter.Value.raise_from(rv, ok == SCDOM_RESULT.SCDOM_OK, name)
         self._throw_if(ok)
@@ -725,7 +725,7 @@ class Element:
         dad = self.parent()
         if not dad or idx >= len(dad):
             return None
-        return dad[idx]
+        return dad[idx]     # pylint: disable=unsubscriptable-object
 
     def prev_sibling(self):
         """Get previous sibling element."""
@@ -733,21 +733,21 @@ class Element:
         dad = self.parent()
         if not dad or idx < 0 or idx >= len(dad):
             return None
-        return dad[idx]
+        return dad[idx]     # pylint: disable=unsubscriptable-object
 
     def first_sibling(self):
         """Get first sibling element."""
         dad = self.parent()
         if not dad or len(dad) == 0:
             return None
-        return dad[0]
+        return dad[0]     # pylint: disable=unsubscriptable-object
 
     def last_sibling(self):
         """Get last sibling element."""
         dad = self.parent()
         if not dad or len(dad) == 0:
             return None
-        return dad[len(dad)-1]
+        return dad[len(dad)-1]     # pylint: disable=unsubscriptable-object
 
     def children_count(self):
         """Get number of child elements."""

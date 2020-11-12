@@ -156,6 +156,8 @@ class EventHandler:
         if True:
             try:
                 args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
+                # pylint: disable=assignment-from-none,assignment-from-no-return
+                # because the `self.on_` methods can be overloaded
                 rv = self.on_script_call(fname, args)
             except Exception as e:
                 import traceback
@@ -183,6 +185,9 @@ class EventHandler:
 
     # event handler native callback
     def _element_proc(self, tag, he, evt, params):
+        # pylint: disable=assignment-from-none,assignment-from-no-return
+        # because the `self.on_` methods can be overloaded
+
         he = HELEMENT(he)
         if evt == EVENT_GROUPS.SUBSCRIPTIONS_REQUEST:
             p = ctypes.cast(params, ctypes.POINTER(ctypes.c_uint))

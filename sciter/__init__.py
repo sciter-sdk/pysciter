@@ -41,7 +41,7 @@ def version(as_str=False):
 def version_num():
     """Return version of Sciter engine as 0x03030107 number."""
     # However, `4.0.2.5257` can't be represented as a 32-bit number, we return `0x04_00_02_00` instead.
-    a, b, c, d = version()
+    a, b, c, _ = version()
     return (a << 24) | (b << 16) | (c << 8) | (0)
 
 def api_version():
@@ -58,7 +58,7 @@ def set_option(option, value):
     """Set various sciter engine global options, see the SCITER_RT_OPTIONS."""
     ok = api.SciterSetOption(None, option, value)
     if not ok:
-        raise sciter.SciterError("Could not set option " + str(option) + "=" + str(value))
+        raise SciterError("Could not set option " + str(option) + "=" + str(value))
     return True
 
 def runtime_features(file_io=True, socket_io=True, allow_eval=True, allow_sysinfo=True):
