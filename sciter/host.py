@@ -41,6 +41,8 @@ class Host():
     def setup_debug(self, hwnd=None):
         """Setup debug output function for specific window or globally."""
         ok = _api.SciterSetOption(hwnd, SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, True)
+        if not ok:
+            raise sciter.SciterError("Could not set debug mode")
         self._sciter_debug_proc = DEBUG_OUTPUT_PROC(self.on_debug_output)
         _api.SciterSetupDebugOutput(hwnd, None, self._sciter_debug_proc)
         pass
@@ -59,7 +61,7 @@ class Host():
         """Set sciter window home url."""
         ok = _api.SciterSetHomeURL(self.hwnd, url)
         if not ok:
-            raise sciter.SciterError("Could not home url " + str(url))
+            raise sciter.SciterError("Could not set home url " + str(url))
         return self
 
     def set_media_type(self, media_type: str):
@@ -126,6 +128,7 @@ class Host():
         """Get window root DOM element."""
         he = sciter.dom.HELEMENT()
         ok = _api.SciterGetRootElement(self.hwnd, ctypes.byref(he))
+        sciter.dom.Element._throw_if(ok)
         return sciter.dom.Element(he) if he else None
 
     def eval_script(self, script: str, name=None):
