@@ -15,6 +15,11 @@ if SCITER_WIN:
 
         _initialized = False
 
+        def __init__(self):
+            super().__init__()
+            self.hwnd = None
+            pass
+
         def _create(self, flags, rect, parent):
             if not WindowsWindow._initialized:
                 ctypes.windll.ole32.OleInitialize(None)
@@ -71,6 +76,8 @@ if SCITER_WIN:
             pass
 
         def _on_msg_delegate(self, hwnd, msg, wparam, lparam, pparam, phandled):
+            # pylint: disable=assignment-from-none,assignment-from-no-return
+            # because the `self.on_` methods can be overloaded
             rv = self.on_message(hwnd, msg, wparam, lparam)
             if rv is not None:
                 phandled.contents = 1  # True
@@ -91,6 +98,8 @@ elif SCITER_OSX:
             super().__init__()
             self.objc = ObjC()
             self.nsApp = None
+            self.hwnd = None
+            self.window_flags = None
 
             NSApplication = self.objc.getClass('NSApplication')
             self.nsApp = self.objc(NSApplication, 'sharedApplication')
@@ -249,7 +258,6 @@ elif SCITER_OSX:
 
         def call(self, obj, method, *args, **kwargs):
             # objc.call(NSSound, 'alloc')
-            objc = self.dll
             restype = kwargs.get('cast', ctypes.c_void_p)
             typename = kwargs.get('type')
             if typename is not None and hasattr(ctypes, typename):
@@ -295,6 +303,7 @@ elif SCITER_LNX:
 
         def __init__(self):
             super().__init__()
+            self.hwnd = None
             self._gtk = _init_lib()
             pass
 
