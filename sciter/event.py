@@ -120,6 +120,30 @@ class EventHandler:
         """Requested data has been delivered."""
         pass
 
+    def on_timer(self, timerId):
+        """Timer tick. Return `True` to continue timer, `False` to stop (default behavior)."""
+        pass
+
+    def on_mouse(self, params: MOUSE_PARAMS):
+        """Mouse event."""
+        pass
+
+    def on_key(self, params: KEY_PARAMS):
+        """Keyboard event."""
+        pass
+
+    def on_focus(self, params: FOCUS_PARAMS):
+        """Element focus get/loose event."""
+        pass
+
+    def on_draw(self, params: DRAW_PARAMS):
+        """Element draw event. Return `True` for custom drawing, `False` for default drawing."""
+        pass
+
+    def on_size(self):
+        """Element resize event."""
+        pass
+
     ## @}
 
     def _document_ready(self, target):
@@ -240,6 +264,35 @@ class EventHandler:
             # notification event: data requested by HTMLayoutRequestData just delivered
             p = ctypes.cast(params, ctypes.POINTER(DATA_ARRIVED_PARAMS))
             handled = self.on_data_arrived(p.contents)
+            return handled or False
+
+        elif evt == EVENT_GROUPS.HANDLE_DRAW:
+            p = ctypes.cast(params, ctypes.POINTER(DRAW_PARAMS))
+            handled = self.on_draw(p.contents)
+            return handled or False
+
+        elif evt == EVENT_GROUPS.HANDLE_MOUSE:
+            p = ctypes.cast(params, ctypes.POINTER(MOUSE_PARAMS))
+            handled = self.on_mouse(p.contents)
+            return handled or False
+
+        elif evt == EVENT_GROUPS.HANDLE_KEY:
+            p = ctypes.cast(params, ctypes.POINTER(KEY_PARAMS))
+            handled = self.on_key(p.contents)
+            return handled or False
+
+        elif evt == EVENT_GROUPS.HANDLE_FOCUS:
+            p = ctypes.cast(params, ctypes.POINTER(FOCUS_PARAMS))
+            handled = self.on_focus(p.contents)
+            return handled or False
+
+        elif evt == EVENT_GROUPS.HANDLE_TIMER:
+            p = ctypes.cast(params, ctypes.POINTER(TIMER_PARAMS))
+            handled = self.on_timer(p.contents.timerId)
+            return handled or False
+
+        elif evt == EVENT_GROUPS.HANDLE_SIZE:
+            handled = self.on_size()
             return handled or False
 
         return False
