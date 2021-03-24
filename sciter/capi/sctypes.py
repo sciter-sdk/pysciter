@@ -122,7 +122,8 @@ if SCITER_WIN:
 
 elif SCITER_OSX:
     # sciter-osx-32 since 3.3.1.8
-    SCITER_DLL_NAME = "sciter-osx-64" if sys.maxsize > 2**32 else "sciter-osx-32"
+    # libsciter since 4.4.6.3
+    SCITER_DLL_NAME = "libsciter"
     SCITER_DLL_EXT = ".dylib"
 
     SCFN = ctypes.CFUNCTYPE
