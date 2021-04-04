@@ -5,24 +5,33 @@ branches:
     - master
     - travis
 
+image:
+  - Visual Studio 2019
+
 environment:
   matrix:
+  # Python versions:
+  # https://www.appveyor.com/docs/windows-images-software/#python
+
   - TARGET: Python34
     ARCH: 32
 
   - TARGET: Python34-x64
     ARCH: 64
 
-  - TARGET: Python35
-    ARCH: 32
-
   - TARGET: Python35-x64
     ARCH: 64
 
-  - TARGET: Python36
-    ARCH: 32
-
   - TARGET: Python36-x64
+    ARCH: 64
+
+  - TARGET: Python37-x64
+    ARCH: 64
+
+  - TARGET: Python38-x64
+    ARCH: 64
+
+  - TARGET: Python39-x64
     ARCH: 64
 
 install:

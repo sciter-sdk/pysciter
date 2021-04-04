@@ -1,6 +1,8 @@
 # Based on the "trust" template v0.1.2
 # https://github.com/japaric/trust/tree/v0.1.2
 
+# Ubuntu versions:
+# https://docs.travis-ci.com/user/reference/linux/
 dist: xenial
 sudo: false
 language: python
@@ -10,12 +12,17 @@ notifications:
 
 matrix:
   include:
+    # Python versions:
+    # https://docs.travis-ci.com/user/languages/python/#python-versions
+
     - os: linux
       python: "3.4"
     - os: linux
       python: "3.7"
     - os: linux
       python: "3.8"
+    - os: linux
+      python: "3.9"
 
     - os: osx
       # python comes with `osx_image`, see
