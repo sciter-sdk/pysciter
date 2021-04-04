@@ -30,6 +30,10 @@ matrix:
       language: shell
       osx_image: xcode10.2
 
+    - os: osx
+      language: shell
+      osx_image: xcode12.2
+
 branches:
   only:
     - master

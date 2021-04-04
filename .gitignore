@@ -2,6 +2,7 @@ env*/*
 **/__pycache__/*
 *.pyc
 *.egg-info/*
-dist/*
+/dist/*
+/build/*
 PySciter.pyproj
 PySciter.sln
