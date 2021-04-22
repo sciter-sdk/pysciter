@@ -20,9 +20,8 @@ SciterVersion = SCFN(UINT, BOOL)
 SciterDataReady = SCFN(BOOL, HWINDOW, LPCWSTR, LPCBYTE, UINT)
 SciterDataReadyAsync = SCFN(BOOL, HWINDOW, LPCWSTR, LPCBYTE, UINT, LPVOID)
 
-if SCITER_WIN:
-    SciterProc = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM)
-    SciterProcND = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM, POINTER(BOOL))
+SciterProc = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM)
+SciterProcND = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM, POINTER(BOOL))
 
 SciterLoadFile = SCFN(BOOL, HWINDOW, LPCWSTR)
 SciterLoadHtml = SCFN(BOOL, HWINDOW, LPCBYTE, UINT, LPCWSTR)
@@ -38,26 +37,22 @@ SciterCall = SCFN(BOOL, HWINDOW, LPCSTR, UINT, POINTER(SCITER_VALUE), POINTER(SC
 SciterEval = SCFN(BOOL, HWINDOW, LPCWSTR, UINT, POINTER(SCITER_VALUE))
 SciterUpdateWindow = SCFN(VOID, HWINDOW)
 
-if SCITER_WIN:
-    SciterTranslateMessage = SCFN(BOOL, POINTER(MSG))
+SciterTranslateMessage = SCFN(BOOL, POINTER(MSG))
 
 SciterSetOption = SCFN(BOOL, HWINDOW, UINT, UINT_PTR)
 SciterGetPPI = SCFN(VOID, HWINDOW, POINTER(UINT), POINTER(UINT))
 SciterGetViewExpando = SCFN(BOOL, HWINDOW, POINTER(SCITER_VALUE))
 
-if SCITER_WIN:
-    SciterRenderD2D = SCFN(BOOL, HWINDOW, POINTER(ID2D1RenderTarget))
-    SciterD2DFactory = SCFN(BOOL, POINTER(ID2D1Factory))
-    SciterDWFactory = SCFN(BOOL, POINTER(IDWriteFactory))
+SciterRenderD2D = SCFN(BOOL, HWINDOW, POINTER(ID2D1RenderTarget))
+SciterD2DFactory = SCFN(BOOL, POINTER(ID2D1Factory))
+SciterDWFactory = SCFN(BOOL, POINTER(IDWriteFactory))
 
 SciterGraphicsCaps = SCFN(BOOL, LPUINT)
 SciterSetHomeURL = SCFN(BOOL, HWINDOW, LPCWSTR)
 
-if SCITER_OSX:
-    SciterCreateNSView = SCFN(HWINDOW, LPRECT)
+SciterCreateNSView = SCFN(HWINDOW, LPRECT)
 
-if SCITER_LNX:
-    SciterCreateWidget = SCFN(HWINDOW, LPRECT)
+SciterCreateWidget = SCFN(HWINDOW, LPRECT)
 
 
 SciterCreateWindow = SCFN(HWINDOW, UINT, LPRECT, SciterWindowDelegate, LPVOID, HWINDOW)
@@ -221,11 +216,10 @@ GetSciterRequestAPI = SCFN(LPSciterRequestAPI)
 SciterProcX = SCFN(BOOL, HWINDOW, POINTER(SCITER_X_MSG))
 
 
-if SCITER_WIN:
-    # DirectX API
-    SciterCreateOnDirectXWindow = SCFN(BOOL, HWINDOW, POINTER(IDXGISwapChain))
-    SciterRenderOnDirectXWindow = SCFN(BOOL, HWINDOW, HELEMENT, BOOL)
-    SciterRenderOnDirectXTexture = SCFN(BOOL, HWINDOW, HELEMENT, POINTER(IDXGISurface))
+# DirectX API
+SciterCreateOnDirectXWindow = SCFN(BOOL, HWINDOW, POINTER(IDXGISwapChain))
+SciterRenderOnDirectXWindow = SCFN(BOOL, HWINDOW, HELEMENT, BOOL)
+SciterRenderOnDirectXTexture = SCFN(BOOL, HWINDOW, HELEMENT, POINTER(IDXGISurface))
 
 
 class ISciterAPI(Structure):
@@ -444,10 +438,37 @@ class ISciterAPI(Structure):
         # since 4.0.0.0
         "SciterProcX",
 
+        # since 4.4.2.14
+        "SciterAtomValue",
+        "SciterAtomNameCB",
+
+        # since 4.4.2.16
+        "SciterSetGlobalAsset",
+
+        # since 4.4.4.7
+        "SciterGetElementAsset",
+
+        # since 4.4.4.6 (yet disabled)
+        "SciterSetVariable",
+        "SciterGetVariable",
+
+        # since 4.4.5.4
+        "SciterElementUnwrap",
+        "SciterElementWrap",
+        "SciterNodeUnwrap",
+        "SciterNodeWrap",
+
         ]
     # END OF ISciterAPI.
 
     def _make_fields(names):
+        #
+        # Patch the ISciterAPI structure.
+        #
+        # This works by conditionally defining the function types first in the global scope,
+        # then defining *all* the possible API names in a single array,
+        # and filtering the array eliminating those that don't exist in the global context.
+        #
         context = globals()
         fields = [(name, context[name]) for name in names if name in context]
         fields.insert(0, ("version", UINT))
