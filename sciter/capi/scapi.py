@@ -20,8 +20,12 @@ SciterVersion = SCFN(UINT, BOOL)
 SciterDataReady = SCFN(BOOL, HWINDOW, LPCWSTR, LPCBYTE, UINT)
 SciterDataReadyAsync = SCFN(BOOL, HWINDOW, LPCWSTR, LPCBYTE, UINT, LPVOID)
 
-SciterProc = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM)
-SciterProcND = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM, POINTER(BOOL))
+if SCITER_WIN:
+	SciterProc = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM)
+	SciterProcND = SCFN(LRESULT, HWINDOW, UINT, WPARAM, LPARAM, POINTER(BOOL))
+else:
+	SciterProc = c_void_p
+	SciterProcND = c_void_p
 
 SciterLoadFile = SCFN(BOOL, HWINDOW, LPCWSTR)
 SciterLoadHtml = SCFN(BOOL, HWINDOW, LPCBYTE, UINT, LPCWSTR)
@@ -37,22 +41,36 @@ SciterCall = SCFN(BOOL, HWINDOW, LPCSTR, UINT, POINTER(SCITER_VALUE), POINTER(SC
 SciterEval = SCFN(BOOL, HWINDOW, LPCWSTR, UINT, POINTER(SCITER_VALUE))
 SciterUpdateWindow = SCFN(VOID, HWINDOW)
 
-SciterTranslateMessage = SCFN(BOOL, POINTER(MSG))
+if SCITER_WIN:
+	SciterTranslateMessage = SCFN(BOOL, POINTER(MSG))
+else:
+	SciterTranslateMessage = c_void_p
 
 SciterSetOption = SCFN(BOOL, HWINDOW, UINT, UINT_PTR)
 SciterGetPPI = SCFN(VOID, HWINDOW, POINTER(UINT), POINTER(UINT))
 SciterGetViewExpando = SCFN(BOOL, HWINDOW, POINTER(SCITER_VALUE))
 
-SciterRenderD2D = SCFN(BOOL, HWINDOW, POINTER(ID2D1RenderTarget))
-SciterD2DFactory = SCFN(BOOL, POINTER(ID2D1Factory))
-SciterDWFactory = SCFN(BOOL, POINTER(IDWriteFactory))
+if SCITER_WIN:
+	SciterRenderD2D = SCFN(BOOL, HWINDOW, POINTER(ID2D1RenderTarget))
+	SciterD2DFactory = SCFN(BOOL, POINTER(ID2D1Factory))
+	SciterDWFactory = SCFN(BOOL, POINTER(IDWriteFactory))
+else:
+	SciterRenderD2D = c_void_p
+	SciterD2DFactory = c_void_p
+	SciterDWFactory = c_void_p
 
 SciterGraphicsCaps = SCFN(BOOL, LPUINT)
 SciterSetHomeURL = SCFN(BOOL, HWINDOW, LPCWSTR)
 
-SciterCreateNSView = SCFN(HWINDOW, LPRECT)
+if SCITER_OSX:
+	SciterCreateNSView = SCFN(HWINDOW, LPRECT)
+else:
+	SciterCreateNSView = c_void_p
 
-SciterCreateWidget = SCFN(HWINDOW, LPRECT)
+if SCITER_LNX:
+	SciterCreateWidget = SCFN(HWINDOW, LPRECT)
+else:
+	SciterCreateWidget = c_void_p
 
 
 SciterCreateWindow = SCFN(HWINDOW, UINT, LPRECT, SciterWindowDelegate, LPVOID, HWINDOW)
@@ -217,9 +235,14 @@ SciterProcX = SCFN(BOOL, HWINDOW, POINTER(SCITER_X_MSG))
 
 
 # DirectX API
-SciterCreateOnDirectXWindow = SCFN(BOOL, HWINDOW, POINTER(IDXGISwapChain))
-SciterRenderOnDirectXWindow = SCFN(BOOL, HWINDOW, HELEMENT, BOOL)
-SciterRenderOnDirectXTexture = SCFN(BOOL, HWINDOW, HELEMENT, POINTER(IDXGISurface))
+if SCITER_WIN:
+	SciterCreateOnDirectXWindow = SCFN(BOOL, HWINDOW, POINTER(IDXGISwapChain))
+	SciterRenderOnDirectXWindow = SCFN(BOOL, HWINDOW, HELEMENT, BOOL)
+	SciterRenderOnDirectXTexture = SCFN(BOOL, HWINDOW, HELEMENT, POINTER(IDXGISurface))
+else:
+	SciterCreateOnDirectXWindow = c_void_p
+	SciterRenderOnDirectXWindow = c_void_p
+	SciterRenderOnDirectXTexture = c_void_p
 
 
 class ISciterAPI(Structure):
