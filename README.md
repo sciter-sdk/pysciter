@@ -1,7 +1,7 @@
 # Python bindings for Sciter
 
-[![Build status](https://ci.appveyor.com/api/projects/status/rphv883klffw9em9/branch/master?svg=true)](https://ci.appveyor.com/project/pravic/pysciter)
-[![Build Status](https://img.shields.io/travis/sciter-sdk/pysciter/master.svg)](https://travis-ci.org/sciter-sdk/pysciter)
+[![AppVeyor status](https://ci.appveyor.com/api/projects/status/rphv883klffw9em9/branch/master?svg=true)](https://ci.appveyor.com/project/pravic/pysciter)
+[![Travis Status](https://www.travis-ci.com/sciter-sdk/pysciter.svg?branch=master)](https://www.travis-ci.com/sciter-sdk/pysciter)
 [![PyPI](https://img.shields.io/pypi/v/pysciter.svg)](https://pypi.python.org/pypi/PySciter)
 [![License](https://img.shields.io/pypi/l/pysciter.svg)](https://pypi.python.org/pypi/PySciter)
 [![Join the forums at https://sciter.com/forums](https://img.shields.io/badge/forum-sciter.com-orange.svg)](https://sciter.com/forums)
