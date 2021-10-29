@@ -16,7 +16,7 @@ class EventHandler:
     ALL_EVENTS = EVENT_GROUPS.HANDLE_ALL
     DEFAULT_EVENTS = EVENT_GROUPS.HANDLE_INITIALIZATION | EVENT_GROUPS.HANDLE_SIZE | EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL
 
-    def __init__(self, window=None, element=None, subscription=DEFAULT_EVENTS):
+    def __init__(self, window=None, element=None, subscription=DEFAULT_EVENTS, script_call_exception_handler=None):
         """Attach event handler to dom::element or sciter::window."""
         super().__init__()
         self.subscription = subscription
@@ -27,7 +27,7 @@ class EventHandler:
         self.set_dispatch_options()
         if window or element:
             self.attach(window, element, subscription)
-        pass
+        self.script_call_exception_handler = script_call_exception_handler  # callback function to catch exceptions in script calls
 
     def __del__(self):
         assert(not self.element)
@@ -186,6 +186,9 @@ class EventHandler:
             except Exception as e:
                 import traceback
                 traceback.print_exc()
+                if self.script_call_exception_handler:
+                    # if exception handler is defined, call it with exception as argument
+                    self.script_call_exception_handler(e)
                 rv = e
 
         # if not handled, call decorated method
@@ -199,6 +202,9 @@ class EventHandler:
             except Exception as e:
                 import traceback
                 traceback.print_exc()
+                if self.script_call_exception_handler:
+                    # if exception handler is defined, call it with exception as argument
+                    self.script_call_exception_handler(e)
                 rv = str(e) if skip_exception else e
 
         # if handled, pack result for Sciter
