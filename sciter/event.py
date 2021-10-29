@@ -27,7 +27,10 @@ class EventHandler:
         self.set_dispatch_options()
         if window or element:
             self.attach(window, element, subscription)
-        self.script_call_exception_handler = script_call_exception_handler  # callback function to catch exceptions in script calls
+
+        # callback function to catch exceptions in script calls
+        # handler_func(function_name, exception)
+        self.script_call_exception_handler = script_call_exception_handler
 
     def __del__(self):
         assert(not self.element)
@@ -188,7 +191,7 @@ class EventHandler:
                 traceback.print_exc()
                 if self.script_call_exception_handler:
                     # if exception handler is defined, call it with exception as argument
-                    self.script_call_exception_handler(e)
+                    self.script_call_exception_handler(fname, e)
                 rv = e
 
         # if not handled, call decorated method
@@ -204,7 +207,7 @@ class EventHandler:
                 traceback.print_exc()
                 if self.script_call_exception_handler:
                     # if exception handler is defined, call it with exception as argument
-                    self.script_call_exception_handler(e)
+                    self.script_call_exception_handler(fname, e)
                 rv = str(e) if skip_exception else e
 
         # if handled, pack result for Sciter
