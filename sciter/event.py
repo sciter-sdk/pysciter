@@ -190,7 +190,7 @@ class EventHandler:
                 import traceback
                 traceback.print_exc()
                 if self.script_call_exception_handler:
-                    # if exception handler is defined, call it with exception as argument
+                    # if exception handler is defined, call it with (func_name, exception) as arguments
                     self.script_call_exception_handler(fname, e)
                 rv = e
 
@@ -206,7 +206,7 @@ class EventHandler:
                 import traceback
                 traceback.print_exc()
                 if self.script_call_exception_handler:
-                    # if exception handler is defined, call it with exception as argument
+                    # if exception handler is defined, call it with (func_name, exception) as arguments
                     self.script_call_exception_handler(fname, e)
                 rv = str(e) if skip_exception else e
 
