@@ -16,7 +16,7 @@ class EventHandler:
     ALL_EVENTS = EVENT_GROUPS.HANDLE_ALL
     DEFAULT_EVENTS = EVENT_GROUPS.HANDLE_INITIALIZATION | EVENT_GROUPS.HANDLE_SIZE | EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL
 
-    def __init__(self, window=None, element=None, subscription=DEFAULT_EVENTS, script_call_exception_handler=None):
+    def __init__(self, window=None, element=None, subscription=DEFAULT_EVENTS):
         """Attach event handler to dom::element or sciter::window."""
         super().__init__()
         self.subscription = subscription
@@ -27,10 +27,6 @@ class EventHandler:
         self.set_dispatch_options()
         if window or element:
             self.attach(window, element, subscription)
-
-        # callback function to catch exceptions in script calls
-        # handler_func(function_name, exception)
-        self.script_call_exception_handler = script_call_exception_handler
 
     def __del__(self):
         assert(not self.element)
@@ -189,10 +185,7 @@ class EventHandler:
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                if self.script_call_exception_handler:
-                    # if exception handler is defined, call it with (func_name, exception) as arguments
-                    self.script_call_exception_handler(fname, e)
-                rv = e
+                rv = self.script_exception_handler(fname, e)
 
         # if not handled, call decorated method
         if rv is None and fn:
@@ -205,10 +198,8 @@ class EventHandler:
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                if self.script_call_exception_handler:
-                    # if exception handler is defined, call it with (func_name, exception) as arguments
-                    self.script_call_exception_handler(fname, e)
-                rv = str(e) if skip_exception else e
+                exc = self.script_exception_handler(fname, e)
+                rv = str(exc) if skip_exception else exc
 
         # if handled, pack result for Sciter
         if fn or rv is not None:
@@ -305,4 +296,12 @@ class EventHandler:
             return handled or False
 
         return False
+
+    def script_exception_handler(self, func_name, exception):
+        """
+        By default, just return passed in exception.
+        Can be overridden to change script exception handling.
+        """
+        return exception
+
     pass
