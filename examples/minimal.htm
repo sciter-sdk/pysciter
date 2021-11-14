@@ -37,6 +37,34 @@
       });
 
     </script>
+    <script type="module">
+      import * as env from "@env";
+
+      Window.this.caption = document.$("head > title").value;
+
+      document.$("#machine").innerText = env.machineName();
+
+      var counter = 0;
+
+      document.$("button#append").on("click", function() {
+        document.$("body").append(<h1#test>{ ++counter }</h1>);
+      });
+
+      document.$("button#open").on("click", function() {
+
+        var fn = Window.this.selectFile({
+          mode: "open",
+          filter: "HTML Files (*.htm,*.html)|*.HTM;*.HTML|All Files (*.*)|*.*",
+          extension: "html"
+        });
+
+        console.log("selected file: " + fn);
+        if (fn) {
+          document.$("body").append(<h1#test>{fn}</h1>);
+        }
+      });
+
+    </script>
   </head>
 <body>
 
