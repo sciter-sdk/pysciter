@@ -174,14 +174,15 @@ class EventHandler:
         fname = f.name.decode('utf-8')
         fn = self._dispatcher['handlers'].get(fname)
         rv = None
+        value_args = None
 
         # call raw handler first
         if True:
             try:
-                args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
+                value_args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
                 # pylint: disable=assignment-from-none,assignment-from-no-return
                 # because the `self.on_` methods can be overloaded
-                rv = self.on_script_call(fname, args)
+                rv = self.on_script_call(fname, value_args)
             except Exception as e:
                 import traceback
                 traceback.print_exc()
@@ -194,6 +195,8 @@ class EventHandler:
             try:
                 if cfg.get('convert'):
                     args = sciter.Value.unpack_from(f.argv, f.argc)
+                else:
+                    args = value_args
                 rv = fn(*args)
             except Exception as e:
                 import traceback
