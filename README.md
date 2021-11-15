@@ -61,7 +61,7 @@ Check <https://sciter.com> website and its [documentation resources](https://sci
 ## Getting started:
 
 1. Download the [Sciter.TIS or Sciter.JS SDK](https://sciter.com/download/) and extract it somewhere.
-2. Add the corresponding target platform binaries to PATH (`bin`, `bin.osx` or `bin.gtk`) and install Sciter shared library to your [LIBRARY_PATH](https://github.com/sciter-sdk/go-sciter#getting-started).
+2. Add the corresponding target platform binaries to PATH (`bin.win/x64`, `bin.osx` or `bin.lnx/x64`) and install Sciter shared library to your [LIBRARY_PATH](https://github.com/sciter-sdk/go-sciter#getting-started).
 3. Install pysciter: `python3 setup.py install` or `pip install pysciter`.
 4. Run the minimal pysciter sample: `python3 examples/minimal.py`. Also you can run script from zip archive directly: `python3 ./archive.zip` :)
 
