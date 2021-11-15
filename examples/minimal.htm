@@ -12,17 +12,39 @@
         mapping: left-to-right(background);
       }
 
+      #files {
+        margin: 10dip;
+        padding: 4dip;
+      }
+
+      a { color: white; }
+      code { font-weight: bold; }
+
     </style>
     <script type="text/tiscript">
 
       view.caption = $(head > title).value;
 
+      $(#kind).text = ".TIS";
       $(#machine).text = Sciter.machineName();
+      $(#version).text = String.printf("%d.%d.%d.%d",
+        (Sciter.VERSION >> 16) & 0xffff, Sciter.VERSION & 0xffff,
+        (Sciter.REVISION >> 16) & 0xffff, Sciter.REVISION & 0xffff);
+
+      try {
+        // since 4.2.5.0
+        $(#revision).text = Sciter.BUILD.toString();
+      } catch(e) {
+        $(#revision).text = "N/A";
+      }
+
+      function append(item) {
+        $(#files).$append(<li>{item}</li>);
+      }
 
       var counter = 0;
-
       $(button#append).on("click", function() {
-        $(body).$append(<h1#test>{ ++counter }</h1>);
+        append(++counter);
       });
 
       $(button#open).on("click", function() {
@@ -32,22 +54,39 @@
 
         stdout.println("selected file: " + fn);
         if (fn) {
-          $(body).$append(<h1#test>{fn}</h1>);
+          append(fn);
         }
       });
+
+      // Some tricks with hyperlinks:
+      self.on("click", "a[href]", function(evt, el) {
+        Sciter.launch(el.attributes["href"]);
+        return true;
+      });
+
+      for (var a in $$(a)) {
+        a.attributes["title"] = a.attributes["href"];
+      }
 
     </script>
     <script type="module">
       import * as env from "@env";
+      import * as sciter from "@sciter";
 
       Window.this.caption = document.$("head > title").value;
 
+      document.$("#kind").innerText = ".JS";
       document.$("#machine").innerText = env.machineName();
+      document.$("#version").innerText = sciter.VERSION;
+      document.$("#revision").innerText = sciter.REVISION;
+
+      function append(item) {
+        document.$("#files").append(<li>{ item }</li>);
+      }
 
       var counter = 0;
-
       document.$("button#append").on("click", function() {
-        document.$("body").append(<h1#test>{ ++counter }</h1>);
+        append(++counter);
       });
 
       document.$("button#open").on("click", function() {
@@ -60,23 +99,38 @@
 
         console.log("selected file: " + fn);
         if (fn) {
-          document.$("body").append(<h1#test>{fn}</h1>);
+          append(fn);
         }
       });
+
+      // Some tricks with hyperlinks:
+      document.on("click", "a[href]", function(evt, el) {
+        env.launch(el.attributes["href"]);
+        return true;
+      });
+
+      for (const a of document.$$("a")) {
+        a.attributes["title"] = a.attributes["href"];
+      }
 
     </script>
   </head>
 <body>
 
   <h1>Minimal Sciter Application</h1>
-  <p>Running on <em #machine /> machine</p>
+  <p>Sciter<span id="kind" /> version <span id="version">x.x.x</span> rev <span id="revision">N</span>.</p>
+  <p>Running on <em id="machine" /> machine.</p>
 
-  <button #append>Append</button>
-  <button #open>Open</button>
-  <select>
-    <option>First</option>
-    <option>Second</option>
-    <option>Third</option>
-  </select>
+  <button id="append" title="Test a script call">Append</button>
+  <button id="open" title="Open a file selection dialog">Open a file</button>
+
+  <ul id="files">
+  </ul>
+
+  <section class=footer>
+    <p>You can inspect this window in the <a href="https://sciter.com/developers/development-tools/">Inspector tool</a>
+    from the <a href="https://sciter.com/download/">Sciter SDK</a>.</p>
+    <p>Run the Inspector first and then press <code>CTRL+SHIFT+I</code> in this window.</p>
+  </section>
 </body>
 </html>
