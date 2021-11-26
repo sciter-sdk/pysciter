@@ -57,6 +57,9 @@ if SCITER_WIN:
             ctypes.windll.user32.GetWindowTextW(self.hwnd, title, cb)
             return title
 
+        def minimal_menu(self):
+            pass
+
         def run_app(self):
             """Run the main app message loop until window been closed."""
             msg = MSG()
@@ -151,6 +154,29 @@ elif SCITER_OSX:
             nstitle = self.objc(self._window(), 'title')
             return self.objc.fromNSString(nstitle)
 
+        def minimal_menu(self):
+            NSMenu = self.objc.getClass('NSMenu')
+            NSMenuItem = self.objc.getClass('NSMenuItem')
+
+            menubar = self.objc.alloc(NSMenu)
+            menubar_item = self.objc.alloc(NSMenuItem)
+
+            self.objc(menubar, 'addItem:', menubar_item)
+            self.objc(self.nsApp, 'setMainMenu:', menubar)
+
+            title = self.objc.toNSString('Quit')
+            key = self.objc.toNSString('q')
+            action = ctypes.c_void_p(self.objc.getSEL('terminate:'))
+
+            quit = self.objc(self.objc(NSMenuItem, 'alloc'), 'initWithTitle:action:keyEquivalent:', title, action, key)
+            self.objc(quit, 'autorelease')
+
+            appmenu = self.objc.alloc(NSMenu)
+            self.objc(appmenu, 'addItem:', quit)
+            self.objc(menubar_item, 'setSubmenu:', appmenu)
+
+            pass
+
         def run_app(self):
             """Run the main app message loop until window been closed."""
             self.objc(self.nsApp, 'run')
@@ -235,7 +261,7 @@ elif SCITER_OSX:
 
         def toNSString(self, string: str):
             kCFStringEncodingUTF8 = 0x08000100
-            return ctypes.c_void_p(self.cf.CFStringCreateWithCString(None, string.encode('utf8'), kCFStringEncodingUTF8))
+            return ctypes.c_void_p(self.cf.CFStringCreateWithCString(None, string.encode('utf-8'), kCFStringEncodingUTF8))
 
         def getClass(self, name):
             # NSSound = objc.getClass('NSSound')
@@ -244,6 +270,10 @@ elif SCITER_OSX:
         def new(self, cls):
             # sound = objc.new(NSSound)
             return self.call(self.call(cls, 'alloc'), 'init')
+
+        def alloc(self, cls):
+            # sound = objc.alloc(NSSound)
+            return self.call(self.call(cls, 'new'), 'autorelease')
 
         def getSEL(self, name):
             return self.dll.sel_registerName(name.encode('utf-8'))
@@ -258,6 +288,9 @@ elif SCITER_OSX:
 
         def call(self, obj, method, *args, **kwargs):
             # objc.call(NSSound, 'alloc')
+            # NB: `objc_msgSend.argtypes` has only 2 arguments specified.
+            # Extra args should be `c_void_p`!
+
             restype = kwargs.get('cast', ctypes.c_void_p)
             typename = kwargs.get('type')
             if typename is not None and hasattr(ctypes, typename):
@@ -349,6 +382,9 @@ elif SCITER_LNX:
             """Get native window title."""
             self._gtk.gtk_window_get_title.restype = ctypes.c_char_p
             return self._gtk.gtk_window_get_title(self._window()).decode('utf-8')
+
+        def minimal_menu(self):
+            pass
 
         def run_app(self):
             """Run the main app message loop until window been closed."""
