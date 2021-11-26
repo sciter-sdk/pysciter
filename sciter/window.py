@@ -78,6 +78,10 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
         """Get native window title."""
         return super().get_title()
 
+    def minimal_menu(self):
+        """Construct a minimal menu with a Quit item. Vital for macOS."""
+        return super().minimal_menu()
+
     def run_app(self, show=True):
         """Show window and run the main app message loop until window been closed."""
         if show:
