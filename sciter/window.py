@@ -32,7 +32,13 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
 
         if debug:
             flags = flags | SCITER_CREATE_WINDOW_FLAGS.SW_ENABLE_DEBUG
-            self.setup_debug()
+
+        # New windows can be inspectable.
+        # Debug messages will be printed always.
+        # If you need to disable the debug output,
+        # either call `frame.setup_debug(debug_output=False)`
+        # or override `Host.on_debug_output`.
+        self.setup_debug(debug_windows=debug, debug_output=True)
 
         self.window_flags = flags
         self._title_changed = False
