@@ -38,13 +38,16 @@ class Host():
         _api.SciterSetCallback(hwnd, self._sciter_handler_proc, ctypes.c_void_p(0))
         pass
 
-    def setup_debug(self, hwnd=None):
+    def setup_debug(self, hwnd=None, debug_windows=True, debug_output=True):
         """Setup debug output function for specific window or globally."""
-        ok = _api.SciterSetOption(hwnd, SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, True)
+        ok = _api.SciterSetOption(hwnd, SCITER_RT_OPTIONS.SCITER_SET_DEBUG_MODE, debug_windows)
         if not ok:
             raise sciter.SciterError("Could not set debug mode")
         self._sciter_debug_proc = DEBUG_OUTPUT_PROC(self.on_debug_output)
-        _api.SciterSetupDebugOutput(hwnd, None, self._sciter_debug_proc)
+        if debug_output:
+            _api.SciterSetupDebugOutput(hwnd, None, self._sciter_debug_proc)
+        else:
+            _api.SciterSetupDebugOutput(hwnd, None, DEBUG_OUTPUT_PROC(0))
         pass
 
     def set_option(self, option, value):
