@@ -234,7 +234,7 @@ class EventHandler:
             p = ctypes.cast(params, ctypes.POINTER(ctypes.c_uint))
             subscribed = self.on_subscription(p.contents)
             if subscribed is not None:
-                p.contents = ctypes.c_ulong(int(subscribed))
+                p[0] = int(subscribed)
                 return True
 
         elif evt == EVENT_GROUPS.HANDLE_INITIALIZATION:
