@@ -16,10 +16,10 @@ class EventHandler:
     ALL_EVENTS = EVENT_GROUPS.HANDLE_ALL
     DEFAULT_EVENTS = EVENT_GROUPS.HANDLE_INITIALIZATION | EVENT_GROUPS.HANDLE_SIZE | EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL
 
-    def __init__(self, window=None, element=None, subscription=DEFAULT_EVENTS):
+    def __init__(self, window=None, element=None, subscription=None):
         """Attach event handler to dom::element or sciter::window."""
         super().__init__()
-        self.subscription = subscription
+        self.subscription = subscription if subscription is not None else EventHandler.DEFAULT_EVENTS
         self.element = None
         self._attached_to_window = None
         self._attached_to_element = None
@@ -32,15 +32,15 @@ class EventHandler:
         assert(not self.element)
         pass
 
-    def attach(self, window=None, element=None, subscription=DEFAULT_EVENTS):
+    def attach(self, window=None, element=None, subscription=None):
         """Attach event handler to dom::element or sciter::window."""
         assert(window or element)
-        self.subscription = subscription
+        self.subscription = subscription if subscription is not None else EventHandler.DEFAULT_EVENTS
         self._event_handler_proc = sciter.capi.scdef.ElementEventProc(self._element_proc)
         tag = id(self)
         if window:
             self._attached_to_window = window
-            ok = _api.SciterWindowAttachEventHandler(window, self._event_handler_proc, tag, subscription)
+            ok = _api.SciterWindowAttachEventHandler(window, self._event_handler_proc, tag, self.subscription)
             if ok != SCDOM_RESULT.SCDOM_OK:
                 raise sciter.SciterError("Could not attach to window")
         elif element:
