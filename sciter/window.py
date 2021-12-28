@@ -49,7 +49,7 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
         if not pos and not size:
             rect = None
 
-        self.hwnd = self._create(flags, rect=rect, parent=None)
+        self.hwnd = self._create(flags, rect=rect, parent=parent)
         if not self.hwnd:
             raise sciter.SciterError("Could not create window")
 
