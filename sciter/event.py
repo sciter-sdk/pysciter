@@ -72,10 +72,11 @@ class EventHandler:
         #     return fn(*args)
         pass
 
-    def set_dispatch_options(self, enable=True, require_attribute=True, dynamic_handlers=False):
+    def set_dispatch_options(self, enable=True, require_attribute=True, dynamic_handlers=False, raw_handlers=True):
         """Set the various script dispatch options."""
         self._dispatcher['enabled'] = enable                # enable or disable dispatching of script calls to class handlers
         self._dispatcher['runtime'] = dynamic_handlers      # class handlers may be added at runtime, so we won't cache it
+        self._dispatcher['static'] = raw_handlers           # `self.on_script_call` is always called
         self._dispatcher['require'] = require_attribute     # class handlers require @sciter.script attribute
         self._dispatcher['handlers'] = {}
         self._dispatcher_update(True)
@@ -173,11 +174,12 @@ class EventHandler:
 
         fname = f.name.decode('utf-8')
         fn = self._dispatcher['handlers'].get(fname)
+        call_raw = self._dispatcher['static']
         rv = None
         value_args = None
 
-        # call raw handler first
-        if True:
+        # call raw handler first if configured
+        if call_raw == 'always':
             try:
                 value_args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
                 # pylint: disable=assignment-from-none,assignment-from-no-return
@@ -203,6 +205,18 @@ class EventHandler:
                 traceback.print_exc()
                 exc = self.script_exception_handler(fname, e)
                 rv = str(exc) if skip_exception else exc
+
+        # if not handled by @script, call the raw handler
+        if not fn and call_raw == True:
+            try:
+                value_args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
+                # pylint: disable=assignment-from-none,assignment-from-no-return
+                # because the `self.on_` methods can be overloaded
+                rv = self.on_script_call(fname, value_args)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                rv = self.script_exception_handler(fname, e)
 
         # if handled, pack result for Sciter
         if fn or rv is not None:
