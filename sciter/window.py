@@ -12,7 +12,7 @@ _api = sciter.SciterAPI()
 class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHandler):
     """Basic Sciter window."""
 
-    def __init__(self, ismain=False, ispopup=False, ischild=False, resizeable=True, parent=None, uni_theme=False, debug=True, pos=None, size=None):
+    def __init__(self, ismain=False, ispopup=False, ischild=False, resizeable=True, parent=None, uni_theme=False, debug=True, pos=None, size=None, subscription=None):
         """Create a new window and setup the sciter and dom callbacks."""
         super().__init__()
         from sciter.capi.scdef import SCITER_CREATE_WINDOW_FLAGS
@@ -60,7 +60,7 @@ class Window(sciter.platform.BaseWindow, sciter.host.Host, sciter.event.EventHan
             raise sciter.SciterError("Could not create window")
 
         self.setup_callback(self.hwnd)
-        self.attach(window=self.hwnd)
+        self.attach(window=self.hwnd, subscription=subscription)
         pass
 
     def collapse(self, hide=False):
