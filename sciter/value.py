@@ -2,7 +2,6 @@
 
 # TODO: Date support.
 
-import inspect
 import ctypes
 
 import sciter
@@ -581,11 +580,20 @@ class value():
         elif isinstance(val, (value, SCITER_VALUE)):
             ok = _api.ValueCopy(self, val)
             self._throw_if(ok)
-        elif inspect.isroutine(val):
+        elif self._is_callable(val):
             ok = self._assign_function(val)
             self._throw_if(ok)
         else:
             raise TypeError(str(type(val)) + " is unsupported sciter type")
+        pass
+
+    def _is_callable(self, val):
+        # `callable` was removed in 3.0 until 3.2
+        try:
+            return callable(val)
+        except:
+            import inspect
+            return inspect.isroutine(val)
         pass
 
     def _assign_list(self, val):
