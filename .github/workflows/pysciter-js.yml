@@ -1,6 +1,6 @@
 # This workflow will install Python dependencies, run tests and lint
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-name: Quick check
+name: Sciter.JS
 
 on:
   push:
@@ -13,35 +13,7 @@ on:
     - master
 
 jobs:
-  fetch:
-    name: Check environment
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
-        os: [macos-latest, ubuntu-latest, windows-latest]
-
-    steps:
-      - name: Environment
-        shell: bash
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-          SCITER_DEPS: ${{ runner.workspace }}
-        run: |
-          echo HOME is "$HOME"
-          echo workspace is "$SCITER_DEPS"
-          echo temp is "$TEMP"
-          echo runner is "$RUNNER_CONTEXT"
-          echo cargo is at `which cargo`
-          echo rustc is at `which rustc`
-          command -v cargo && rustc -vV
-          echo done
-
-  build:
-    needs: [fetch]
-    name: Build and test
-
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -60,7 +32,7 @@ jobs:
     - name: Windows deps
       if: runner.os == 'Windows'
       # Windows: download sciter library
-      run: curl -sSLo "%SCITER_DEPS%/sciter.dll" "https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.win/x64/sciter.dll"
+      run: curl -sSLo "%SCITER_DEPS%/sciter.dll" "https://raw.githubusercontent.com/c-smile/sciter-js-sdk/main/bin/windows/x64/sciter.dll"
       shell: cmd
       env:
         SCITER_DEPS: ${{ runner.workspace }}
@@ -69,7 +41,7 @@ jobs:
       if: runner.os == 'Linux'
       # Linux: download sciter library && install libgtk-3-dev
       run: |
-        curl -so "$SCITER_DEPS/libsciter-gtk.so" "https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.lnx/x64/libsciter-gtk.so"
+        curl -so "$SCITER_DEPS/libsciter-gtk.so" "https://raw.githubusercontent.com/c-smile/sciter-js-sdk/main/bin/linux/x64/libsciter-gtk.so"
         sudo apt-get update -y && sudo apt-get install libgtk-3-dev libgtk-3-0 -y
       env:
         SCITER_DEPS: ${{ runner.workspace }}
@@ -78,7 +50,7 @@ jobs:
       if: runner.os == 'macOS'
       # OSX: download sciter library
       run: |
-        curl -so "$SCITER_DEPS/libsciter.dylib" "https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.osx/libsciter.dylib"
+        curl -so "$SCITER_DEPS/libsciter.dylib" "https://raw.githubusercontent.com/c-smile/sciter-js-sdk/main/bin/macosx/libsciter.dylib"
       env:
         SCITER_DEPS: ${{ runner.workspace }}
 
