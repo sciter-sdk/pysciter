@@ -28,6 +28,7 @@ class EVENT_GROUPS(enum.IntEnum):
     HANDLE_TISCRIPT_METHOD_CALL = 0x0800   # behavior specific methods using direct tiscript::value's */
     HANDLE_EXCHANGE = 0x1000  # system drag-n-drop */
     HANDLE_GESTURE = 0x2000  # touch input events */
+    HANDLE_SOM = 0x8000  # som_asset_t request */
     HANDLE_ALL = 0xFFFF  # all of them */
     SUBSCRIPTIONS_REQUEST = 0xFFFFFFFF  # special value for getting subscription flags */
 
