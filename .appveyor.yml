@@ -1,4 +1,4 @@
-version: 0.4.0.{build}
+version: 0.6.0.{build}
 
 branches:
   only:
@@ -32,6 +32,9 @@ environment:
     ARCH: 64
 
   - TARGET: Python39-x64
+    ARCH: 64
+
+  - TARGET: Python310-x64
     ARCH: 64
 
 install:
