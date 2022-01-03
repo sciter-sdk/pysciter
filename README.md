@@ -88,7 +88,7 @@ It looks similar to this:
 
 ### Interoperability
 
-In respect of [tiscript](https://www.codeproject.com/Articles/33662/TIScript-language-a-gentle-extension-of-JavaScript) functions calling:
+In respect of [tiscript](https://www.codeproject.com/Articles/33662/TIScript-language-a-gentle-extension-of-JavaScript) or JavaScript functions calling:
 ```python
 answer = self.call_function('script_function', "hello, python!", "and", ["other", 3, "arguments"])
 ```
@@ -108,7 +108,7 @@ def GetNativeApi(): # called from sciter.EventHandler.on_script_call
   return api
 ```
 
-So, we can access our api now:
+So, we can access our api now from TIScript:
 ```js
 // `view` represents window where script is runnung.
 // `stdout` stream is a standard output stream (shell or debugger console, for example)
@@ -118,6 +118,13 @@ var api = view.GetNativeApi();
 // returned `api` object looks like {add: function(a,b) { return a + b; }};
 stdout.println("2 + 3 = " + api.add(2, 3));
 ```
+
+or from JavaScript:
+```js
+// `Window.this` represents the window where this script is running.
+const api = Window.this.GetNativeApi();
+console.log("2 + 3", api.add(2, 3));
+````
 
 _Check [pysciter/examples](https://github.com/sciter-sdk/pysciter/tree/master/examples) folder for more complex usage_.
 
