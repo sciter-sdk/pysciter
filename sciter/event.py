@@ -198,7 +198,7 @@ class EventHandler:
                 if cfg.get('convert'):
                     args = sciter.Value.unpack_from(f.argv, f.argc)
                 else:
-                    args = value_args
+                    args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
                 rv = fn(*args)
             except Exception as e:
                 import traceback
