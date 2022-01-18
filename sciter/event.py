@@ -186,8 +186,6 @@ class EventHandler:
                 # because the `self.on_` methods can be overloaded
                 rv = self.on_script_call(fname, value_args)
             except Exception as e:
-                import traceback
-                traceback.print_exc()
                 rv = self.script_exception_handler(fname, e)
 
         # if not handled, call decorated method
@@ -201,8 +199,6 @@ class EventHandler:
                     args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
                 rv = fn(*args)
             except Exception as e:
-                import traceback
-                traceback.print_exc()
                 exc = self.script_exception_handler(fname, e)
                 rv = str(exc) if skip_exception else exc
 
@@ -214,8 +210,6 @@ class EventHandler:
                 # because the `self.on_` methods can be overloaded
                 rv = self.on_script_call(fname, value_args)
             except Exception as e:
-                import traceback
-                traceback.print_exc()
                 rv = self.script_exception_handler(fname, e)
 
         # if handled, pack result for Sciter
@@ -319,6 +313,9 @@ class EventHandler:
         By default, just return passed in exception.
         Can be overridden to change script exception handling.
         """
+        print("Python exception in `%s`: %s" % (func_name, repr(exception)))
+        import traceback
+        traceback.print_exc()
         return exception
 
     pass
