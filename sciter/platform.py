@@ -106,6 +106,10 @@ elif SCITER_OSX:
 
             NSApplication = self.objc.getClass('NSApplication')
             self.nsApp = self.objc(NSApplication, 'sharedApplication')
+
+			# By default, unbundled apps start with `NSApplicationActivationPolicyProhibited` (no dock, no menu).
+            # Bundled apps start with `NSApplicationActivationPolicyRegular`
+            self.objc(self.nsApp, 'setActivationPolicy:', 0)
             pass
 
         def _create(self, flags, rect, parent):
