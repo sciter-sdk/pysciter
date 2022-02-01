@@ -99,6 +99,9 @@ def main():
     title = u"Win32 Sciter"
     clsname = u"PySciter"
 
+    windll.user32.DefWindowProcW.argtypes = [HWND, c_uint, WPARAM, LPARAM]
+    windll.user32.DefWindowProcW.restype = LRESULT
+
     WndProc = WNDPROCTYPE(on_wnd_message)
     wndClass = WNDCLASSEX()
     wndClass.cbSize = sizeof(WNDCLASSEX)
