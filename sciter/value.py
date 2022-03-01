@@ -445,6 +445,27 @@ class value():
         t, u = self.get_type(with_unit=True)
         return t == VALUE_TYPE.T_OBJECT and u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_FUNCTION
 
+    def is_object_error(self):
+        """."""
+        t, u = self.get_type(with_unit=True)
+        return t == VALUE_TYPE.T_OBJECT and u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_ERROR
+
+    def is_varray(self):
+        """."""
+        return self.is_array()
+
+    def is_vmap(self):
+        """."""
+        return self.is_map() or self.is_object_map()
+
+    def is_vfunction(self):
+        """."""
+        return self.is_function() or self.is_object_function() or self.is_native_function()
+
+    def is_verror(self):
+        """."""
+        return self.is_error_string() or self.is_object_error()
+
     def get_type(self, py=False, with_unit=False):
         """Return python type or sciter type with (optionally) unit subtype of sciter::value."""
         t = VALUE_TYPE(self.data.t)
@@ -512,12 +533,6 @@ class value():
             return self._get_list()
         elif t == VALUE_TYPE.T_MAP:
             return self._get_dict()
-        elif t == VALUE_TYPE.T_OBJECT:
-            u = self.data.u
-            if u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_ARRAY:
-                return self._get_list()
-            elif u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_OBJECT:
-                return self._get_dict()
         elif t == VALUE_TYPE.T_DURATION:
             v = ctypes.c_double()
             ok = _api.ValueFloatData(self, byref(v))
@@ -533,6 +548,13 @@ class value():
             ok = _api.ValueIntData(self, byref(v))
             self._throw_if(ok)
             return int(v.value)
+        elif t == VALUE_TYPE.T_OBJECT:
+            u = self.data.u
+            if u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_ARRAY:
+                return self._get_list()
+            elif u == VALUE_UNIT_TYPE_OBJECT.UT_OBJECT_OBJECT:
+                return self._get_dict()
+            pass
 
         # unsupported:
         t, u = self.get_type(with_unit=True)
