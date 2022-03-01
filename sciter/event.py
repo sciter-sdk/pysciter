@@ -1,7 +1,6 @@
 """Behaviors support (a.k.a windowless controls)."""
 
 import ctypes
-
 import sciter.capi.scdef
 
 from sciter.capi.scbehavior import *
@@ -24,6 +23,7 @@ class EventHandler:
         self._attached_to_window = None
         self._attached_to_element = None
         self._dispatcher = dict()
+        self._executor = None
         self.set_dispatch_options()
         if window or element:
             self.attach(window, element, subscription)
@@ -53,6 +53,9 @@ class EventHandler:
     def detach(self):
         """Detach event handler from dom::element or sciter::window."""
         tag = id(self)
+        if self._executor is not None:
+            self._executor.shutdown()
+            self._executor = None
         if self._attached_to_window:
             ok = _api.SciterWindowDetachEventHandler(self._attached_to_window, self._event_handler_proc, tag)
             if ok != SCDOM_RESULT.SCDOM_OK:
@@ -197,6 +200,54 @@ class EventHandler:
                     args = sciter.Value.unpack_from(f.argv, f.argc)
                 else:
                     args = [sciter.Value(f.argv[i]) for i in range(f.argc)]
+
+                if cfg.get('threading'):
+                    # submit this handler to a separate thread
+                    # syntax:
+                    # `root.xcall(name, [args])`
+                    # `root.xcall(name, [args], resolve, reject)`
+                    jsargs = args[0]
+                    jsresolve = args[1] if len(args) == 3 else None
+                    jsreject = args[2] if len(args) == 3 else None
+
+                    def on_script_done(fut):
+                        if fut.cancelled():
+                            return
+
+                        def resolve(val):
+                            if jsresolve is not None:
+                                jsresolve(val)
+                            pass
+
+                        def reject(val):
+                            if jsreject is not None:
+                                jsreject(val)
+                            pass
+
+                        exc = fut.exception()
+                        if exc is None:
+                            # no exception, resolve the promise
+                            rv = fut.result()
+                            resolve(rv)
+                        else:
+                            # there was an exception, reject the promise
+                            # note: reject expects a value, not an error
+                            exc = self.script_exception_handler(fname, exc)
+                            if skip_exception:
+                                resolve(str(exc))
+                            else:
+                                reject(str(exc))
+                        pass
+
+                    if self._executor is None:
+                        from concurrent.futures import ThreadPoolExecutor
+                        self._executor = ThreadPoolExecutor()
+
+                    # submit to the executor and wait for completion
+                    fut = self._executor.submit(fn, *jsargs)
+                    fut.add_done_callback(on_script_done)
+                    return True
+
                 rv = fn(*args)
             except Exception as e:
                 exc = self.script_exception_handler(fname, e)

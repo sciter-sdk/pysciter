@@ -556,6 +556,10 @@ class value():
                 return self._get_dict()
             pass
 
+        if self.is_vfunction():
+            # return functions as is
+            return self
+
         # unsupported:
         t, u = self.get_type(with_unit=True)
         u = str(u).rpartition('.')[2]
