@@ -13,7 +13,7 @@ class EventHandler:
     """DOM event handler which can be attached to any DOM element."""
 
     ALL_EVENTS = EVENT_GROUPS.HANDLE_ALL
-    DEFAULT_EVENTS = EVENT_GROUPS.HANDLE_INITIALIZATION | EVENT_GROUPS.HANDLE_SIZE | EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL | EVENT_GROUPS.HANDLE_METHOD_CALL
+    DEFAULT_EVENTS = EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL | EVENT_GROUPS.HANDLE_METHOD_CALL
 
     def __init__(self, window=None, element=None, subscription=None):
         """Attach event handler to dom::element or sciter::window."""
@@ -277,7 +277,8 @@ class EventHandler:
         he = HELEMENT(he)
         if evt == EVENT_GROUPS.SUBSCRIPTIONS_REQUEST:
             p = ctypes.cast(params, ctypes.POINTER(ctypes.c_uint))
-            subscribed = self.on_subscription(p.contents)
+            request = p.contents.value
+            subscribed = self.on_subscription(request)
             if subscribed is not None:
                 p[0] = int(subscribed)
                 return True
