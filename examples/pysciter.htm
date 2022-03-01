@@ -17,7 +17,18 @@
 
       view.caption = $(head > title).value;
 
+      $(#kind).text = ".TIS";
       $(#machine).text = Sciter.machineName();
+      $(#version).text = String.printf("%d.%d.%d.%d",
+        (Sciter.VERSION >> 16) & 0xffff, Sciter.VERSION & 0xffff,
+        (Sciter.REVISION >> 16) & 0xffff, Sciter.REVISION & 0xffff);
+
+      try {
+        // since 4.2.5.0
+        $(#revision).text = Sciter.BUILD.toString();
+      } catch(e) {
+        $(#revision).text = "N/A";
+      }
 
       var counter = 0;
 
@@ -46,6 +57,28 @@
         var answer = view.ScriptCallTest();
       })
 
+      /*
+      async function async_call(name, args..) {
+        return promise(function (resolve, reject) {
+          return view ??? #name(args, resolve, reject)
+        });
+      }
+      */
+
+      self.on("click", "button#async", async function() {
+        stdout.printf("calling AsyncTest\n");
+        var prom = promise(function (resolve, reject) {
+          stdout.printf("view.AsyncTest(1,2)\n");
+          return view.AsyncTest([1,2], resolve, reject);
+        });
+        try {
+          var r = await prom;
+          stdout.printf("async result %v\n", r);
+        } catch(e) {
+          stdout.printf("async exception %v\n", e);
+        }
+      })
+
       function hello(who) {
       	$(body).$append(<h1#test>python -&gt; script: {who}</h1>);
       	return "its working!";
@@ -67,16 +100,51 @@
       });
 
     </script>
+    <script type="module">
+      import * as env from "@env";
+      import * as sciter from "@sciter";
+
+      Window.this.caption = document.$("head > title").value;
+
+      document.$("#kind").innerText = ".JS";
+      document.$("#machine").innerText = env.machineName();
+      document.$("#version").innerText = sciter.VERSION;
+      document.$("#revision").innerText = sciter.REVISION;
+
+      document.on("click", "button#ti2py", function() {
+        var answer = Window.this.xcall("PythonCall", Window.this.caption);
+        document.$("body").append(<h1#test>script -&gt; python: {answer}</h1>);
+      })
+
+      async function async_call(name, ...args) {
+        return new Promise((resolve, reject) => {
+          return Window.this.xcall(name, args, resolve, reject);
+        });
+      }
+
+      document.on("click", "#async", async function() {
+        console.log("calling AsyncTest");
+        try {
+          let r = await async_call("AsyncTest", 1, 2);
+          console.log("async result", r);
+        } catch (e) {
+          console.log("async exception", e);
+        }
+      })
+
+    </script>
   </head>
 <body>
 
   <h1>Pythonic Sciter Application</h1>
+  <p>Sciter<span id="kind" /> version <span id="version">x.x.x</span> rev <span id="revision">N</span>.</p>
   <p>Running on <em #machine /> machine</p>
 
   <button #append>Append</button>
   <button #open>Open</button>
   <button #ti2py>Call python</button>
   <button #py2ti>Call script</button>
+  <button #async>Async call</button>
   <select>
     <option>First</option>
     <option>Second</option>
