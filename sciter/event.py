@@ -367,7 +367,7 @@ class EventHandler:
         """
         print("Python exception in `%s`: %s" % (func_name, repr(exception)))
         import traceback
-        traceback.print_exc()
+        traceback.print_exception(exception)
         return exception
 
     pass
