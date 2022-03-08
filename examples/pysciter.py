@@ -11,7 +11,7 @@ class Frame(sciter.Window):
     def on_subscription(self, groups):
         # subscribing only for scripting calls and document events
         from sciter.event import EVENT_GROUPS
-        return EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL
+        return EVENT_GROUPS.HANDLE_BEHAVIOR_EVENT | EVENT_GROUPS.HANDLE_SCRIPTING_METHOD_CALL | EVENT_GROUPS.HANDLE_METHOD_CALL
 
     def on_script_call(self, name, args):
         # script calls
@@ -78,6 +78,15 @@ class Frame(sciter.Window):
             print("answer: ", str(e))
         return True
 
+    @sciter.script(convert=True, threading=True)
+    def AsyncTest(self, a: int, b: int) -> int:
+        print("Handler.AsyncTest(%s, %s) for %s" % (repr(a), repr(b), repr(self)))
+        print("sleeping for 10 s")
+        import time
+        time.sleep(10)
+        print("resume")
+        return a + b
+    pass
     ## @}
 
 # end
@@ -89,5 +98,6 @@ if __name__ == '__main__':
     import os
     htm = os.path.join(os.path.dirname(__file__), 'pysciter.htm')
     frame = Frame()
+    frame.set_dispatch_options(raw_handlers=False)
     frame.load_file(htm)
     frame.run_app()
