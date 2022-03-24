@@ -75,7 +75,7 @@ def runtime_features(file_io=True, socket_io=True, allow_eval=True, allow_sysinf
         flags += SCRIPT_RUNTIME_FEATURES.ALLOW_SYSINFO
     return set_option(SCITER_RT_OPTIONS.SCITER_SET_SCRIPT_RUNTIME_FEATURES, flags)
 
-def script(name=None, convert=True, safe=True, threading=False):
+def script(name=None, convert=True, safe=True, threading=False, promise=False):
     """Annotation decorator for the functions that called from script."""
     # @script def -> script(def)
     # @script('name') def -> script(name)(def)
@@ -83,11 +83,14 @@ def script(name=None, convert=True, safe=True, threading=False):
     # `convert`: Convert Sciter values to Python types
     # `safe`: Pass exceptions to Sciter or ignore them
     # `threading`: Call the handler in a separate thread (concurrent.futures.ThreadPoolExecutor)
+    # `promise`: Call the handler in a separate thread as a promise
+    if threading and promise:
+        raise SciterError("Don't mix `threading` and `promise` in @script")
 
     def decorator(func):
         attr = True if name is None else name
         func._from_sciter = attr
-        func._sciter_cfg = dict(name=name, convert=convert, safe=safe, threading=threading)
+        func._sciter_cfg = dict(name=name, convert=convert, safe=safe, threading=threading, promise=promise)
         return func
 
     # script('name')

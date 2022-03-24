@@ -79,8 +79,17 @@ class Frame(sciter.Window):
         return True
 
     @sciter.script(convert=True, threading=True)
-    def AsyncTest(self, a: int, b: int) -> int:
-        print("Handler.AsyncTest(%s, %s) for %s" % (repr(a), repr(b), repr(self)))
+    def AsyncThread(self, a: int, b: int) -> int:
+        print("Handler.AsyncThread(%s, %s) for %s" % (repr(a), repr(b), repr(self)))
+        print("sleeping for 10 s")
+        import time
+        time.sleep(10)
+        print("resume")
+        return a + b
+
+    @sciter.script(convert=True, promise=True)
+    def AsyncTask(self, a: int, b: int) -> int:
+        print("Handler.AsyncTask(%s, %s) for %s" % (repr(a), repr(b), repr(self)))
         print("sleeping for 10 s")
         import time
         time.sleep(10)

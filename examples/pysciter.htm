@@ -123,12 +123,22 @@
       }
 
       document.on("click", "#async", async function() {
-        console.log("calling AsyncTest");
+        console.log("calling AsyncTask");
         try {
-          let r = await async_call("AsyncTest", 1, 2);
+          let r = await async_call("AsyncTask", 1, 2);
           console.log("async result", r);
         } catch (e) {
           console.log("async exception", e);
+        }
+      })
+
+      document.on("click", "#thread", function() {
+        console.log("calling AsyncThread");
+        try {
+          let r = Window.this.xcall("AsyncThread", 1, 2);
+          console.log("thread result", r);
+        } catch (e) {
+          console.log("thread exception", e);
         }
       })
 
@@ -145,6 +155,7 @@
   <button #ti2py>Call python</button>
   <button #py2ti>Call script</button>
   <button #async>Async call</button>
+  <button #thread>Thread call</button>
   <select>
     <option>First</option>
     <option>Second</option>
