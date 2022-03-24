@@ -101,3 +101,27 @@ def script(name=None, convert=True, safe=True, threading=False, promise=False):
     func = name
     name = None
     return decorator(func)
+
+def async_script(name=None, convert=True, safe=True):
+    """Annotation decorator for async functions that called from script."""
+    # @async_script def -> async_script(def)
+    # @async_script('name') def -> async_script(name)(def)
+
+    # `convert`: Convert Sciter values to Python types
+    # `safe`: Pass exceptions to Sciter or ignore them
+    # `promise`: Call the handler in a separate thread as a promise (always true)
+
+    def decorator(func):
+        attr = True if name is None else name
+        func._from_sciter = attr
+        func._sciter_cfg = dict(name=name, convert=convert, safe=safe, threading=False, promise=True)
+        return func
+
+    # async_script('name')
+    if name is None or isinstance(name, str):
+        return decorator
+
+    # async_script(def)
+    func = name
+    name = None
+    return decorator(func)
