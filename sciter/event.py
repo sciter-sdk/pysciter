@@ -195,6 +195,8 @@ class EventHandler:
         if rv is None and fn:
             cfg = getattr(fn, '_sciter_cfg', {})
             skip_exception = not cfg.get('safe', True)
+            if cfg.get('threading') and cfg.get('promise'):
+                raise sciter.SciterError("Don't mix `threading` and `promise` in @script")
             try:
                 if cfg.get('convert'):
                     args = sciter.Value.unpack_from(f.argv, f.argc)
@@ -204,39 +206,55 @@ class EventHandler:
                 if cfg.get('threading'):
                     # submit this handler to a separate thread
                     # syntax:
-                    # `root.xcall(name, [args])`
-                    # `root.xcall(name, [args], resolve, reject)`
-                    jsargs = args[0]
-                    jsresolve = args[1] if len(args) == 3 else None
-                    jsreject = args[2] if len(args) == 3 else None
+                    # `root.xcall(name, ...args)`
 
-                    def on_script_done(fut):
+                    def on_thread_done(fut):
                         if fut.cancelled():
                             return
 
-                        def resolve(val):
-                            if jsresolve is not None:
-                                jsresolve(val)
-                            pass
+                        exc = fut.exception()
+                        if exc is None:
+                            # no exception, but nowhere to send the result
+                            fut.result()
+                        else:
+                            # there was an exception, call the exception hook
+                            self.script_exception_handler(fname, exc)
+                        pass
 
-                        def reject(val):
-                            if jsreject is not None:
-                                jsreject(val)
-                            pass
+                    if self._executor is None:
+                        from concurrent.futures import ThreadPoolExecutor
+                        self._executor = ThreadPoolExecutor()
+
+                    # submit to the executor and wait for completion
+                    fut = self._executor.submit(fn, *args)
+                    fut.add_done_callback(on_thread_done)
+                    return True
+
+                elif cfg.get('promise'):
+                    # submit this promise handler to a separate thread
+                    # syntax:
+                    # `root.xcall(name, [args], resolve, reject)`
+                    jsargs = args[0]
+                    jsresolve = args[1]
+                    jsreject = args[2]
+
+                    def on_task_done(fut):
+                        if fut.cancelled():
+                            return
 
                         exc = fut.exception()
                         if exc is None:
                             # no exception, resolve the promise
                             rv = fut.result()
-                            resolve(rv)
+                            jsresolve(rv)
                         else:
                             # there was an exception, reject the promise
                             # note: reject expects a value, not an error
                             exc = self.script_exception_handler(fname, exc)
                             if skip_exception:
-                                resolve(str(exc))
+                                jsresolve(str(exc))
                             else:
-                                reject(str(exc))
+                                jsreject(str(exc))
                         pass
 
                     if self._executor is None:
@@ -245,7 +263,7 @@ class EventHandler:
 
                     # submit to the executor and wait for completion
                     fut = self._executor.submit(fn, *jsargs)
-                    fut.add_done_callback(on_script_done)
+                    fut.add_done_callback(on_task_done)
                     return True
 
                 rv = fn(*args)
