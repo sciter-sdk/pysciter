@@ -122,7 +122,7 @@ class value():
         super().__init__()
         self.data = SCITER_VALUE()
         self.ptr = ctypes.pointer(self.data)
-        self._as_parameter_ = self.ptr
+        self._as_parameter_ = self.ptr  # allows instance to be used as ctypes parameter
         _api.ValueInit(self.ptr)
         if val is not None:
             self.set_value(val)
@@ -690,11 +690,9 @@ class value():
     def pack_args(*args, **kwargs):
         """Pack arguments tuple as SCITER_VALUE array."""
         argc = len(args)
-        args_type = SCITER_VALUE * argc
-        argv = args_type()
+        argv = value_array(array_len=argc)
         for i, v in enumerate(args):
-            sv = sciter.Value(v)
-            sv.copy_to(argv[i])
+            argv[i] = v
         this = value(kwargs.get('this'))
         return (argc, argv, this)
 
@@ -710,6 +708,50 @@ class value():
 
     pass
 # end
+
+
+class value_array:
+    """
+    Wrapper for SCITER_VALUE Array
+    """
+
+    def __init__(self, array_len: int):
+        """Return a new sciter value array wrapped object."""
+        super().__init__()
+        self.data = (SCITER_VALUE * array_len)()
+        self.ptr = ctypes.pointer(self.data)
+
+    @property
+    def _as_parameter_(self):
+        """
+        Called when passing this object as parameter to a ctypes function.
+        """
+        return ctypes.cast(self.ptr, ctypes.POINTER(SCITER_VALUE))
+
+    def __getitem__(self, index) -> value:
+        """Get value from array."""
+        return value(self.data[index])
+
+    def __setitem__(self, index: int, val):
+        """Set value to array."""
+        if not isinstance(val, value):
+            val = value(val)
+        val.copy_to(self.data[index])
+
+    def __len__(self) -> int:
+        """Get array length."""
+        return len(self.data)
+
+    def __iter__(self):
+        """Get array iterator."""
+        return iter(self.data)
+
+    def __del__(self):
+        """Clear array from memory"""
+        for val in self:
+            # clear all values in array
+            _api.ValueClear(val)
+        _api.ValueClear(self)  # clear array itself
 
 
 _native_cache = []
