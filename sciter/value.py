@@ -690,7 +690,7 @@ class value():
     def pack_args(*args, **kwargs):
         """Pack arguments tuple as SCITER_VALUE array."""
         argc = len(args)
-        argv = value_array(array_len=argc)
+        argv = value_array(length=argc)
         for i, v in enumerate(args):
             argv[i] = v
         this = value(kwargs.get('this'))
@@ -715,10 +715,10 @@ class value_array:
     Wrapper for SCITER_VALUE Array
     """
 
-    def __init__(self, array_len: int):
+    def __init__(self, length: int):
         """Return a new sciter value array wrapped object."""
         super().__init__()
-        self.data = (SCITER_VALUE * array_len)()
+        self.data = (SCITER_VALUE * length)()
         self.ptr = ctypes.pointer(self.data)
 
     @property
