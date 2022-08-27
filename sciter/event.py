@@ -383,7 +383,6 @@ class EventHandler:
         By default, just prints exception traceback to stderr and then returns it.
         Can be overridden to change script exception handling.
         """
-        print("Python exception in `%s`: %s" % (func_name, repr(exception)))
         import traceback
         traceback.print_tb(exception.__traceback__)
         return exception
