@@ -31,18 +31,27 @@ rapi = sapi.GetSciterRequestAPI if sapi else None
 
 
 def version(as_str=False):
-    """Return version of Sciter engine as (3,3,1,7) tuple or '3.3.1.7' string."""
-    high = api.SciterVersion(True)
+    """Return version of Sciter engine as (3,3,1,7) tuple or '3.3.1.7' string.
+    """
     low = api.SciterVersion(False)
-    ver = (high >> 16, high & 0xFFFF, low >> 16, low & 0xFFFF)
+    if low < 5:
+        high = api.SciterVersion(True)
+        ver = (high >> 16, high & 0xFFFF, low >> 16, low & 0xFFFF)
+    else:
+        ver = tuple([api.SciterVersion(i) for i in range(4)])
     return ".".join(map(str, ver)) if as_str else ver
 
 
 def version_num():
     """Return version of Sciter engine as 0x03030107 number."""
-    # However, `4.0.2.5257` can't be represented as a 32-bit number, we return `0x04_00_02_00` instead.
+    low = api.SciterVersion(False)
     a, b, c, _ = version()
-    return (a << 24) | (b << 16) | (c << 8) | (0)
+    if low < 5:
+        # However, `4.0.2.5257` can't be represented as a 32-bit number, we return `0x04_00_02_00` instead.
+        res = (a << 24) | (b << 16) | (c << 8) | (0)
+    else:
+        res = a, b, c
+    return res
 
 def api_version():
     """Return Sciter API version number, since 4.4.0.3."""
